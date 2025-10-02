@@ -16,6 +16,7 @@
   --animate-float-medium: float-medium 4s ease-in-out infinite;
   --animate-float-fast: float-fast 3s ease-in-out infinite;
   --animate-fade-in-up: fade-in-up 1s ease-out forwards;
+  --animate-bubble-rise: bubble-rise 8s ease-in infinite;
   
   /* Animation delays */
   --animation-delay-200: 200ms;
@@ -62,7 +63,24 @@
   }
 }
 
-/* Utility classes for animation delays */
+@keyframes bubble-rise {
+  0% { 
+    transform: translateY(0) translateX(0) scale(1); 
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% { 
+    transform: translateY(-100vh) translateX(20px) scale(0.8); 
+    opacity: 0;
+  }
+}
+
+/* animation delays */
 .animation-delay-200 {
   animation-delay: 200ms;
 }

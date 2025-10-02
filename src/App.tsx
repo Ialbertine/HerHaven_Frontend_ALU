@@ -1,26 +1,18 @@
-import React from 'react';
-import { Navbar } from './components/navbar';
-import { Home } from './pages/landingpage/Home';
-import    Footer from './components/footer';
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from "./layout/layout";
+import { Home } from "./pages/landingpage/Home";
 
-const SkipLink: React.FC = () => (
-  <a 
-    href="#main-content" 
-    className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-purple-600 focus:text-white focus:px-4 focus:py-2 focus:rounded"
-  >
-    Skip to main content
-  </a>
-);
-
-export default function App() {
+const App: React.FC = () => {
   return (
-    <div className="min-h-screen">
-      <SkipLink />
-      <Navbar />
-      <main id="main-content">
-        <Home />
-      </main>
-      <Footer/>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
-}
+};
+
+export default App;

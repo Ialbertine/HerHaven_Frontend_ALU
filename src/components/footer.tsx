@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { IoMdArrowDropright } from "react-icons/io";
-import { FaLinkedinIn, FaPinterestP, FaTwitter, FaInstagram } from 'react-icons/fa';
+import {
+  FaLinkedinIn,
+  FaPinterestP,
+  FaTwitter,
+  FaInstagram,
+} from "react-icons/fa";
 // import { Link } from "react-router-dom";
-import { Logo } from "./navbar";
+// import { Logo } from "./navbar";
 
 interface LinkItem {
   label: string;
@@ -26,13 +31,12 @@ const Footer: React.FC = () => {
   const [particles, setParticles] = useState<Particle[]>([]);
 
   useEffect(() => {
-    // Generate random particles
     const newParticles: Particle[] = Array.from({ length: 30 }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
       delay: Math.random() * 5,
       duration: 3 + Math.random() * 4,
-      size: 2 + Math.random() * 4
+      size: 2 + Math.random() * 4,
     }));
     setParticles(newParticles);
   }, []);
@@ -88,7 +92,7 @@ const Footer: React.FC = () => {
         />
       ))}
 
-      {/* Decorative wave overlay */}
+      {/* Animated background */}
       <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
         <svg
           className="w-full h-full"
@@ -98,7 +102,7 @@ const Footer: React.FC = () => {
           <path
             d="M0,50 Q300,0 600,50 T1200,50 L1200,120 L0,120 Z"
             fill="white"
-            style={{ animation: 'wave 8s ease-in-out infinite' }}
+            style={{ animation: "wave 8s ease-in-out infinite" }}
           />
         </svg>
       </div>
@@ -107,7 +111,10 @@ const Footer: React.FC = () => {
       <div className="absolute top-1/4 left-10 opacity-20 pointer-events-none">
         <div className="w-16 h-16 rounded-full border-2 border-white animate-pulse" />
       </div>
-      <div className="absolute top-1/2 right-20 opacity-15 pointer-events-none" style={{ animation: 'spin-slow 20s linear infinite' }}>
+      <div
+        className="absolute top-1/2 right-20 opacity-15 pointer-events-none"
+        style={{ animation: "spin-slow 20s linear infinite" }}
+      >
         <div className="w-20 h-20 rounded-full border-2 border-white" />
       </div>
       <div className="absolute bottom-1/4 left-1/3 opacity-20 pointer-events-none">
@@ -116,16 +123,23 @@ const Footer: React.FC = () => {
 
       {/* Content */}
       <div className="relative z-10">
-        {/* Prefooter Content */}
         <div className="text-gray-300 sm:px-5 lg:px-10 lg:pt-10 sm:pt-6">
           <div className="flex flex-col lg:flex-row justify-between gap-16 lg:gap-24 lg:py-10">
-            {/* Left Side: Image and Description */}
+            {/* Left Side */}
             <div className="lg:w-1/3">
               <div className="mb-6">
-                <Logo />
+                <div className="flex items-center gap-1">
+                  <div className="w-10 h-10">
+                    <img src="/herhaven.svg" alt="HerHaven Logo" />
+                  </div>
+                  <span className="text-2xl font-bold text-white">
+                    HerHaven
+                  </span>
+                </div>
                 <p className="text-[14px] mt-4 text-white">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit
-                  tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
+                  elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus
+                  leo.
                 </p>
               </div>
               <form className="flex items-center gap-2">
@@ -161,7 +175,11 @@ const Footer: React.FC = () => {
                     <h2 className="font-bold text-xl text-white">
                       {section.title}
                     </h2>
-                    <p className={`text-[15px] text-white ${index === 0 ? "lg:w-[85%]" : ""}`}>
+                    <p
+                      className={`text-[15px] text-white ${
+                        index === 0 ? "lg:w-[85%]" : ""
+                      }`}
+                    >
                       {section.content}
                     </p>
                   </div>
@@ -180,35 +198,38 @@ const Footer: React.FC = () => {
         <footer className="text-white pb-4 lg:px-[2rem]">
           <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
             <div className="text-center md:text-left mb-4 md:mb-0">
-              <p className="text-gray-200">Copyright © {new Date().getFullYear()} Her Haven. All Rights Reserved.</p>
+              <p className="text-gray-200">
+                Copyright © {new Date().getFullYear()} Her Haven. All Rights
+                Reserved.
+              </p>
             </div>
-            
+
             {/* Social Media Icons */}
             <div className="flex space-x-4">
-              <a 
-                href="#" 
-                aria-label="LinkedIn" 
+              <a
+                href="#"
+                aria-label="LinkedIn"
                 className="flex items-center justify-center w-9 h-9 bg-[#9c27b0] rounded-full hover:bg-[#0597e6] hover:transform hover:-translate-y-2 transition-all duration-300 ease-in-out shadow-lg"
               >
                 <FaLinkedinIn className="text-white text-xl" />
               </a>
-              <a 
-                href="#" 
-                aria-label="Pinterest" 
+              <a
+                href="#"
+                aria-label="Pinterest"
                 className="flex items-center justify-center w-9 h-9 bg-[#9c27b0] rounded-full hover:bg-[#E60023] hover:transform hover:-translate-y-2 transition-all duration-300 ease-in-out shadow-lg"
               >
                 <FaPinterestP className="text-white text-xl" />
               </a>
-              <a 
-                href="#" 
-                aria-label="Twitter" 
+              <a
+                href="#"
+                aria-label="Twitter"
                 className="flex items-center justify-center w-9 h-9 bg-[#9c27b0] rounded-full hover:bg-[#1DA1F2] hover:transform hover:-translate-y-2 transition-all duration-300 ease-in-out shadow-lg"
               >
                 <FaTwitter className="text-white text-xl" />
               </a>
-              <a 
-                href="#" 
-                aria-label="Instagram" 
+              <a
+                href="#"
+                aria-label="Instagram"
                 className="flex items-center justify-center w-9 h-9 bg-[#9c27b0] rounded-full hover:bg-[#de2d2d] hover:transform hover:-translate-y-2 transition-all duration-300 ease-in-out shadow-lg"
               >
                 <FaInstagram className="text-white text-xl" />

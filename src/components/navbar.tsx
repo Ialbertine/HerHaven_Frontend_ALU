@@ -1,22 +1,39 @@
 import React, { useState } from 'react';
-import { Menu, X, Globe, ALargeSmall } from 'lucide-react';
+import { Menu, X, Globe, ALargeSmall, ChevronDown } from 'lucide-react';
+
+interface DropdownItem {
+  href: string;
+  label: string;
+}
 
 interface NavLink {
   href: string;
   label: string;
   isActive?: boolean;
+  hasDropdown?: boolean;
+  dropdownItems?: DropdownItem[];
 }
 
 const navLinks: NavLink[] = [
   { href: '#home', label: 'Home', isActive: true },
   { href: '#about', label: 'About us' },
-  { href: '#services', label: 'Services' },
-  { href: '#pages', label: 'Pages' },
+  { 
+    href: '#services', 
+    label: 'Services',
+    hasDropdown: true,
+    dropdownItems: [
+      { href: '#counseling', label: 'Counseling Services' },
+      { href: '#legal', label: 'Legal Aid' },
+      { href: '#shelter', label: 'Safe Shelter' },
+      { href: '#education', label: 'Education Programs' },
+    ]
+  },
+  { href: '#resources', label: 'Resources' },
   { href: '#contact', label: 'Contact Us' },
 ];
 
 export const Logo: React.FC = () => (
-  <div className="flex items-center gap-2">
+  <div className="flex items-center gap-1">
     <div className="w-10 h-10">
       <img src="/herhaven.svg" alt="HerHaven Logo" />
     </div>
@@ -42,21 +59,83 @@ const SignUpButton: React.FC<{ fullWidth?: boolean }> = ({ fullWidth = false }) 
   </button>
 );
 
+interface DropdownMenuProps {
+  items: DropdownItem[];
+}
+
+const DropdownMenu: React.FC<DropdownMenuProps> = ({ items }) => (
+  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+    {items.map((item) => (
+      <a
+        key={item.href}
+        href={item.href}
+        className="block px-4 py-3 hover:bg-purple-50 transition-colors"
+      >
+        <div className="font-medium text-black">{item.label}</div>
+      </a>
+    ))}
+  </div>
+);
+
 interface NavItemProps {
   link: NavLink;
   isMobile?: boolean;
 }
 
 const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
+  const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
   const baseClasses = isMobile ? 'block py-2' : '';
   const activeClasses = link.isActive ? 'text-[#9c27b0]' : 'text-black hover:text-[#9c27b0]';
+  
+  if (link.hasDropdown && link.dropdownItems) {
+    if (isMobile) {
+      return (
+        <li>
+          <button
+            onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
+            className={`${baseClasses} ${activeClasses} transition-colors w-full text-left flex items-center justify-between`}
+          >
+            {link.label}
+            <ChevronDown className={`w-4 h-4 transition-transform ${mobileDropdownOpen ? 'rotate-180' : ''}`} />
+          </button>
+          {mobileDropdownOpen && (
+            <div className="pl-4 mt-2 space-y-2">
+              {link.dropdownItems.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="block py-2 text-gray-700 hover:text-[#9c27b0] transition-colors"
+                >
+                  <div className="font-medium">{item.label}</div>
+                </a>
+              ))}
+            </div>
+          )}
+        </li>
+      );
+    }
+
+    return (
+      <li className="relative group">
+        <a 
+          href={link.href} 
+          className={`${baseClasses} ${activeClasses} transition-colors flex items-center gap-1`}
+          aria-current={link.isActive ? 'page' : undefined}
+        >
+          {link.label}
+          <ChevronDown className="w-4 h-4" />
+        </a>
+        <DropdownMenu items={link.dropdownItems} />
+      </li>
+    );
+  }
   
   return (
     <li>
       <a 
         href={link.href} 
         className={`${baseClasses} ${activeClasses} transition-colors`}
-        {...(link.isActive && { 'aria-current': 'page' as const })}
+        aria-current={link.isActive ? 'page' : undefined}
       >
         {link.label}
       </a>
@@ -68,8 +147,8 @@ export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="absolute top-0 left-0 right-0 z-50">
-      <nav className="container mx-auto px-6 py-6" aria-label="Main navigation">
+    <header className="fixed top-0 left-0 right-0 z-50 color-lavender-50 backdrop-blur-md">
+      <nav className="container mx-auto px-6 py-4" aria-label="Main navigation">
         <div className="flex items-center justify-between">
           <Logo />
 
