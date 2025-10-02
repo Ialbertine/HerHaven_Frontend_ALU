@@ -1,11 +1,26 @@
 import React from 'react';
+import { Navbar } from './components/navbar';
+import { Home } from './pages/landingpage/Home';
+import    Footer from './components/footer';
 
-const App: React.FC = () => {
+const SkipLink: React.FC = () => (
+  <a 
+    href="#main-content" 
+    className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-purple-600 focus:text-white focus:px-4 focus:py-2 focus:rounded"
+  >
+    Skip to main content
+  </a>
+);
+
+export default function App() {
   return (
-    <div>
-      App Component 
+    <div className="min-h-screen">
+      <SkipLink />
+      <Navbar />
+      <main id="main-content">
+        <Home />
+      </main>
+      <Footer/>
     </div>
   );
-};
-
-export default App;
+}
