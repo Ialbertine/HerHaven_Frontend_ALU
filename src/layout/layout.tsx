@@ -1,11 +1,11 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom'
-import { Navbar } from '../components/navbar';
-import Footer from '../components/footer';
+import React from "react";
+import { Outlet } from "react-router-dom";
+import { Navbar } from "@/components/navbar";
+import Footer from "@/components/footer";
 
 const SkipLink: React.FC = () => (
-  <a 
-    href="#main-content" 
+  <a
+    href="#main-content"
     className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-purple-600 focus:text-white focus:px-4 focus:py-2 focus:rounded"
   >
     Skip to main content
@@ -18,9 +18,9 @@ export default function Layout() {
       <SkipLink />
       <Navbar />
       <main id="main-content">
-        <Outlet/>
+        <Outlet />
       </main>
-      <Footer/>
+      <Footer />
     </div>
   );
 }

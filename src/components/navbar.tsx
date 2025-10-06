@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Menu, X, Globe, ALargeSmall, ChevronDown } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface DropdownItem {
   href: string;
@@ -54,9 +55,11 @@ const LanguageToggle: React.FC = () => (
 );
 
 const SignUpButton: React.FC<{ fullWidth?: boolean }> = ({ fullWidth = false }) => (
-  <button className={`bg-[#9c27b0] text-white px-6 py-3 rounded-full font-medium transition-colors ${fullWidth ? 'w-full' : ''}`}>
-    Sign Up
-  </button>
+  <Link to="/signup">
+    <button className={`bg-[#9c27b0] text-white px-6 py-3 rounded-full font-medium transition-colors ${fullWidth ? 'w-full' : ''}`}>
+      Sign Up
+    </button>
+  </Link>
 );
 
 interface DropdownMenuProps {
@@ -132,13 +135,13 @@ const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
   
   return (
     <li>
-      <a 
-        href={link.href} 
+      <Link 
+        to={link.href} 
         className={`${baseClasses} ${activeClasses} transition-colors`}
         aria-current={link.isActive ? 'page' : undefined}
       >
         {link.label}
-      </a>
+      </Link>
     </li>
   );
 };
