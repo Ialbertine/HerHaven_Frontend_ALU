@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, User, Mail, Lock, Check, X } from "lucide-react";
+import { Eye, EyeOff, User, Mail, Lock, Check, X, Loader2 } from "lucide-react";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import { register, continueAsGuest } from "@/apis/auth";
+import toast from "react-hot-toast";
 
 interface PasswordRequirement {
   label: string;
@@ -29,7 +30,8 @@ const Signup: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [apiError, setApiError] = useState("");
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [isGuestLoading, setIsGuestLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -102,8 +104,8 @@ const Signup: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
+      setIsRegistering(true);
       setIsLoading(true);
-      setApiError("");
 
       try {
         const response = await register(
@@ -113,39 +115,40 @@ const Signup: React.FC = () => {
         );
 
         if (response.success) {
-          // Registration successful, redirect to dashboard or home
-          navigate("/dashboard");
+          toast.success("You have successfully registered");
+          navigate("/login");
         } else {
-          // Show error message from API
-          setApiError(
+          toast.error(
             response.message || "Registration failed. Please try again."
           );
         }
       } catch {
-        setApiError("An unexpected error occurred. Please try again.");
+        toast.error("An unexpected error occurred. Please try again.");
       } finally {
+        setIsRegistering(false);
         setIsLoading(false);
       }
     }
   };
 
   const handleGuestAccess = async () => {
+    setIsGuestLoading(true);
     setIsLoading(true);
-    setApiError("");
-
     try {
       const response = await continueAsGuest();
 
       if (response.success) {
-        navigate("/dashboard"); // Guest access successful, redirect to dashboard with limited allowed features
+        toast.success("Continuing as guest");
+        navigate("/dashboard");
       } else {
-        setApiError(
+        toast.error(
           response.message || "Guest access failed. Please try again."
         );
       }
     } catch {
-      setApiError("An unexpected error occurred. Please try again.");
+      toast.error("An unexpected error occurred. Please try again.");
     } finally {
+      setIsGuestLoading(false);
       setIsLoading(false);
     }
   };
@@ -184,13 +187,7 @@ const Signup: React.FC = () => {
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* API Error Message */}
-              {apiError && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
-                  <X size={16} />
-                  <span>{apiError}</span>
-                </div>
-              )}
+              {/* API errors are shown via toast notifications */}
 
               {/* Username Field */}
               <div>
@@ -374,28 +371,9 @@ const Signup: React.FC = () => {
                 disabled={isLoading}
                 className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
-                {isLoading ? (
+                {isRegistering ? (
                   <span className="flex items-center justify-center gap-2">
-                    <svg
-                      className="animate-spin h-5 w-5"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
+                    <Loader2 className="animate-spin h-5 w-5" />
                     Creating Account...
                   </span>
                 ) : (
@@ -414,39 +392,14 @@ const Signup: React.FC = () => {
 
           {/* Guest Access Card */}
           <div className="bg-white/60 backdrop-blur-sm rounded-2xl shadow-lg p-6 mb-6 text-center animate-fade-in-up animation-delay-600">
-            {apiError && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2 mb-4">
-                <X size={16} />
-                <span>{apiError}</span>
-              </div>
-            )}
             <button
               onClick={handleGuestAccess}
               disabled={isLoading}
               className="w-full flex items-center justify-center gap-2 bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-full font-semibold hover:border-[#9c27b0] hover:text-[#9c27b0] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? (
+              {isGuestLoading ? (
                 <>
-                  <svg
-                    className="animate-spin h-5 w-5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
+                  <Loader2 className="animate-spin h-5 w-5" />
                   Loading...
                 </>
               ) : (

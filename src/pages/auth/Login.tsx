@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, X, Loader2 } from "lucide-react";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import { login } from "@/apis/auth";
+import toast from "react-hot-toast";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -15,7 +16,6 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [apiError, setApiError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -55,7 +55,6 @@ const Login: React.FC = () => {
     e.preventDefault();
     if (validateForm()) {
       setIsLoading(true);
-      setApiError("");
       try {
         const response = await login(formData.email, formData.password);
 
@@ -76,13 +75,12 @@ const Login: React.FC = () => {
             navigate("/user/dashboard");
           }
         } else {
-          // Show error message from API
-          setApiError(
+          toast.error(
             response.message || "Login failed. Please check your credentials."
           );
         }
       } catch {
-        setApiError("An unexpected error occurred. Please try again.");
+        toast.error("An unexpected error occurred. Please try again.");
       } finally {
         setIsLoading(false);
       }
@@ -121,13 +119,7 @@ const Login: React.FC = () => {
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* API Error Message */}
-              {apiError && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
-                  <X size={16} />
-                  <span>{apiError}</span>
-                </div>
-              )}
+              {/* API errors are displayed via toast notifications */}
 
               {/* Email Field */}
               <div>
