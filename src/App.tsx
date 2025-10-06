@@ -18,26 +18,23 @@ const App: React.FC = () => {
         <Route path="signup" element={<Signup />} />
         <Route path="login" element={<Login />} />
 
-        {/* Protected Routes, this is admin dashboard */}
-         <Route path="dashboard">
-          <Route
-            path="admin"
-            element={<ProtectedRoute allowedRoles={["admin"]} />}
-          >
-            <Route path="/admin/dashboard" element={<AdminLanding />} />
-          </Route>
+        {/* Admin Routes */}
+        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+          <Route path="admin/dashboard" element={<AdminLanding />} />
         </Route>
 
-        {/* Protected Routes, this is user dashboard */}
-        <Route path="dashboard">
-          <Route
-            path="user"
-            element={<ProtectedRoute allowedRoles={["user"]} />}
-          >
-            <Route path="/user/dashboard" element={<UserLanding />} />
-          </Route>
+        {/* User Routes */}
+        <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
+          <Route path="user/dashboard" element={<UserLanding />} />
         </Route>
 
+        {/* Counselor Routes */}
+        <Route element={<ProtectedRoute allowedRoles={["counselor"]} />}>
+          <Route
+            path="counselor/dashboard"
+            element={<div>Counselor Dashboard</div>}
+          />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
