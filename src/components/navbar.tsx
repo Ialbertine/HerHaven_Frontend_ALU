@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Menu, X, Globe, ALargeSmall, ChevronDown } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { Menu, X, Globe, ALargeSmall, ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface DropdownItem {
   href: string;
@@ -16,47 +16,64 @@ interface NavLink {
 }
 
 const navLinks: NavLink[] = [
-  { href: '#home', label: 'Home', isActive: true },
-  { href: '#about', label: 'About us' },
-  { 
-    href: '#services', 
-    label: 'Services',
+  { href: "#home", label: "Home", isActive: true },
+  { href: "#about", label: "About us" },
+  {
+    href: "#services",
+    label: "Services",
     hasDropdown: true,
     dropdownItems: [
-      { href: '#counseling', label: 'Counseling Services' },
-      { href: '#legal', label: 'Legal Aid' },
-      { href: '#shelter', label: 'Safe Shelter' },
-      { href: '#education', label: 'Education Programs' },
-    ]
+      { href: "#counseling", label: "Counseling Services" },
+      { href: "#legal", label: "Legal Aid" },
+      { href: "#shelter", label: "Safe Shelter" },
+      { href: "#education", label: "Education Programs" },
+    ],
   },
-  { href: '#resources', label: 'Resources' },
-  { href: '#contact', label: 'Contact Us' },
+  { href: "#resources", label: "Resources" },
+  { href: "#contact", label: "Contact Us" },
 ];
 
 export const Logo: React.FC = () => (
   <div className="flex items-center gap-1">
-    <div className="w-10 h-10">
+    <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10">
       <img src="/herhaven.svg" alt="HerHaven Logo" />
     </div>
-    <span className="text-2xl font-bold text-black">HerHaven</span>
+    <span className="text-xl sm:text-xl md:text-2xl lg:text-2xl xl:text-3xl font-bold text-black">
+      HerHaven
+    </span>
   </div>
 );
 
 const ResizeText: React.FC = () => (
-  <button aria-label="Resize text">
-    <ALargeSmall className='w-6 h-6 text-black'/>
+  <button 
+    aria-label="Resize text"
+    className="hover:scale-110 transition-transform"
+  >
+    <ALargeSmall className="w-5 h-5 md:w-6 md:h-6 text-black" />
   </button>
 );
 
 const LanguageToggle: React.FC = () => (
-  <button aria-label="Toggle languages">
-    <Globe className='w-6 h-6 text-black'/>
+  <button 
+    aria-label="Toggle languages"
+    className="hover:scale-110 transition-transform"
+  >
+    <Globe className="w-5 h-5 md:w-6 md:h-6 text-black" />
   </button>
 );
 
-const SignUpButton: React.FC<{ fullWidth?: boolean }> = ({ fullWidth = false }) => (
+const SignUpButton: React.FC<{ fullWidth?: boolean }> = ({
+  fullWidth = false,
+}) => (
   <Link to="/signup">
-    <button className={`bg-[#9c27b0] text-white px-6 py-3 rounded-full font-medium transition-colors ${fullWidth ? 'w-full' : ''}`}>
+    <button
+      className={`bg-[#9c27b0] hover:bg-[#7b1fa2] text-white 
+        px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 
+        text-sm sm:text-base md:text-base
+        rounded-full font-medium transition-all duration-200 
+        hover:shadow-lg hover:scale-105
+        ${fullWidth ? "w-full" : ""}`}
+    >
       Sign Up
     </button>
   </Link>
@@ -87,9 +104,11 @@ interface NavItemProps {
 
 const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
-  const baseClasses = isMobile ? 'block py-2' : '';
-  const activeClasses = link.isActive ? 'text-[#9c27b0]' : 'text-black hover:text-[#9c27b0]';
-  
+  const baseClasses = isMobile ? "block py-2" : "";
+  const activeClasses = link.isActive
+    ? "text-[#9c27b0]"
+    : "text-black hover:text-[#9c27b0]";
+
   if (link.hasDropdown && link.dropdownItems) {
     if (isMobile) {
       return (
@@ -99,7 +118,11 @@ const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
             className={`${baseClasses} ${activeClasses} transition-colors w-full text-left flex items-center justify-between`}
           >
             {link.label}
-            <ChevronDown className={`w-4 h-4 transition-transform ${mobileDropdownOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${
+                mobileDropdownOpen ? "rotate-180" : ""
+              }`}
+            />
           </button>
           {mobileDropdownOpen && (
             <div className="pl-4 mt-2 space-y-2">
@@ -120,10 +143,10 @@ const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
 
     return (
       <li className="relative group">
-        <a 
-          href={link.href} 
+        <a
+          href={link.href}
           className={`${baseClasses} ${activeClasses} transition-colors flex items-center gap-1`}
-          aria-current={link.isActive ? 'page' : undefined}
+          aria-current={link.isActive ? "page" : undefined}
         >
           {link.label}
           <ChevronDown className="w-4 h-4" />
@@ -132,13 +155,13 @@ const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
       </li>
     );
   }
-  
+
   return (
     <li>
-      <Link 
-        to={link.href} 
+      <Link
+        to={link.href}
         className={`${baseClasses} ${activeClasses} transition-colors`}
-        aria-current={link.isActive ? 'page' : undefined}
+        aria-current={link.isActive ? "page" : undefined}
       >
         {link.label}
       </Link>
@@ -151,41 +174,47 @@ export const Navbar: React.FC = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 color-lavender-50 backdrop-blur-md">
-      <nav className="container mx-auto px-6 py-4" aria-label="Main navigation">
+      <nav className="px-6 py-4" aria-label="Main navigation">
         <div className="flex items-center justify-between">
           <Logo />
 
-          {/* Navigation */}
-          <ul className="hidden md:flex items-center gap-8">
+          {/* Navigation - Hidden on mobile/sm, visible from md (768px) */}
+          <ul className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => (
               <NavItem key={link.href} link={link} />
             ))}
           </ul>
 
-          <div className="hidden md:flex items-center gap-3">
+          {/* Actions */}
+          <div className="hidden md:flex items-right gap-2 lg:gap-3">
             <ResizeText />
             <LanguageToggle />
             <SignUpButton />
           </div>
 
+          {/*  Menu */}
           <button
-            className="md:hidden p-2 text-black hover:bg-gray-100 rounded-lg transition-colors"
+            className="lg:hidden p-2 text-black hover:bg-gray-100 rounded-lg transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-expanded={mobileMenuOpen}
             aria-label="Toggle mobile menu"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
           </button>
         </div>
 
-        {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden mt-4 bg-white/95 backdrop-blur-sm rounded-lg p-4 border border-gray-200">
+          <div className="lg:hidden mt-4 bg-white/95 backdrop-blur-sm rounded-lg p-4 border border-gray-200 shadow-lg">
             <ul className="flex flex-col gap-4">
               {navLinks.map((link) => (
                 <NavItem key={link.href} link={link} isMobile />
               ))}
-              <li className="pt-2 border-t border-gray-300">
+              {/* Show Sign Up button only on smaller screens where actions are hidden */}
+              <li className="pt-2 border-t border-gray-300 md:hidden">
                 <SignUpButton fullWidth />
               </li>
             </ul>

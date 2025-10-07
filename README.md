@@ -1,14 +1,13 @@
 # HerHaven Frontend
 
 <div align="center">
-  <img src="public/herhaven.svg" alt="HerHaven Logo" width="200"/>
-  
+
   ### A Safe Haven for Healing and Support
 </div>
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [About](#about)
 - [Features](#features)
@@ -24,7 +23,7 @@
 
 ---
 
-## 🌟 About
+## About
 
 **[HerHaven](https://ialbertine-herhaven.netlify.app/)** is a culturally sensitive, trauma-informed digital space designed to support women affected by gender-based violence. It offers confidential access to mental health care through professional counseling links, peer-to-peer support, and an AI-guided chatbot providing psychoeducation, self-help tools, and crisis referrals—promoting healing, resilience, and stigma-free help-seeking.
 
