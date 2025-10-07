@@ -7,6 +7,7 @@ import Signup from "@/pages/auth/Signup";
 import Login from "@/pages/auth/Login";
 import AdminLanding from "./Dashboard/admin/AdminLanding";
 import UserLanding from "./Dashboard/user/UserLanding";
+import About from "./pages/landingpage/About";
 
 const App: React.FC = () => {
   return (
@@ -14,6 +15,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
+          <Route path="aboutus" element={<About />} />
         </Route>
         <Route path="signup" element={<Signup />} />
         <Route path="login" element={<Login />} />

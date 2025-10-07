@@ -16,21 +16,19 @@ interface NavLink {
 }
 
 const navLinks: NavLink[] = [
-  { href: "#home", label: "Home", isActive: true },
-  { href: "#about", label: "About us" },
+  { href: "/", label: "Home", isActive: true },
+  { href: "/aboutus", label: "About us" },
   {
-    href: "#services",
+    href: "/services",
     label: "Services",
     hasDropdown: true,
     dropdownItems: [
-      { href: "#counseling", label: "Counseling Services" },
-      { href: "#legal", label: "Legal Aid" },
-      { href: "#shelter", label: "Safe Shelter" },
-      { href: "#education", label: "Education Programs" },
+      { href: "/counseling", label: "Counseling Services" },
+      { href: "/support", label: "Support" },
     ],
   },
-  { href: "#resources", label: "Resources" },
-  { href: "#contact", label: "Contact Us" },
+  { href: "/resources", label: "Resources" },
+  { href: "/contact", label: "Contact Us" },
 ];
 
 export const Logo: React.FC = () => (
@@ -45,7 +43,7 @@ export const Logo: React.FC = () => (
 );
 
 const ResizeText: React.FC = () => (
-  <button 
+  <button
     aria-label="Resize text"
     className="hover:scale-110 transition-transform"
   >
@@ -54,7 +52,7 @@ const ResizeText: React.FC = () => (
 );
 
 const LanguageToggle: React.FC = () => (
-  <button 
+  <button
     aria-label="Toggle languages"
     className="hover:scale-110 transition-transform"
   >
