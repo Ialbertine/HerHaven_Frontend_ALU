@@ -37,11 +37,14 @@ To create a safe, accessible, and empowering digital platform that breaks the si
 
 - Backend Repository: https://github.com/Ialbertine/HerHaven_Backend_ALU  
 
-- Backend API: https://ialbertine-herhaven-backend.onrender.com
+- Frontend Repository: https://github.com/Ialbertine/HerHaven_Frontend_ALU 
 
+- Backend API: https://ialbertine-herhaven-backend.onrender.com
 you will need to add Routes accordingly
 
 - Recorded video: 
+
+- Figma link: https://www.figma.com/design/MKR357S6f32m7JAjewQqf8/HerHaven_Design?node-id=0-1&t=lXnetUpHHEw4LFuX-1 
 
 ## Features
 
@@ -115,7 +118,7 @@ npm install
 ```
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 ### Environment Variables
 
