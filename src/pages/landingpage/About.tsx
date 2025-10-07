@@ -7,7 +7,6 @@ import {
   Sprout,
   Lightbulb,
   Ear,
-  Wrench,
   Link2,
   ArrowRight,
   Smartphone,
@@ -47,15 +46,15 @@ const About: React.FC = () => {
   const workflowSteps = [
     {
       icon: Ear,
-      title: "Listen & Understand",
+      title: "Listen with Compassion",
       description:
-        "We engage with survivors and experts to understand real needs.",
+        "We create a safe space where women survivors can share their experiences, be heard without judgment, and have their voices truly valued.",
     },
     {
-      icon: Wrench,
-      title: "Design & Build",
+      icon: Shield,
+      title: "Build Safe Spaces",
       description:
-        "We co-create digital solutions that are safe, ethical, and accessible.",
+        "We create a secure, confidential space where women can access support, resources, and healing without fear or judgment.",
     },
     {
       icon: Link2,
@@ -206,7 +205,7 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      {/* Section 5: What We Do / How We Work */}
+      {/* What We Do / How We Work */}
       <section className="py-16 px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
         <h2 className="text-4xl font-bold text-purple-900 text-center mb-12">
           How We Work
@@ -245,19 +244,19 @@ const About: React.FC = () => {
       {/* Section 6: Impact / Why It Matters */}
       <section className="py-16 px-4 md:px-8 lg:px-16 bg-gradient-to-r from-purple-900 to-purple-700 text-white">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-12">
+          <h2 className="text-3xl font-bold text-center mb-12">
             Why This Work Matters
           </h2>
 
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             <div className="text-center bg-white/10 backdrop-blur-lg rounded-xl p-8 hover:bg-white/20 transition-all duration-300">
-              <div className="text-5xl font-bold mb-2">46%</div>
+              <div className="text-3xl font-bold mb-2">46%</div>
               <p className="text-lg">
                 of women in Rwanda have experienced partner violence
               </p>
             </div>
             <div className="text-center bg-white/10 backdrop-blur-lg rounded-xl p-8 hover:bg-white/20 transition-all duration-300">
-              <div className="text-5xl font-bold mb-2">5.6%</div>
+              <div className="text-3xl font-bold mb-2">5.6%</div>
               <p className="text-lg">
                 of those affected access mental health care
               </p>
@@ -276,7 +275,7 @@ const About: React.FC = () => {
           <div className="max-w-4xl mx-auto">
             <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border-l-4 border-lavender-300">
               <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                <Star className="w-8 h-8" />
+                <Star className="w-6 h-6" />
                 Share Your Feedback
               </h3>
 
@@ -340,7 +339,7 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      {/* Section 7: Get Involved / Contact */}
+      {/* Get Involved / Contact */}
       <section className="py-16 px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
         <div className="text-center">
           <h2 className="text-4xl font-bold text-purple-900 mb-6">
@@ -351,9 +350,6 @@ const About: React.FC = () => {
             interested in supporting our mission, we'd love to hear from you.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-              Contact Us
-            </button>
             <button className="px-8 py-4 bg-lavender-500 hover:bg-lavender-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               Partner With Us
             </button>
