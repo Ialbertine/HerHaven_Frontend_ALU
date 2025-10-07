@@ -57,7 +57,7 @@ you will need to add Routes accordingly
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Core Technologies
 
@@ -135,7 +135,7 @@ Ensure your backend API is running and accessible. Update the `VITE_API_BASE_URL
 
 ---
 
-## 🏃‍♀️ Running the Application
+## Running the Application
 
 ### Development Mode
 
