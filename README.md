@@ -41,9 +41,9 @@ To create a safe, accessible, and empowering digital platform that breaks the si
 
 you will need to add Routes accordingly
 
-- 
+- Recorded video: 
 
-## ✨ Features
+## Features
 
 - **Secure Authentication** - Role-based access control with JWT authentication and integrated continue as guest option to support confidential
 - **Multi-Role Dashboard** - Separate interfaces for Users, and Admins
