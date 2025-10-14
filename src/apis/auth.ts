@@ -1,4 +1,5 @@
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
+import apiClient from "./axiosConfig";
 
 // Type Definitions
 export interface User {
@@ -19,8 +20,6 @@ export interface AuthResponse {
   };
 }
 
-const API_BASE_URL = import.meta.env.VITE_REACT_API_URL as string;
-
 // 1. REGISTER
 export const register = async (
   username: string,
@@ -28,8 +27,8 @@ export const register = async (
   password: string
 ): Promise<AuthResponse> => {
   try {
-    const response = await axios.post<AuthResponse>(
-      `${API_BASE_URL}/api/auth/register`,
+    const response = await apiClient.post<AuthResponse>(
+      "/api/auth/register",
       {
         username,
         email,
@@ -60,8 +59,8 @@ export const login = async (
   password: string
 ): Promise<AuthResponse> => {
   try {
-    const response = await axios.post<AuthResponse>(
-      `${API_BASE_URL}/api/auth/login`,
+    const response = await apiClient.post<AuthResponse>(
+      "/api/auth/login",
       {
         email,
         password,
@@ -88,8 +87,8 @@ export const login = async (
 // 3. CONTINUE AS GUEST
 export const continueAsGuest = async (): Promise<AuthResponse> => {
   try {
-    const response = await axios.post<AuthResponse>(
-      `${API_BASE_URL}/api/auth/guest`,
+    const response = await apiClient.post<AuthResponse>(
+      "/api/auth/guest",
       {
         userAgent: navigator.userAgent,
         ipAddress: "0.0.0.0",
@@ -116,8 +115,8 @@ export const validateGuestSession = async (
   sessionId: string
 ): Promise<boolean> => {
   try {
-    const response = await axios.post<AuthResponse>(
-      `${API_BASE_URL}/api/auth/validate-guest`,
+    const response = await apiClient.post<AuthResponse>(
+      "/api/auth/validate-guest",
       {
         sessionId,
       }
@@ -188,8 +187,8 @@ export const registerCounselor = async (
   data: CounselorRegistrationData
 ): Promise<CounselorRegistrationResponse> => {
   try {
-    const response = await axios.post<CounselorRegistrationResponse>(
-      `${API_BASE_URL}/api/counselor/register`,
+    const response = await apiClient.post<CounselorRegistrationResponse>(
+      "/api/counselor/register",
       data
     );
 
