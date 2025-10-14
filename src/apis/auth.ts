@@ -154,3 +154,51 @@ export const getCurrentUser = (): User | null => {
 export const getAuthToken = (): string | null => {
   return localStorage.getItem("token");
 };
+
+// 9. COUNSELOR REGISTRATION
+export interface CounselorRegistrationData {
+  email: string;
+  password: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  licenseNumber: string;
+  specialization: string;
+  experience: number;
+  bio: string;
+}
+
+export interface CounselorRegistrationResponse {
+  success: boolean;
+  message?: string;
+  data?: {
+    counselor: {
+      id: string;
+      email: string;
+      username: string;
+      specialization: string;
+      verificationStatus: string;
+      submittedAt: string;
+    };
+  };
+}
+
+export const registerCounselor = async (
+  data: CounselorRegistrationData
+): Promise<CounselorRegistrationResponse> => {
+  try {
+    const response = await axios.post<CounselorRegistrationResponse>(
+      `${API_BASE_URL}/api/counselor/register`,
+      data
+    );
+
+    return response.data;
+  } catch (error) {
+    const axiosError = error as AxiosError<CounselorRegistrationResponse>;
+    return {
+      success: false,
+      message: axiosError.response?.data?.message || "Counselor registration failed",
+    };
+  }
+};

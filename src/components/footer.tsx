@@ -195,7 +195,7 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Footer Section */}
-        <footer className="text-white pb-4 lg:px-[2rem]">
+        <footer className="text-white pb-4 lg:px-[1rem]">
           <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
             <div className="text-center md:text-left mb-4 md:mb-0">
               <p className="text-gray-200">

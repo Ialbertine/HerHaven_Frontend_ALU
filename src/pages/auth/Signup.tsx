@@ -140,7 +140,7 @@ const Signup: React.FC = () => {
       if (response.success) {
         toast.success("Continuing as guest");
         //redirect to user dashboard but with minimal features
-        navigate("/user/dashboard"); 
+        navigate("/"); 
       } else {
         toast.error(
           response.message || "Guest access failed. Please try again."
