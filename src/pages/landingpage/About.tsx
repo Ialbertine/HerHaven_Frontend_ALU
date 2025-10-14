@@ -12,6 +12,7 @@ import {
   Smartphone,
   Star,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const About: React.FC = () => {
   const [feedbackForm, setFeedbackForm] = useState({
@@ -342,7 +343,7 @@ const About: React.FC = () => {
       {/* Get Involved / Contact */}
       <section className="py-16 px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
         <div className="text-center">
-          <h2 className="text-4xl font-bold text-purple-900 mb-6">
+          <h2 className="text-3xl font-bold text-purple-900 mb-6">
             Join Us in Making a Difference
           </h2>
           <p className="text-lg text-gray-700 max-w-3xl mx-auto mb-10 leading-relaxed">
@@ -350,9 +351,16 @@ const About: React.FC = () => {
             interested in supporting our mission, we'd love to hear from you.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-8 py-4 bg-lavender-500 hover:bg-lavender-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-              Partner With Us
-            </button>
+            <Link to="/contact">
+              <button className="px-8 py-4 bg-lavender-500 hover:bg-lavender-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                Partner With Us
+              </button>
+            </Link>
+            <Link to="/counselorform">
+              <button className="px-8 py-4 bg-purple-100 hover:bg-purple-200 text-purple-900 font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                Join as a Counselor
+              </button>
+            </Link>
           </div>
         </div>
       </section>
