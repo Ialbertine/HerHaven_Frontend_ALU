@@ -11,6 +11,8 @@ import About from "./pages/landingpage/About";
 import CounselorApplicationForm from "@/pages/landingpage/therapyForm";
 import Contact from "@/pages/landingpage/contact";
 import Resources from "@/pages/landingpage/resources";
+import TherapistLanding from "@/Dashboard/therapist/therapyLanding";
+
 const App: React.FC = () => {
   return (
     <BrowserRouter>
@@ -26,7 +28,7 @@ const App: React.FC = () => {
         <Route path="login" element={<Login />} />
 
         {/* Admin Routes */}
-        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+        <Route element={<ProtectedRoute allowedRoles={["super_admin"]} />}>
           <Route path="admin/dashboard" element={<AdminLanding />} />
         </Route>
 
@@ -37,10 +39,7 @@ const App: React.FC = () => {
 
         {/* Counselor Routes */}
         <Route element={<ProtectedRoute allowedRoles={["counselor"]} />}>
-          <Route
-            path="counselor/dashboard"
-            element={<div>Counselor Dashboard</div>}
-          />
+          <Route path="counselor/dashboard" element={<TherapistLanding />} />
         </Route>
       </Routes>
     </BrowserRouter>

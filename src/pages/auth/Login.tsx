@@ -65,7 +65,7 @@ const Login: React.FC = () => {
           localStorage.setItem("userRole", userRole);
 
           // Navigate based on role
-          if (userRole === "admin") {
+          if (userRole === "super_admin") {
             navigate("/admin/dashboard");
           } else if (userRole === "counselor") {
             navigate("/counselor/dashboard");
