@@ -1,21 +1,19 @@
-import axios, { type AxiosResponse } from 'axios';
+import axios, { type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_REACT_API_URL || 'https://ialbertine-herhaven-backend.onrender.com';
 
-
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 30000, 
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  withCredentials: false, 
+  withCredentials: true,
 });
 
-// Request interceptor
 apiClient.interceptors.request.use(
-  (config) => {
+  (config: InternalAxiosRequestConfig) => {
     if (config.method === 'get') {
       config.params = {
         ...config.params,
@@ -23,7 +21,6 @@ apiClient.interceptors.request.use(
       };
     }
     
-    // Add authorization header if token exists
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -32,47 +29,64 @@ apiClient.interceptors.request.use(
     config.headers['Content-Type'] = 'application/json';
     config.headers['Accept'] = 'application/json';
     
-    console.log(`Making ${config.method?.toUpperCase()} request to: ${config.url}`);
     return config;
   },
   (error) => {
-    console.error('Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
 
-// Response interceptor with retry logic
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
-    console.log(`Response received from: ${response.config.url}`);
     return response;
   },
   async (error) => {
-    console.error('Response error:', error);
+    const originalRequest = error.config;
     
-    if (error.code === 'ERR_NETWORK' || error.message.includes('CORS')) {
-      console.error('CORS Error detected. Check backend CORS configuration.');
-    }
-    
-    const config = error.config;
-    if (!config || config._retryCount >= 3) {
+    if (!originalRequest || originalRequest._retryCount >= 3) {
       return Promise.reject(error);
     }
     
-    config._retryCount = (config._retryCount || 0) + 1;
-    
-    // Only retry on network errors 
-    if (error.code === 'ERR_NETWORK' || (error.response && error.response.status >= 500)) {
-      console.log(`Retrying request (attempt ${config._retryCount}/3): ${config.url}`);
+    if (error.response) {
+      const status = error.response.status;
       
-      const delay = Math.pow(2, config._retryCount) * 1000;
-      await new Promise(resolve => setTimeout(resolve, delay));
+      if (status >= 400 && status < 500 && status !== 408 && status !== 429) {
+        return Promise.reject(error);
+      }
       
-      return apiClient(config);
+      if (status === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        return Promise.reject(error);
+      }
+      
+      if (status >= 500 || status === 408 || status === 429) {
+        originalRequest._retryCount = (originalRequest._retryCount || 0) + 1;
+        
+        const delay = Math.min(1000 * Math.pow(2, originalRequest._retryCount), 10000);
+        
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return apiClient(originalRequest);
+      }
+    } else if (error.request) {
+      if (error.code === 'ERR_NETWORK' || error.code === 'ECONNABORTED') {
+        originalRequest._retryCount = (originalRequest._retryCount || 0) + 1;
+        
+        const delay = Math.min(1000 * Math.pow(2, originalRequest._retryCount), 10000);
+        
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return apiClient(originalRequest);
+      }
     }
     
     return Promise.reject(error);
   }
 );
+
+declare module 'axios' {
+  export interface InternalAxiosRequestConfig {
+    _retryCount?: number;
+  }
+}
 
 export default apiClient;

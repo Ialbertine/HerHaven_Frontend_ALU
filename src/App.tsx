@@ -12,6 +12,7 @@ import CounselorApplicationForm from "@/pages/landingpage/therapyForm";
 import Contact from "@/pages/landingpage/contact";
 import Resources from "@/pages/landingpage/resources";
 import TherapistLanding from "@/Dashboard/therapist/therapyLanding";
+import TherapyManagement from "./Dashboard/admin/TherapyManagement";
 
 const App: React.FC = () => {
   return (
@@ -30,6 +31,7 @@ const App: React.FC = () => {
         {/* Admin Routes */}
         <Route element={<ProtectedRoute allowedRoles={["super_admin"]} />}>
           <Route path="admin/dashboard" element={<AdminLanding />} />
+          <Route path="admin/therapy-management" element={<TherapyManagement />} />
         </Route>
 
         {/* User Routes */}

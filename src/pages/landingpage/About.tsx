@@ -67,7 +67,6 @@ const About: React.FC = () => {
 
   const partners = [
     "IOSC",
-    "RWAMREC",
     "Ministry of Health",
     "UNFPA Rwanda",
     "UN Women Rwanda",
@@ -75,7 +74,6 @@ const About: React.FC = () => {
 
   const handleFeedbackSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle feedback submission logic here
     console.log("Feedback submitted:", feedbackForm);
     setFeedbackSubmitted(true);
     setTimeout(() => {

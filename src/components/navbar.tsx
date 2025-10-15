@@ -23,7 +23,7 @@ const navLinks: NavLink[] = [
     label: "Services",
     hasDropdown: true,
     dropdownItems: [
-      { href: "/counseling", label: "Counseling Services" },
+      { href: "/therapy", label: "Therapy Services" },
       { href: "/support", label: "Support" },
     ],
   },

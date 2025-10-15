@@ -1,6 +1,6 @@
 import React from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
-import { Users, Heart, Calendar, Star, TrendingUp, ArrowUp, ArrowDown } from 'lucide-react';
+import { Users, Heart, Calendar, Star, ArrowUp, ArrowDown } from 'lucide-react';
 
 interface CardProps {
   children: React.ReactNode;
@@ -107,35 +107,6 @@ const AdminLanding: React.FC = () => {
                     <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
                   </div>
                 </div>
-              ))}
-            </div>
-          </Card>
-
-          {/* Top Counselors */}
-          <Card>
-            <h2 className="text-xl font-bold text-gray-800 mb-6">Top Counselors</h2>
-            
-          </Card>
-
-          {/* Quick Actions */}
-          <Card className="bg-gradient-to-r from-purple-100 to-pink-100">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">Quick Actions</h2>
-            <div className="space-y-2">
-              {[
-                'Approve Pending Counselors',
-                'Review Reported Content',
-                'Export Monthly Report',
-                'Manage User Roles',
-              ].map((action, i) => (
-                <button
-                  key={i}
-                  className="w-full flex items-center gap-3 p-3 bg-white rounded-xl hover:shadow-md transition-all text-left group"
-                >
-                  <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-400 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <TrendingUp className="w-4 h-4 text-white" />
-                  </div>
-                  <span className="font-medium text-gray-800 text-sm">{action}</span>
-                </button>
               ))}
             </div>
           </Card>

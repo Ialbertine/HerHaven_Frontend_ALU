@@ -27,14 +27,11 @@ export const register = async (
   password: string
 ): Promise<AuthResponse> => {
   try {
-    const response = await apiClient.post<AuthResponse>(
-      "/api/auth/register",
-      {
-        username,
-        email,
-        password,
-      }
-    );
+    const response = await apiClient.post<AuthResponse>("/api/auth/register", {
+      username,
+      email,
+      password,
+    });
 
     if (response.data.success && response.data.data?.token) {
       localStorage.setItem("token", response.data.data.token);
@@ -59,13 +56,10 @@ export const login = async (
   password: string
 ): Promise<AuthResponse> => {
   try {
-    const response = await apiClient.post<AuthResponse>(
-      "/api/auth/login",
-      {
-        email,
-        password,
-      }
-    );
+    const response = await apiClient.post<AuthResponse>("/api/auth/login", {
+      email,
+      password,
+    });
 
     if (response.data.success && response.data.data?.token) {
       localStorage.setItem("token", response.data.data.token);
@@ -87,13 +81,10 @@ export const login = async (
 // 3. CONTINUE AS GUEST
 export const continueAsGuest = async (): Promise<AuthResponse> => {
   try {
-    const response = await apiClient.post<AuthResponse>(
-      "/api/auth/guest",
-      {
-        userAgent: navigator.userAgent,
-        ipAddress: "0.0.0.0",
-      }
-    );
+    const response = await apiClient.post<AuthResponse>("/api/auth/guest", {
+      userAgent: navigator.userAgent,
+      ipAddress: "0.0.0.0",
+    });
 
     if (response.data.success && response.data.data?.sessionId) {
       localStorage.setItem("guestSessionId", response.data.data.sessionId);
@@ -129,11 +120,7 @@ export const validateGuestSession = async (
 
 // 5. LOGOUT
 export const logout = (): { success: boolean; message: string } => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-  localStorage.removeItem("userRole");
-  localStorage.removeItem("guestSessionId");
-  localStorage.removeItem("accessType");
+  localStorage.clear();
   return { success: true, message: "Logged out successfully" };
 };
 
@@ -197,7 +184,8 @@ export const registerCounselor = async (
     const axiosError = error as AxiosError<CounselorRegistrationResponse>;
     return {
       success: false,
-      message: axiosError.response?.data?.message || "Counselor registration failed",
+      message:
+        axiosError.response?.data?.message || "Counselor registration failed",
     };
   }
 };

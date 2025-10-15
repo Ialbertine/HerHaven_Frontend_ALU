@@ -5,14 +5,11 @@ import {
   Calendar,
   MessageCircle,
   Users,
-  Book,
   Settings,
   LogOut,
   X,
   Heart,
   Activity,
-  FileText,
-  TrendingUp,
   BookOpen,
   Home,
 } from "lucide-react";
@@ -42,18 +39,17 @@ const menuConfig: Record<"user" | "counselor" | "admin", MenuItem[]> = {
       path: "/user/dashboard",
     },
     {
-      id: "progress",
-      icon: BarChart3,
-      label: "My Progress",
-      path: "/user/progress",
+      id: "consultations",
+      icon: Calendar,
+      label: "Consultations",
+      path: "/user/therapy",
     },
     {
-      id: "sessions",
-      icon: Calendar,
-      label: "My Sessions",
-      path: "/user/sessions",
+      id: "appointments",
+      icon: MessageCircle,
+      label: "Support",
+      path: "/user/appointment",
     },
-    { id: "tools", icon: Heart, label: "Self-Help Tools", path: "/user/tools" },
     {
       id: "resources",
       icon: BookOpen,
@@ -98,12 +94,6 @@ const menuConfig: Record<"user" | "counselor" | "admin", MenuItem[]> = {
       label: "Sessions",
       path: "/counselor/sessions",
     },
-    {
-      id: "resources",
-      icon: Book,
-      label: "Resources",
-      path: "/counselor/resources",
-    },
   ],
   admin: [
     {
@@ -112,26 +102,25 @@ const menuConfig: Record<"user" | "counselor" | "admin", MenuItem[]> = {
       label: "Dashboard",
       path: "/admin/dashboard",
     },
+    { id: "users", icon: Users, label: "Users", path: "/admin/users" },
+    {
+      id: "counselors",
+      icon: Heart,
+      label: "Counselors",
+      path: "/admin/therapy-management",
+    },
     {
       id: "analytics",
       icon: BarChart3,
       label: "Analytics",
       path: "/admin/analytics",
     },
-    { id: "users", icon: Users, label: "Users", path: "/admin/users" },
-    {
-      id: "counselors",
-      icon: Heart,
-      label: "Counselors",
-      path: "/admin/counselors",
-    },
-    { id: "content", icon: FileText, label: "Content", path: "/admin/content" },
-    {
-      id: "reports",
-      icon: TrendingUp,
-      label: "Reports",
-      path: "/admin/reports",
-    },
+   {
+      id: "content",
+      icon: Users,
+      label: "Content",
+      path: "/admin/content",
+   }
   ],
 };
 

@@ -36,7 +36,7 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-white pt-26 pb-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-b from-lavender-50 to-white pt-26 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-3xl font-bold text-gray-800 mb-4">Get In Touch</h1>
@@ -106,7 +106,7 @@ const Contact: React.FC = () => {
                           value={formData.firstName}
                           onChange={handleChange}
                           className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all outline-none"
-                          placeholder="John"
+                          placeholder="First name"
                         />
                       </div>
                     </div>
@@ -127,7 +127,7 @@ const Contact: React.FC = () => {
                           value={formData.lastName}
                           onChange={handleChange}
                           className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all outline-none"
-                          placeholder="Doe"
+                          placeholder="Last name"
                         />
                       </div>
                     </div>
@@ -150,7 +150,7 @@ const Contact: React.FC = () => {
                           value={formData.email}
                           onChange={handleChange}
                           className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all outline-none"
-                          placeholder="john.doe@example.com"
+                          placeholder="Email"
                         />
                       </div>
                     </div>
@@ -170,32 +170,10 @@ const Contact: React.FC = () => {
                           value={formData.phone}
                           onChange={handleChange}
                           className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all outline-none"
-                          placeholder="+1 (555) 000-0000"
+                          placeholder="07xx xxx xxx"
                         />
                       </div>
                     </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 mb-2">
-                      Subject *
-                    </label>
-                    <select
-                      id="subject"
-                      name="subject"
-                      required
-                      value={formData.subject}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all outline-none appearance-none bg-white"
-                    >
-                      <option value="">Select a subject</option>
-                      <option value="general">General Inquiry</option>
-                      <option value="appointment">Schedule Appointment</option>
-                      <option value="support">Technical Support</option>
-                      <option value="feedback">Feedback</option>
-                      <option value="billing">Billing Question</option>
-                      <option value="other">Other</option>
-                    </select>
                   </div>
 
                   <div>
@@ -223,10 +201,6 @@ const Contact: React.FC = () => {
                       <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </button>
                   </div>
-
-                  <p className="text-sm text-gray-500 text-center">
-                    * Required fields
-                  </p>
                 </div>
               ) : (
                 <div className="text-center py-12">

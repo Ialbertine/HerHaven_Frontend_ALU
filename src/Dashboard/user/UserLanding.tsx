@@ -1,17 +1,27 @@
-import React from 'react';
-import DashboardLayout from '@/components/DashboardLayout';
-import { 
-  BookOpen, Heart, Activity, Calendar, FileText, 
-  Users, Phone, Star 
-} from 'lucide-react';
+import React from "react";
+import DashboardLayout from "@/components/DashboardLayout";
+import {
+  BookOpen,
+  Heart,
+  Activity,
+  Calendar,
+  FileText,
+  Users,
+  Phone,
+  Star,
+} from "lucide-react";
+import EmergencyCallButton from "@/components/EmergencyCall";
+import QuickExitButton from "@/components/QuickExit";
 
 interface CardProps {
   children: React.ReactNode;
   className?: string;
 }
 
-const Card: React.FC<CardProps> = ({ children, className = '' }) => (
-  <div className={`bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all ${className}`}>
+const Card: React.FC<CardProps> = ({ children, className = "" }) => (
+  <div
+    className={`bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all ${className}`}
+  >
     {children}
   </div>
 );
@@ -23,8 +33,13 @@ interface ToolCardProps {
   onClick?: () => void;
 }
 
-const ToolCard: React.FC<ToolCardProps> = ({ icon: Icon, label, description, onClick }) => (
-  <button 
+const ToolCard: React.FC<ToolCardProps> = ({
+  icon: Icon,
+  label,
+  description,
+  onClick,
+}) => (
+  <button
     onClick={onClick}
     className="p-4 rounded-xl border-2 border-gray-100 hover:border-purple-300 hover:bg-purple-50 transition-all group text-center w-full"
   >
@@ -42,8 +57,12 @@ interface RecommendationProps {
   onClick?: () => void;
 }
 
-const RecommendationItem: React.FC<RecommendationProps> = ({ icon: Icon, label, onClick }) => (
-  <button 
+const RecommendationItem: React.FC<RecommendationProps> = ({
+  icon: Icon,
+  label,
+  onClick,
+}) => (
+  <button
     onClick={onClick}
     className="w-full flex items-center gap-3 p-3 bg-white rounded-xl hover:shadow-md transition-all text-left"
   >
@@ -54,31 +73,29 @@ const RecommendationItem: React.FC<RecommendationProps> = ({ icon: Icon, label, 
 
 const UserLanding: React.FC = () => {
   // In a real app, you'd get this from auth context or API
-  const userName = 'Sarah';
-  
+  const userName = "Sarah";
+
   const tools = [
-    { icon: BookOpen, label: 'Journal', description: 'Reflect and write' },
-    { icon: Heart, label: 'Meditations', description: 'Find your calm' },
-    { icon: Activity, label: 'Breathing', description: 'Center yourself' },
+    { icon: BookOpen, label: "Journal", description: "Reflect and write" },
+    { icon: Heart, label: "Meditations", description: "Find your calm" },
+    { icon: Activity, label: "Breathing", description: "Center yourself" },
   ];
 
   const recommendations = [
-    { icon: FileText, label: 'Understanding Trauma Responses' },
-    { icon: Users, label: 'Join a Peer Support Group' },
-    { icon: Phone, label: 'Emergency Contact Hotlines' },
-    { icon: Star, label: 'Coping with Anxiety' },
+    { icon: FileText, label: "Understanding Trauma Responses" },
+    { icon: Users, label: "Join a Peer Support Group" },
+    { icon: Phone, label: "Emergency Contact Hotlines" },
+    { icon: Star, label: "Coping with Anxiety" },
   ];
 
   return (
-    <DashboardLayout 
-      userType="user" 
-      userName={userName}
-      notificationCount={3}
-    >
+    <DashboardLayout userType="user" userName={userName} notificationCount={3}>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Self-Help Tools */}
         <Card className="lg:col-span-2">
-          <h2 className="text-xl font-bold text-gray-800 mb-6">Self-Help Tools</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-6">
+            Self-Help Tools
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {tools.map((tool, i) => (
               <ToolCard key={i} {...tool} />
@@ -88,11 +105,15 @@ const UserLanding: React.FC = () => {
 
         {/* Next Session */}
         <Card className="bg-gradient-to-br from-purple-50 to-pink-50">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Your Next Session</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-4">
+            Your Next Session
+          </h2>
           <div className="bg-white rounded-xl p-4 mb-4">
             <div className="flex items-center gap-3 mb-3">
               <Calendar className="w-5 h-5 text-purple-600" />
-              <span className="font-semibold text-gray-800">Tomorrow, 10:00 AM</span>
+              <span className="font-semibold text-gray-800">
+                Tomorrow, 10:00 AM
+              </span>
             </div>
             <p className="text-gray-600 text-sm mb-4">with Dr. Emily Carter</p>
             <button className="w-full py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-medium hover:shadow-lg transition-all">
@@ -103,7 +124,9 @@ const UserLanding: React.FC = () => {
 
         {/* Recommendations */}
         <Card className="bg-gradient-to-br from-purple-50 to-pink-50">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Recommended for You</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-4">
+            Recommended for You
+          </h2>
           <div className="space-y-3">
             {recommendations.map((item, i) => (
               <RecommendationItem key={i} {...item} />
@@ -111,6 +134,9 @@ const UserLanding: React.FC = () => {
           </div>
         </Card>
       </div>
+      {/* Emergency and Quick Exit buttons - visible only on user dashboard */}
+      <EmergencyCallButton />
+      <QuickExitButton />
     </DashboardLayout>
   );
 };
