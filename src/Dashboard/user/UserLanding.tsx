@@ -7,7 +7,6 @@ import {
   Calendar,
   FileText,
   Users,
-  Phone,
   Star,
 } from "lucide-react";
 import EmergencyCallButton from "@/components/EmergencyCall";
@@ -72,8 +71,7 @@ const RecommendationItem: React.FC<RecommendationProps> = ({
 );
 
 const UserLanding: React.FC = () => {
-  // In a real app, you'd get this from auth context or API
-  const userName = "Sarah";
+  const userName = "-";
 
   const tools = [
     { icon: BookOpen, label: "Journal", description: "Reflect and write" },
@@ -84,7 +82,6 @@ const UserLanding: React.FC = () => {
   const recommendations = [
     { icon: FileText, label: "Understanding Trauma Responses" },
     { icon: Users, label: "Join a Peer Support Group" },
-    { icon: Phone, label: "Emergency Contact Hotlines" },
     { icon: Star, label: "Coping with Anxiety" },
   ];
 
@@ -115,7 +112,7 @@ const UserLanding: React.FC = () => {
                 Tomorrow, 10:00 AM
               </span>
             </div>
-            <p className="text-gray-600 text-sm mb-4">with Dr. Emily Carter</p>
+            <p className="text-gray-600 text-sm mb-4">with Dr. Tina</p>
             <button className="w-full py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-medium hover:shadow-lg transition-all">
               Join Session
             </button>

@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, User, Mail, Lock, Check, X, Loader2 } from "lucide-react";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import { register, continueAsGuest } from "@/apis/auth";
-import toast from "react-hot-toast";
 
 interface PasswordRequirement {
   label: string;
@@ -32,6 +31,10 @@ const Signup: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isGuestLoading, setIsGuestLoading] = useState(false);
+  const [message, setMessage] = useState<{
+    type: "success" | "error" | "info";
+    text: string;
+  } | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -44,6 +47,8 @@ const Signup: React.FC = () => {
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
+    // Clear inline messages when user edits inputs
+    if (message) setMessage(null);
   };
 
   const calculatePasswordStrength = (
@@ -115,15 +120,22 @@ const Signup: React.FC = () => {
         );
 
         if (response.success) {
-          toast.success("You have successfully registered");
+          setMessage({
+            type: "success",
+            text: "You have successfully registered",
+          });
           navigate("/login");
         } else {
-          toast.error(
-            response.message || "Registration failed. Please try again."
-          );
+          setMessage({
+            type: "error",
+            text: response.message || "Registration failed. Please try again.",
+          });
         }
       } catch {
-        toast.error("An unexpected error occurred. Please try again.");
+        setMessage({
+          type: "error",
+          text: "An unexpected error occurred. Please try again.",
+        });
       } finally {
         setIsRegistering(false);
         setIsLoading(false);
@@ -138,16 +150,20 @@ const Signup: React.FC = () => {
       const response = await continueAsGuest();
 
       if (response.success) {
-        toast.success("Continuing as guest");
+        setMessage({ type: "success", text: "Continuing as guest" });
         //redirect to user dashboard but with minimal features
-        navigate("/"); 
+        navigate("/");
       } else {
-        toast.error(
-          response.message || "Guest access failed. Please try again."
-        );
+        setMessage({
+          type: "error",
+          text: response.message || "Guest access failed. Please try again.",
+        });
       }
     } catch {
-      toast.error("An unexpected error occurred. Please try again.");
+      setMessage({
+        type: "error",
+        text: "An unexpected error occurred. Please try again.",
+      });
     } finally {
       setIsGuestLoading(false);
       setIsLoading(false);
@@ -188,7 +204,18 @@ const Signup: React.FC = () => {
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* API errors are shown via toast notifications */}
+              {/* Inline success / error message (replaces toasts) */}
+              {message && (
+                <div
+                  className={`p-3 rounded-md text-sm font-medium ${
+                    message.type === "success"
+                      ? "bg-green-50 text-green-800"
+                      : "bg-red-50 text-red-800"
+                  }`}
+                >
+                  {message.text}
+                </div>
+              )}
 
               {/* Username Field */}
               <div>

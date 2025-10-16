@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { Eye, EyeOff, CheckCircle, AlertCircle } from "lucide-react";
-import { 
-  registerCounselor, 
+import {
+  registerCounselor,
   completeCounselorRegistration,
   type CounselorRegistrationData,
-  type CompleteCounselorRegistrationData 
+  type CompleteCounselorRegistrationData,
 } from "../../apis/auth";
 import { COUNSELING_TYPES } from "../../hooks/type";
 
@@ -13,11 +14,12 @@ interface CounselorApplicationFormProps {
   inviteToken?: string;
 }
 
-const CounselorApplicationForm = ({ 
+const CounselorApplicationForm = ({
   mode = "new",
-  inviteToken 
+  inviteToken,
 }: CounselorApplicationFormProps) => {
   const isCompleteMode = mode === "complete";
+  const { token: routeToken } = useParams<{ token?: string }>();
 
   // Form data state
   const [formData, setFormData] = useState<{
@@ -52,28 +54,36 @@ const CounselorApplicationForm = ({
     message: string;
   }>({ type: null, message: "" });
 
-  // Extract token from URL if in complete mode
   useEffect(() => {
     if (isCompleteMode && !inviteToken) {
-      const params = new URLSearchParams(window.location.search);
-      const token = params.get("token");
-      
+      const token =
+        routeToken ||
+        new URLSearchParams(window.location.search).get("token") ||
+        undefined;
+
       if (!token) {
         setSubmitStatus({
           type: "error",
-          message: "Invalid invitation link. Please contact the administrator."
+          message: "Invalid invitation link. Please contact the administrator.",
         });
       }
     }
-  }, [isCompleteMode, inviteToken]);
+  }, [isCompleteMode, inviteToken, routeToken]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "experience" ? (value === "" ? "" : parseInt(value) || 0) : value,
+      [name]:
+        name === "experience"
+          ? value === ""
+            ? ""
+            : parseInt(value) || 0
+          : value,
     }));
   };
 
@@ -128,9 +138,12 @@ const CounselorApplicationForm = ({
       let response;
 
       if (isCompleteMode) {
-        // Complete registration mode (invited counselor)
-        const token = inviteToken || new URLSearchParams(window.location.search).get("token");
-        
+        // Complete registration mode for invited counselors
+        const token =
+          routeToken ||
+          inviteToken ||
+          new URLSearchParams(window.location.search).get("token");
+
         if (!token) {
           throw new Error("Invalid invitation token");
         }
@@ -158,11 +171,11 @@ const CounselorApplicationForm = ({
       if (response.success) {
         setSubmitStatus({
           type: "success",
-          message: response.message || 
-            (isCompleteMode 
+          message:
+            response.message ||
+            (isCompleteMode
               ? "Registration completed successfully! You can now log in with your credentials."
-              : "Application submitted successfully! Please check your email for confirmation."
-            ),
+              : "Application submitted successfully! Please check your email for confirmation."),
         });
 
         // Reset form
@@ -188,46 +201,55 @@ const CounselorApplicationForm = ({
       } else {
         setSubmitStatus({
           type: "error",
-          message: response.message || 
-            (isCompleteMode 
+          message:
+            response.message ||
+            (isCompleteMode
               ? "Failed to complete registration. Please try again."
-              : "Failed to submit application. Please try again."
-            ),
+              : "Failed to submit application. Please try again."),
         });
       }
     } catch (error) {
       setSubmitStatus({
         type: "error",
-        message: error instanceof Error ? error.message : "An unexpected error occurred. Please try again.",
+        message:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred. Please try again.",
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const topPaddingClass = isCompleteMode ? "pt-12" : "pt-32";
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 py-32 pb-12 px-4">
+    <div
+      className={`min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 ${topPaddingClass} pb-12 px-4`}
+    >
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-3">
-            {isCompleteMode ? "Complete Your Registration" : "Counselor Application"}
+          <h1 className="text-3xl font-bold text-gray-800 mb-3">
+            {isCompleteMode
+              ? "Complete Your Registration"
+              : "Counselor Application"}
           </h1>
           <p className="text-gray-600 text-lg">
-            {isCompleteMode 
+            {isCompleteMode
               ? "Finish setting up your counselor account"
-              : "Join our team of professional counselors"
-            }
+              : "Join our team of professional counselors"}
           </p>
         </div>
 
         {/* Status Message */}
         {submitStatus.type && (
           <div
-            className={`mb-6 p-4 rounded-lg flex items-start gap-3 ${submitStatus.type === "success"
-              ? "bg-green-50 border border-green-200"
-              : "bg-red-50 border border-red-200"
-              }`}
+            className={`mb-6 p-4 rounded-lg flex items-start gap-3 ${
+              submitStatus.type === "success"
+                ? "bg-green-50 border border-green-200"
+                : "bg-red-50 border border-red-200"
+            }`}
           >
             {submitStatus.type === "success" ? (
               <CheckCircle
@@ -241,10 +263,11 @@ const CounselorApplicationForm = ({
               />
             )}
             <p
-              className={`${submitStatus.type === "success"
-                ? "text-green-800"
-                : "text-red-800"
-                }`}
+              className={`${
+                submitStatus.type === "success"
+                  ? "text-green-800"
+                  : "text-red-800"
+              }`}
             >
               {submitStatus.message}
             </p>
@@ -471,7 +494,7 @@ const CounselorApplicationForm = ({
                     placeholder="Tell us about your experience, approach, and areas of expertise..."
                   ></textarea>
                   <p className="text-sm text-gray-500 mt-1">
-                    {formData.bio.length} characters
+                    {formData.bio.length}/10 min characters
                   </p>
                 </div>
               </div>
@@ -482,15 +505,15 @@ const CounselorApplicationForm = ({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""
-                  }`}
+                className={`w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 ${
+                  isSubmitting ? "opacity-70 cursor-not-allowed" : ""
+                }`}
               >
-                {isSubmitting 
-                  ? "Submitting..." 
-                  : isCompleteMode 
-                    ? "Complete Registration" 
-                    : "Submit Application"
-                }
+                {isSubmitting
+                  ? "Submitting..."
+                  : isCompleteMode
+                  ? "Complete Registration"
+                  : "Submit Application"}
               </button>
             </div>
           </form>
@@ -498,7 +521,8 @@ const CounselorApplicationForm = ({
 
         {/* Footer Text */}
         <p className="text-center text-gray-600 mt-6 text-sm">
-          By submitting this {isCompleteMode ? "registration" : "application"}, you agree to our terms and conditions
+          By submitting this {isCompleteMode ? "registration" : "application"},
+          you agree to our terms and conditions
         </p>
       </div>
     </div>

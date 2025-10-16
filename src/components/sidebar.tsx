@@ -47,7 +47,7 @@ const menuConfig: Record<"user" | "counselor" | "admin", MenuItem[]> = {
     {
       id: "appointments",
       icon: MessageCircle,
-      label: "Support",
+      label: "Appointments",
       path: "/user/appointment",
     },
     {

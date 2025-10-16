@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, X, Loader2 } from "lucide-react";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import { login } from "@/apis/auth";
-import toast from "react-hot-toast";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -16,6 +15,10 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState<{
+    type: "success" | "error" | "info";
+    text: string;
+  } | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -24,9 +27,12 @@ const Login: React.FC = () => {
       [name]: type === "checkbox" ? checked : value,
     }));
 
-    // this Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+
+    if (message) {
+      setMessage(null);
     }
   };
 
@@ -64,6 +70,11 @@ const Login: React.FC = () => {
           // Store user role in localStorage for ProtectedRoute
           localStorage.setItem("userRole", userRole);
 
+          setMessage({
+            type: "success",
+            text: "Login successful. Redirecting...",
+          });
+
           // Navigate based on role
           if (userRole === "super_admin") {
             navigate("/admin/dashboard");
@@ -75,12 +86,18 @@ const Login: React.FC = () => {
             navigate("/user/dashboard");
           }
         } else {
-          toast.error(
-            response.message || "Login failed. Please check your credentials."
-          );
+          setMessage({
+            type: "error",
+            text:
+              response.message ||
+              "Login failed. Please check your credentials.",
+          });
         }
       } catch {
-        toast.error("An unexpected error occurred. Please try again.");
+        setMessage({
+          type: "error",
+          text: "An unexpected error occurred. Please try again.",
+        });
       } finally {
         setIsLoading(false);
       }
@@ -119,6 +136,18 @@ const Login: React.FC = () => {
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Inline success / error message (replaces toasts) */}
+              {message && (
+                <div
+                  className={`p-3 rounded-md text-sm font-medium ${
+                    message.type === "success"
+                      ? "bg-green-50 text-green-800"
+                      : "bg-red-50 text-red-800"
+                  }`}
+                >
+                  {message.text}
+                </div>
+              )}
               {/* API errors are displayed via toast notifications */}
 
               {/* Email Field */}
