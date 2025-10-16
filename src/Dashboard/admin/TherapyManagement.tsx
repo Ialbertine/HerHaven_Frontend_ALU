@@ -29,7 +29,7 @@ interface Counselor {
   lastName: string;
   phoneNumber?: string;
   licenseNumber?: string;
-  specialization?: string[];
+  specialization?: string | string[];
   experience?: number;
   bio?: string;
   verificationStatus: "pending" | "approved" | "rejected" | "invited";
@@ -397,6 +397,20 @@ const TherapyManagement: React.FC = () => {
     );
   };
 
+
+  const normalizeSpecialization = (
+    spec: string | string[] | undefined
+  ): string[] => {
+    if (!spec) return [];
+    if (Array.isArray(spec))
+      return spec.filter(Boolean).map((s) => String(s).trim());
+    // spec is a string
+    return spec
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+  };
+
   const stats = {
     total: counselors.length,
     approved: counselors.filter((c) => c.verificationStatus === "approved")
@@ -408,7 +422,11 @@ const TherapyManagement: React.FC = () => {
   };
 
   return (
-    <DashboardLayout userType="super_admin" userName="Admin" notificationCount={5}>
+    <DashboardLayout
+      userType="super_admin"
+      userName="Admin"
+      notificationCount={5}
+    >
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -528,7 +546,7 @@ const TherapyManagement: React.FC = () => {
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     Contact
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  <th className="px-8 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     Specialization
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
@@ -603,31 +621,36 @@ const TherapyManagement: React.FC = () => {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        {counselor.specialization &&
-                        counselor.specialization.length > 0 ? (
-                          <div className="flex flex-wrap gap-1">
-                            {counselor.specialization
-                              .slice(0, 2)
-                              .map((spec, i) => (
-                                <span
-                                  key={i}
-                                  className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full"
-                                >
-                                  {spec}
+                      <td className="px-8 py-4">
+                        {(() => {
+                          const specs = normalizeSpecialization(
+                            counselor.specialization
+                          );
+
+                          return specs.length > 0 ? (
+                            <div className="flex flex-wrap gap-1">
+                              {specs
+                                .slice(0, 2)
+                                .map((spec: string, i: number) => (
+                                  <span
+                                    key={i}
+                                    className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full"
+                                  >
+                                    {spec}
+                                  </span>
+                                ))}
+                              {specs.length > 2 && (
+                                <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+                                  +{specs.length - 2}
                                 </span>
-                              ))}
-                            {counselor.specialization.length > 2 && (
-                              <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
-                                +{counselor.specialization.length - 2}
-                              </span>
-                            )}
-                          </div>
-                        ) : (
-                          <span className="text-sm text-gray-400">
-                            Not specified
-                          </span>
-                        )}
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-sm text-gray-400">
+                              Not specified
+                            </span>
+                          );
+                        })()}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
