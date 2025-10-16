@@ -24,13 +24,13 @@ export interface MenuItem {
 }
 
 interface SidebarProps {
-  userType: "user" | "counselor" | "admin";
+  userType: "user" | "counselor" | "super_admin";
   isMobileOpen: boolean;
   onCloseMobile: () => void;
   onLogout?: () => void;
 }
 
-const menuConfig: Record<"user" | "counselor" | "admin", MenuItem[]> = {
+const menuConfig: Record<"user" | "counselor" | "super_admin", MenuItem[]> = {
   user: [
     {
       id: "dashboard",
@@ -95,7 +95,7 @@ const menuConfig: Record<"user" | "counselor" | "admin", MenuItem[]> = {
       path: "/counselor/sessions",
     },
   ],
-  admin: [
+  super_admin: [
     {
       id: "dashboard",
       icon: Home,

@@ -408,7 +408,7 @@ const TherapyManagement: React.FC = () => {
   };
 
   return (
-    <DashboardLayout userType="admin" userName="Admin" notificationCount={5}>
+    <DashboardLayout userType="super_admin" userName="Admin" notificationCount={5}>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">

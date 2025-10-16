@@ -42,8 +42,8 @@ const AdminLanding: React.FC = () => {
   ];
 
   return (
-    <DashboardLayout 
-      userType="admin" 
+    <DashboardLayout
+      userType="super_admin"
       userName="Admin"
       notificationCount={8}
     >
