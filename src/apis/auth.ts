@@ -189,3 +189,35 @@ export const registerCounselor = async (
     };
   }
 };
+
+// 10. COMPLETE COUNSELOR REGISTRATION From Invite Link
+export interface CompleteCounselorRegistrationData {
+  username: string;
+  password: string;
+  phoneNumber: string;
+  licenseNumber: string;
+  specialization: string;
+  experience: number;
+  bio: string;
+}
+
+export const completeCounselorRegistration = async (
+  token: string,
+  data: CompleteCounselorRegistrationData
+): Promise<CounselorRegistrationResponse> => {
+  try {
+    const response = await apiClient.post<CounselorRegistrationResponse>(
+      `/api/admin/counselors/complete-registration/${token}`,
+      data
+    );
+
+    return response.data;
+  } catch (error) {
+    const axiosError = error as AxiosError<CounselorRegistrationResponse>;
+    return {
+      success: false,
+      message:
+        axiosError.response?.data?.message || "Failed to complete registration",
+    };
+  }
+};

@@ -21,12 +21,17 @@ const App: React.FC = () => {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="aboutus" element={<About />} />
-          <Route path="counselorform" element={<CounselorApplicationForm />} />
+          <Route path="counselorform" element={<CounselorApplicationForm mode="new" />} />
           <Route path="resources" element={<Resources />} />
           <Route path="contact" element={<Contact />} />
         </Route>
+        
         <Route path="signup" element={<Signup />} />
         <Route path="login" element={<Login />} />
+        <Route 
+          path="counselor/complete-registration" 
+          element={<CounselorApplicationForm mode="complete" />} 
+        />
 
         {/* Admin Routes */}
         <Route element={<ProtectedRoute allowedRoles={["super_admin"]} />}>
