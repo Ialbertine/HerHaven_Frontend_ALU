@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   BarChart3,
   Calendar,
-  MessageCircle,
   Users,
   Settings,
   LogOut,
@@ -40,13 +39,13 @@ const menuConfig: Record<"user" | "counselor" | "super_admin", MenuItem[]> = {
     },
     {
       id: "consultations",
-      icon: Calendar,
+      icon: Users,
       label: "Consultations",
       path: "/user/therapy",
     },
     {
       id: "appointments",
-      icon: MessageCircle,
+      icon: Calendar,
       label: "Appointments",
       path: "/user/appointment",
     },
@@ -71,16 +70,10 @@ const menuConfig: Record<"user" | "counselor" | "super_admin", MenuItem[]> = {
       path: "/counselor/dashboard",
     },
     {
-      id: "overview",
+      id: "Profile",
       icon: Activity,
-      label: "Overview",
-      path: "/counselor/overview",
-    },
-    {
-      id: "clients",
-      icon: Users,
-      label: "My Clients",
-      path: "/counselor/clients",
+      label: "Profile",
+      path: "/counselor/profile",
     },
     {
       id: "schedule",
@@ -89,10 +82,10 @@ const menuConfig: Record<"user" | "counselor" | "super_admin", MenuItem[]> = {
       path: "/counselor/schedule",
     },
     {
-      id: "sessions",
-      icon: MessageCircle,
-      label: "Sessions",
-      path: "/counselor/sessions",
+      id: "appointments",
+      icon: Calendar,
+      label: "Appointments",
+      path: "/counselor/appointments",
     },
   ],
   super_admin: [

@@ -13,6 +13,11 @@ import Contact from "@/pages/landingpage/contact";
 import Resources from "@/pages/landingpage/resources";
 import TherapistLanding from "@/Dashboard/therapist/therapyLanding";
 import TherapyManagement from "./Dashboard/admin/TherapyManagement";
+import Profile from "@/Dashboard/therapist/Profile";
+import Schedule from "@/Dashboard/therapist/Schedule";
+import Sessions from "@/Dashboard/therapist/Session";
+import Therapits from "@/Dashboard/user/Therapits";
+import UserAppointment from "@/Dashboard/user/UserAppointment";
 
 const App: React.FC = () => {
   return (
@@ -48,11 +53,17 @@ const App: React.FC = () => {
         {/* User Routes */}
         <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
           <Route path="user/dashboard" element={<UserLanding />} />
+          <Route path="user/therapy" element={<Therapits />} />
+          <Route path="user/appointment" element={<UserAppointment />} />
+          
         </Route>
 
         {/* Counselor Routes */}
         <Route element={<ProtectedRoute allowedRoles={["counselor"]} />}>
           <Route path="counselor/dashboard" element={<TherapistLanding />} />
+          <Route path="counselor/profile" element={<Profile />} />
+          <Route path="counselor/schedule" element={<Schedule />} />
+          <Route path="counselor/appointments" element={<Sessions />} />
         </Route>
       </Routes>
     </BrowserRouter>
