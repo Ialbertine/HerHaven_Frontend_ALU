@@ -124,7 +124,7 @@ const Profile: React.FC = () => {
   }
 
   return (
-    <DashboardLayout userType="counselor" userName={profile.username || 'Counselor'} notificationCount={8}>
+    <DashboardLayout userType="counselor" userName={profile.username || 'Counselor'}>
       <div className="space-y-6 min-h-screen">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-800">Profile Overview</h1>

@@ -7,7 +7,6 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
   userType: "user" | "counselor" | "super_admin";
   userName: string;
-  notificationCount?: number;
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({
@@ -37,7 +36,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           userName={userName}
           onMenuToggle={() => setIsMobileOpen(true)}
           userType={userType}
-          notificationCount={undefined}
         />
 
         <main className="flex-1 p-6">{children}</main>

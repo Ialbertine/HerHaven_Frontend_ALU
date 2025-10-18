@@ -240,7 +240,7 @@ const UserAppointments = () => {
   }
 
   return (
-    <DashboardLayout userType="user" userName="-" notificationCount={8}>
+    <DashboardLayout userType="user" userName="-">
       {loading ? (
         <div className="flex items-center justify-center h-screen">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>

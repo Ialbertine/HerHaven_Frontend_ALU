@@ -270,7 +270,7 @@ const Sessions: React.FC = () => {
   const pendingCount = appointments.filter(a => a.status.toLowerCase() === 'pending').length;
 
   return (
-    <DashboardLayout userType="counselor" userName={userName} notificationCount={8}>
+    <DashboardLayout userType="counselor" userName={userName}>
       <div className="space-y-6 min-h-screen">
         <div className="flex items-center justify-between">
           <div>

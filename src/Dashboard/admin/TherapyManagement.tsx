@@ -387,9 +387,8 @@ const TherapyManagement: React.FC = () => {
 
     return (
       <span
-        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border ${
-          styles[status as keyof typeof styles]
-        }`}
+        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border ${styles[status as keyof typeof styles]
+          }`}
       >
         <Icon className="w-3 h-3" />
         {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -425,7 +424,6 @@ const TherapyManagement: React.FC = () => {
     <DashboardLayout
       userType="super_admin"
       userName="Admin"
-      notificationCount={5}
     >
       <div className="space-y-6">
         {/* Header */}
