@@ -43,15 +43,31 @@ export interface Appointment {
   _id: string;
   id: string;
   user: {
+    _id: string;
     username: string;
     email: string;
   };
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
   counselor: string;
-  date: string;
-  time: string;
+  appointmentDate: string;
+  appointmentTime: string;
+  duration: number;
+  appointmentType: string;
+  sessionMode: string;
   status: string;
-  type?: string;
+  urgencyLevel: string;
   reason?: string;
+  cancelledBy?: string;
+  cancellationReason?: string;
+  meetingDetails?: {
+    meetingId: string;
+    meetingUrl: string;
+    roomName: string;
+    startTime: string;
+    duration: number;
+  };
   createdAt: string;
 }
 
@@ -150,7 +166,7 @@ export const getAllCounselorAppointments = async (filters?: {
     const response = await apiClient.get<
       ApiResponse<{ appointments: Appointment[]; count: number }>
     >(
-      `/api/counselor/appointments${
+      `/api/appointments/counselor${
         params.toString() ? "?" + params.toString() : ""
       }`
     );

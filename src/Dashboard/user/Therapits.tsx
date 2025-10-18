@@ -38,6 +38,9 @@ const Therapits = () => {
   );
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [bookingData, setBookingData] = useState({
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
     date: "",
     time: "",
     sessionMode: "video",
@@ -118,10 +121,27 @@ const Therapits = () => {
   const handleBookAppointment = async () => {
     if (!selectedCounselor) return;
 
+    // Validate required fields
+    if (!bookingData.firstName.trim()) {
+      alert("Please enter your first name");
+      return;
+    }
+    if (!bookingData.lastName.trim()) {
+      alert("Please enter your last name");
+      return;
+    }
+    if (!bookingData.phoneNumber.trim()) {
+      alert("Please enter your phone number");
+      return;
+    }
+
     try {
       setBookingLoading(true);
       const response = await bookAppointment({
         counselorId: selectedCounselor._id,
+        firstName: bookingData.firstName,
+        lastName: bookingData.lastName,
+        phoneNumber: bookingData.phoneNumber,
         appointmentDate: bookingData.date,
         appointmentTime: bookingData.time,
         sessionMode: bookingData.sessionMode,
@@ -137,6 +157,9 @@ const Therapits = () => {
         );
         setShowBookingModal(false);
         setBookingData({
+          firstName: "",
+          lastName: "",
+          phoneNumber: "",
           date: "",
           time: "",
           sessionMode: "video",
@@ -165,6 +188,9 @@ const Therapits = () => {
     setSelectedCounselor(counselor);
     setShowBookingModal(true);
     setBookingData({
+      firstName: "",
+      lastName: "",
+      phoneNumber: "",
       date: "",
       time: "",
       sessionMode: "video",
@@ -371,6 +397,66 @@ const Therapits = () => {
                   </div>
 
                   <div className="space-y-4">
+                    {/* Personal Information */}
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                      <h3 className="text-sm font-semibold text-purple-900 mb-3">
+                        Your Information
+                      </h3>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            First Name *
+                          </label>
+                          <input
+                            type="text"
+                            value={bookingData.firstName}
+                            onChange={(e) =>
+                              setBookingData({
+                                ...bookingData,
+                                firstName: e.target.value,
+                              })
+                            }
+                            placeholder="Enter first name"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Last Name *
+                          </label>
+                          <input
+                            type="text"
+                            value={bookingData.lastName}
+                            onChange={(e) =>
+                              setBookingData({
+                                ...bookingData,
+                                lastName: e.target.value,
+                              })
+                            }
+                            placeholder="Enter last name"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                          />
+                        </div>
+                      </div>
+                      <div className="mt-3">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Phone Number *
+                        </label>
+                        <input
+                          type="tel"
+                          value={bookingData.phoneNumber}
+                          onChange={(e) =>
+                            setBookingData({
+                              ...bookingData,
+                              phoneNumber: e.target.value,
+                            })
+                          }
+                          placeholder="Enter phone number"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Select Date *{" "}
@@ -416,11 +502,10 @@ const Therapits = () => {
                                     time: slot.time,
                                   })
                                 }
-                                className={`px-4 py-2 rounded-lg border-2 transition-all ${
-                                  bookingData.time === slot.time
-                                    ? "border-purple-600 bg-purple-50 text-purple-700 font-semibold"
-                                    : "border-gray-200 hover:border-purple-300"
-                                }`}
+                                className={`px-4 py-2 rounded-lg border-2 transition-all ${bookingData.time === slot.time
+                                  ? "border-purple-600 bg-purple-50 text-purple-700 font-semibold"
+                                  : "border-gray-200 hover:border-purple-300"
+                                  }`}
                               >
                                 {slot.time}
                               </button>
@@ -461,11 +546,10 @@ const Therapits = () => {
                               sessionMode: "video",
                             })
                           }
-                          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
-                            bookingData.sessionMode === "video"
-                              ? "border-purple-600 bg-purple-50 text-purple-700"
-                              : "border-gray-200 hover:border-purple-300"
-                          }`}
+                          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${bookingData.sessionMode === "video"
+                            ? "border-purple-600 bg-purple-50 text-purple-700"
+                            : "border-gray-200 hover:border-purple-300"
+                            }`}
                         >
                           <Video className="w-5 h-5" />
                           Video Call
@@ -477,11 +561,10 @@ const Therapits = () => {
                               sessionMode: "phone",
                             })
                           }
-                          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
-                            bookingData.sessionMode === "phone"
-                              ? "border-purple-600 bg-purple-50 text-purple-700"
-                              : "border-gray-200 hover:border-purple-300"
-                          }`}
+                          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${bookingData.sessionMode === "phone"
+                            ? "border-purple-600 bg-purple-50 text-purple-700"
+                            : "border-gray-200 hover:border-purple-300"
+                            }`}
                         >
                           <Phone className="w-5 h-5" />
                           Phone Call
@@ -501,11 +584,10 @@ const Therapits = () => {
                               appointmentType: "individual",
                             })
                           }
-                          className={`flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
-                            bookingData.appointmentType === "individual"
-                              ? "border-purple-600 bg-purple-50 text-purple-700"
-                              : "border-gray-200 hover:border-purple-300"
-                          }`}
+                          className={`flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${bookingData.appointmentType === "individual"
+                            ? "border-purple-600 bg-purple-50 text-purple-700"
+                            : "border-gray-200 hover:border-purple-300"
+                            }`}
                         >
                           <User className="w-5 h-5" />
                           <span className="text-sm font-medium">
@@ -519,11 +601,10 @@ const Therapits = () => {
                               appointmentType: "couple",
                             })
                           }
-                          className={`flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
-                            bookingData.appointmentType === "couple"
-                              ? "border-purple-600 bg-purple-50 text-purple-700"
-                              : "border-gray-200 hover:border-purple-300"
-                          }`}
+                          className={`flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${bookingData.appointmentType === "couple"
+                            ? "border-purple-600 bg-purple-50 text-purple-700"
+                            : "border-gray-200 hover:border-purple-300"
+                            }`}
                         >
                           <Heart className="w-5 h-5" />
                           <span className="text-sm font-medium">Couple</span>
@@ -535,11 +616,10 @@ const Therapits = () => {
                               appointmentType: "group",
                             })
                           }
-                          className={`flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
-                            bookingData.appointmentType === "group"
-                              ? "border-purple-600 bg-purple-50 text-purple-700"
-                              : "border-gray-200 hover:border-purple-300"
-                          }`}
+                          className={`flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${bookingData.appointmentType === "group"
+                            ? "border-purple-600 bg-purple-50 text-purple-700"
+                            : "border-gray-200 hover:border-purple-300"
+                            }`}
                         >
                           <Users className="w-5 h-5" />
                           <span className="text-sm font-medium">Group</span>
@@ -628,6 +708,9 @@ const Therapits = () => {
                       <button
                         onClick={handleBookAppointment}
                         disabled={
+                          !bookingData.firstName ||
+                          !bookingData.lastName ||
+                          !bookingData.phoneNumber ||
                           !bookingData.date ||
                           !bookingData.time ||
                           bookingLoading

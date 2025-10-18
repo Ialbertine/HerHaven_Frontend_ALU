@@ -1,55 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Phone, Award, Briefcase, FileText, Edit2, Camera, Save, X, } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
-
-
-// Types
-interface CounselorProfile {
-  username: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  specialization: string;
-  experience: number;
-  bio: string;
-  licenseNumber: string;
-  isVerified: boolean;
-  verificationStatus: string;
-  averageRating: number;
-  totalSessions: number;
-  profilePicture: string | null;
-}
+import { getCounselorProfile, updateCounselorProfile, getAppointmentStats, type Counselor } from '@/apis/counselor';
 
 interface FormData {
   username: string;
   phoneNumber: string;
 }
 
-// Mock API
-const fetchCounselorProfile = async (): Promise<CounselorProfile> => {
-  return {
-    username: 'dr_smith',
-    email: 'dr.smith@herhaven.com',
-    firstName: 'Emily',
-    lastName: 'Smith',
-    phoneNumber: '+1234567890',
-    specialization: 'Anxiety & Depression',
-    experience: 8,
-    bio: 'Experienced therapist specializing in anxiety, depression, and stress management. I use evidence-based approaches including CBT and mindfulness techniques.',
-    licenseNumber: 'PSY-12345',
-    isVerified: true,
-    verificationStatus: 'approved',
-    averageRating: 4.8,
-    totalSessions: 156,
-    profilePicture: null
-  };
-};
+interface SessionStats {
+  total: number;
+  completed: number;
+}
+
+// Removed mock API - using real API calls now
 
 const Profile: React.FC = () => {
-  const [profile, setProfile] = useState<CounselorProfile | null>(null);
+  const [profile, setProfile] = useState<Counselor | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [updating, setUpdating] = useState<boolean>(false);
+  const [sessionStats, setSessionStats] = useState<SessionStats>({ total: 0, completed: 0 });
   const [formData, setFormData] = useState<FormData>({
     username: '',
     phoneNumber: ''
@@ -61,14 +32,45 @@ const Profile: React.FC = () => {
 
   const loadProfile = async (): Promise<void> => {
     try {
-      const data = await fetchCounselorProfile();
-      setProfile(data);
-      setFormData({
-        username: data.username,
-        phoneNumber: data.phoneNumber
-      });
+      setLoading(true);
+
+      // Fetch both profile and stats
+      const [profileResponse, statsResponse] = await Promise.all([
+        getCounselorProfile(),
+        getAppointmentStats()
+      ]);
+
+      if (profileResponse.success && profileResponse.data?.counselor) {
+        const counselorData = profileResponse.data.counselor;
+        console.log('📋 Counselor Profile Data:', counselorData);
+        setProfile(counselorData);
+        setFormData({
+          username: counselorData.username,
+          phoneNumber: counselorData.phoneNumber
+        });
+      } else {
+        console.error('Failed to load profile:', profileResponse.message);
+        alert(profileResponse.message || 'Failed to load profile');
+      }
+
+      // Process appointment stats for session count
+      if (statsResponse.success && statsResponse.data?.stats) {
+        const stats = statsResponse.data.stats;
+        console.log('📊 Appointment Stats:', stats);
+
+        // Get completed sessions count
+        const completedCount = stats.breakdown.find(
+          (item: { _id: string; count: number }) => item._id === 'completed'
+        )?.count || 0;
+
+        setSessionStats({
+          total: stats.total,
+          completed: completedCount
+        });
+      }
     } catch (error) {
       console.error('Error loading profile:', error);
+      alert('Failed to load profile. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -76,11 +78,24 @@ const Profile: React.FC = () => {
 
   const handleUpdateProfile = async (): Promise<void> => {
     try {
-      console.log('Updating profile:', formData);
-      await loadProfile();
-      setIsEditing(false);
+      setUpdating(true);
+      const response = await updateCounselorProfile({
+        username: formData.username,
+        phoneNumber: formData.phoneNumber
+      });
+
+      if (response.success && response.data?.counselor) {
+        setProfile(response.data.counselor);
+        setIsEditing(false);
+        alert('Profile updated successfully!');
+      } else {
+        alert(response.message || 'Failed to update profile');
+      }
     } catch (error) {
       console.error('Error updating profile:', error);
+      alert('Failed to update profile. Please try again.');
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -109,7 +124,7 @@ const Profile: React.FC = () => {
   }
 
   return (
-    <DashboardLayout userType="counselor" userName="-" notificationCount={8}>
+    <DashboardLayout userType="counselor" userName={profile.username || 'Counselor'} notificationCount={8}>
       <div className="space-y-6 min-h-screen">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-800">Profile Overview</h1>
@@ -151,8 +166,12 @@ const Profile: React.FC = () => {
 
                 <div className="w-full mt-6 pt-6 border-t border-gray-100 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600 text-sm">Total Sessions</span>
-                    <span className="font-semibold text-gray-800">{profile.totalSessions}</span>
+                    <span className="text-gray-600 text-sm">Total Appointments</span>
+                    <span className="font-semibold text-gray-800">{sessionStats.total}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 text-sm">Completed Sessions</span>
+                    <span className="font-semibold text-gray-800">{sessionStats.completed}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600 text-sm">Experience</span>
@@ -193,10 +212,11 @@ const Profile: React.FC = () => {
 
                   <button
                     onClick={handleUpdateProfile}
-                    className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors font-medium flex items-center justify-center gap-2"
+                    disabled={updating}
+                    className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Save className="w-4 h-4" />
-                    Save Changes
+                    {updating ? 'Saving...' : 'Save Changes'}
                   </button>
                 </div>
               ) : (

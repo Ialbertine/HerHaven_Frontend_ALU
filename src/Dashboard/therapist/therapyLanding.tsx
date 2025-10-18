@@ -142,10 +142,14 @@ const TherapyLanding: React.FC = () => {
         return "bg-amber-100 text-amber-700";
       case "confirmed":
         return "bg-green-100 text-green-700";
+      case "in-progress":
+        return "bg-purple-100 text-purple-700";
       case "cancelled":
         return "bg-red-100 text-red-700";
       case "completed":
         return "bg-blue-100 text-blue-700";
+      case "ended":
+        return "bg-gray-100 text-gray-700";
       default:
         return "bg-gray-100 text-gray-700";
     }
@@ -211,41 +215,22 @@ const TherapyLanding: React.FC = () => {
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold">
-                      {apt.user.username.charAt(0).toUpperCase()}
+                      {apt.firstName && apt.lastName
+                        ? `${apt.firstName.charAt(0)}${apt.lastName.charAt(0)}`
+                        : apt.user?.username?.charAt(0).toUpperCase() || 'U'}
                     </div>
                     <div>
                       <p className="font-semibold text-gray-800">
-                        {apt.user.username}
+                        {apt.firstName && apt.lastName
+                          ? `${apt.firstName} ${apt.lastName}`
+                          : apt.user?.username || 'Unknown User'}
                       </p>
                       <p className="text-sm text-gray-500">
-                        {(() => {
-                          // Handle both possible field name formats
-                          // appointment shape may vary between API responses; handle both keys safely
-                          const maybeDate = apt as unknown as {
-                            date?: string;
-                            appointmentDate?: string;
-                          };
-                          const maybeTime = apt as unknown as {
-                            time?: string;
-                            appointmentTime?: string;
-                          };
-                          const dateValue =
-                            maybeDate.date || maybeDate.appointmentDate;
-                          const timeValue =
-                            maybeTime.time || maybeTime.appointmentTime;
-
-                          const formattedDate = dateValue
-                            ? new Date(dateValue).toLocaleDateString("en-US", {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                              })
-                            : "Date TBD";
-
-                          const formattedTime = timeValue || "Time TBD";
-
-                          return `${formattedDate} at ${formattedTime}`;
-                        })()}
+                        {new Date(apt.appointmentDate).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })} at {apt.appointmentTime}
                       </p>
                     </div>
                   </div>

@@ -4,6 +4,9 @@ import apiClient from "./axiosConfig";
 // Type Definitions
 export interface BookAppointmentData {
   counselorId: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
   appointmentDate: string;
   appointmentTime: string;
   duration?: number;
@@ -231,15 +234,25 @@ export const startSession = async (
   appointmentId: string
 ): Promise<
   ApiResponse<{
-    appointment: Appointment;
-    meeting?: { meetingId: string; meetingUrl: string };
+    appointmentId: string;
+    status: string;
+    meetingDetails?: { 
+      meetingId: string; 
+      meetingUrl: string;
+      startTime: string;
+    };
   }>
 > => {
   try {
     const response = await apiClient.put<
       ApiResponse<{
-        appointment: Appointment;
-        meeting?: { meetingId: string; meetingUrl: string };
+        appointmentId: string;
+        status: string;
+        meetingDetails?: { 
+          meetingId: string; 
+          meetingUrl: string;
+          startTime: string;
+        };
       }>
     >(`/api/appointments/${appointmentId}/start`);
     return response.data;
@@ -271,7 +284,25 @@ export const endSession = async (
   }
 };
 
-// 10. GET MEETING DETAILS (For joining session)
+// 10. DELETE APPOINTMENT 
+export const deleteAppointment = async (
+  appointmentId: string
+): Promise<ApiResponse> => {
+  try {
+    const response = await apiClient.delete<ApiResponse>(
+      `/api/appointments/${appointmentId}`
+    );
+    return response.data;
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiResponse>;
+    return {
+      success: false,
+      message: axiosError.response?.data?.message || "Failed to delete appointment",
+    };
+  }
+};
+
+// 11. GET MEETING DETAILS (For joining session)
 export const getMeetingDetails = async (
   appointmentId: string
 ): Promise<

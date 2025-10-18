@@ -9,11 +9,13 @@ import {
   CheckCircle,
   XCircle,
   Loader,
+  Trash2,
 } from "lucide-react";
 import {
   getUserAppointments,
   cancelAppointment,
   getMeetingDetails,
+  deleteAppointment,
 } from "@/apis/appointment";
 import DashboardLayout from "@/components/DashboardLayout";
 
@@ -47,6 +49,7 @@ const UserAppointments = () => {
     useState<Appointment | null>(null);
   const [cancelReason, setCancelReason] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
+  const [deletingAppointment, setDeletingAppointment] = useState<string | null>(null);
 
   useEffect(() => {
     loadAppointments();
@@ -116,6 +119,50 @@ const UserAppointments = () => {
     }
   };
 
+  const handleDeleteAppointment = async (appointmentId: string) => {
+    if (!confirm('Are you sure you want to delete this appointment? This action cannot be undone.')) return;
+
+    try {
+      setDeletingAppointment(appointmentId);
+      const response = await deleteAppointment(appointmentId);
+      if (response.success) {
+        // Remove from local state
+        setAppointments(appointments.filter(apt => apt._id !== appointmentId));
+        alert('Appointment deleted successfully');
+      } else {
+        alert(response.message || 'Failed to delete appointment');
+      }
+    } catch (error) {
+      console.error('Error deleting appointment:', error);
+      alert('Failed to delete appointment');
+    } finally {
+      setDeletingAppointment(null);
+    }
+  };
+
+  const canDelete = (appointment: Appointment) => {
+    // Check if appointment time has passed
+    const appointmentDateTime = new Date(appointment.appointmentDate);
+    if (appointment.appointmentTime) {
+      const [hours, minutes] = appointment.appointmentTime.split(':').map(Number);
+      appointmentDateTime.setHours(hours, minutes, 0, 0);
+    }
+    const isPast = appointmentDateTime < new Date();
+
+    // Can delete if:
+    // 1. Appointment is in the past (cancelled, ended, completed, or confirmed that passed)
+    // 2. Cannot delete upcoming pending or confirmed appointments
+    if (['cancelled', 'ended', 'completed'].includes(appointment.status)) {
+      return true; // Can always delete these statuses
+    }
+
+    if (appointment.status === 'confirmed' && isPast) {
+      return true; // Can delete confirmed appointments that have passed
+    }
+
+    return false; // Cannot delete upcoming or in-progress appointments
+  };
+
   const filteredAppointments = appointments.filter((apt) => {
     if (filter === "all") return true;
     if (filter === "upcoming") {
@@ -139,6 +186,8 @@ const UserAppointments = () => {
         return "bg-blue-100 text-blue-700";
       case "in-progress":
         return "bg-purple-100 text-purple-700";
+      case "ended":
+        return "bg-gray-100 text-gray-700";
       default:
         return "bg-gray-100 text-gray-700";
     }
@@ -178,7 +227,7 @@ const UserAppointments = () => {
       appointment.status === "in-progress" ||
       (appointment.status === "confirmed" &&
         new Date(appointment.appointmentDate).toDateString() ===
-          new Date().toDateString())
+        new Date().toDateString())
     );
   };
 
@@ -212,51 +261,46 @@ const UserAppointments = () => {
             <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => setFilter("all")}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filter === "all"
-                    ? "bg-purple-600 text-white"
-                    : "bg-white text-gray-600 hover:bg-gray-50"
-                }`}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === "all"
+                  ? "bg-purple-600 text-white"
+                  : "bg-white text-gray-600 hover:bg-gray-50"
+                  }`}
               >
                 All
               </button>
               <button
                 onClick={() => setFilter("upcoming")}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filter === "upcoming"
-                    ? "bg-purple-600 text-white"
-                    : "bg-white text-gray-600 hover:bg-gray-50"
-                }`}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === "upcoming"
+                  ? "bg-purple-600 text-white"
+                  : "bg-white text-gray-600 hover:bg-gray-50"
+                  }`}
               >
                 Upcoming
               </button>
               <button
                 onClick={() => setFilter("pending")}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filter === "pending"
-                    ? "bg-purple-600 text-white"
-                    : "bg-white text-gray-600 hover:bg-gray-50"
-                }`}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === "pending"
+                  ? "bg-purple-600 text-white"
+                  : "bg-white text-gray-600 hover:bg-gray-50"
+                  }`}
               >
                 Pending
               </button>
               <button
                 onClick={() => setFilter("confirmed")}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filter === "confirmed"
-                    ? "bg-purple-600 text-white"
-                    : "bg-white text-gray-600 hover:bg-gray-50"
-                }`}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === "confirmed"
+                  ? "bg-purple-600 text-white"
+                  : "bg-white text-gray-600 hover:bg-gray-50"
+                  }`}
               >
                 Confirmed
               </button>
               <button
                 onClick={() => setFilter("completed")}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filter === "completed"
-                    ? "bg-purple-600 text-white"
-                    : "bg-white text-gray-600 hover:bg-gray-50"
-                }`}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === "completed"
+                  ? "bg-purple-600 text-white"
+                  : "bg-white text-gray-600 hover:bg-gray-50"
+                  }`}
               >
                 Completed
               </button>
@@ -377,6 +421,17 @@ const UserAppointments = () => {
                           <CheckCircle className="w-4 h-4" />
                           Completed
                         </span>
+                      )}
+
+                      {canDelete(appointment) && (
+                        <button
+                          onClick={() => handleDeleteAppointment(appointment._id)}
+                          disabled={deletingAppointment === appointment._id}
+                          className="flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          {deletingAppointment === appointment._id ? 'Deleting...' : 'Delete'}
+                        </button>
                       )}
                     </div>
                   </div>
