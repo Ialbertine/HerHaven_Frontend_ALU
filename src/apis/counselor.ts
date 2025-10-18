@@ -55,7 +55,7 @@ export interface Appointment {
   createdAt: string;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   message?: string;
   data?: T;
@@ -63,7 +63,9 @@ export interface ApiResponse<T = any> {
 }
 
 // 1. GET COUNSELOR PROFILE
-export const getCounselorProfile = async (): Promise<ApiResponse<{ counselor: Counselor }>> => {
+export const getCounselorProfile = async (): Promise<
+  ApiResponse<{ counselor: Counselor }>
+> => {
   try {
     const response = await apiClient.get<ApiResponse<{ counselor: Counselor }>>(
       "/api/counselor/profile"
@@ -85,10 +87,9 @@ export const updateCounselorProfile = async (data: {
   profilePicture?: string;
 }): Promise<ApiResponse<{ counselor: Counselor }>> => {
   try {
-    const response = await apiClient.patch<ApiResponse<{ counselor: Counselor }>>(
-      "/api/counselor/update-profile",
-      data
-    );
+    const response = await apiClient.patch<
+      ApiResponse<{ counselor: Counselor }>
+    >("/api/counselor/update-profile", data);
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<ApiResponse>;
@@ -104,33 +105,36 @@ export const updateCounselorAvailability = async (
   availability: DayAvailability[]
 ): Promise<ApiResponse<{ availability: DayAvailability[] }>> => {
   try {
-    const response = await apiClient.put<ApiResponse<{ availability: DayAvailability[] }>>(
-      "/api/counselor/availability",
-      { availability }
-    );
+    const response = await apiClient.put<
+      ApiResponse<{ availability: DayAvailability[] }>
+    >("/api/counselor/availability", { availability });
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<ApiResponse>;
     return {
       success: false,
-      message: axiosError.response?.data?.message || "Failed to update availability",
-      error: axiosError.response?.data?.error || "Unknown error"
+      message:
+        axiosError.response?.data?.message || "Failed to update availability",
+      error: axiosError.response?.data?.error || "Unknown error",
     };
   }
 };
 
 // 4. GET PENDING APPOINTMENTS
-export const getPendingAppointments = async (): Promise<ApiResponse<{ appointments: Appointment[]; count: number }>> => {
+export const getPendingAppointments = async (): Promise<
+  ApiResponse<{ appointments: Appointment[]; count: number }>
+> => {
   try {
-    const response = await apiClient.get<ApiResponse<{ appointments: Appointment[]; count: number }>>(
-      "/api/counselor/pending-appointments"
-    );
+    const response = await apiClient.get<
+      ApiResponse<{ appointments: Appointment[]; count: number }>
+    >("/api/counselor/pending-appointments");
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<ApiResponse>;
     return {
       success: false,
-      message: axiosError.response?.data?.message || "Failed to fetch appointments",
+      message:
+        axiosError.response?.data?.message || "Failed to fetch appointments",
     };
   }
 };
@@ -143,31 +147,39 @@ export const getAllCounselorAppointments = async (filters?: {
     const params = new URLSearchParams();
     if (filters?.status) params.append("status", filters.status);
 
-    const response = await apiClient.get<ApiResponse<{ appointments: Appointment[]; count: number }>>(
-      `/api/counselor/appointments${params.toString() ? '?' + params.toString() : ''}`
+    const response = await apiClient.get<
+      ApiResponse<{ appointments: Appointment[]; count: number }>
+    >(
+      `/api/counselor/appointments${
+        params.toString() ? "?" + params.toString() : ""
+      }`
     );
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<ApiResponse>;
     return {
       success: false,
-      message: axiosError.response?.data?.message || "Failed to fetch appointments",
+      message:
+        axiosError.response?.data?.message || "Failed to fetch appointments",
     };
   }
 };
 
 // 5. GET APPOINTMENT STATISTICS
-export const getAppointmentStats = async (): Promise<ApiResponse<{ stats: AppointmentStats }>> => {
+export const getAppointmentStats = async (): Promise<
+  ApiResponse<{ stats: AppointmentStats }>
+> => {
   try {
-    const response = await apiClient.get<ApiResponse<{ stats: AppointmentStats }>>(
-      "/api/counselor/appointment-stats"
-    );
+    const response = await apiClient.get<
+      ApiResponse<{ stats: AppointmentStats }>
+    >("/api/counselor/appointment-stats");
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<ApiResponse>;
     return {
       success: false,
-      message: axiosError.response?.data?.message || "Failed to fetch statistics",
+      message:
+        axiosError.response?.data?.message || "Failed to fetch statistics",
     };
   }
 };
@@ -179,24 +191,29 @@ export const getAllCounselors = async (filters?: {
 }): Promise<ApiResponse<{ counselors: Counselor[]; count: number }>> => {
   try {
     const params = new URLSearchParams();
-    if (filters?.specialization) params.append("specialization", filters.specialization);
-    if (filters?.isAvailable !== undefined) params.append("isAvailable", String(filters.isAvailable));
+    if (filters?.specialization)
+      params.append("specialization", filters.specialization);
+    if (filters?.isAvailable !== undefined)
+      params.append("isAvailable", String(filters.isAvailable));
 
-    const response = await apiClient.get<ApiResponse<{ counselors: Counselor[]; count: number }>>(
-      `/api/counselor/allcounselors?${params.toString()}`
-    );
+    const response = await apiClient.get<
+      ApiResponse<{ counselors: Counselor[]; count: number }>
+    >(`/api/counselor/allcounselors?${params.toString()}`);
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<ApiResponse>;
     return {
       success: false,
-      message: axiosError.response?.data?.message || "Failed to fetch counselors",
+      message:
+        axiosError.response?.data?.message || "Failed to fetch counselors",
     };
   }
 };
 
 // 7. GET COUNSELOR BY ID (Public)
-export const getCounselorById = async (counselorId: string): Promise<ApiResponse<{ counselor: Counselor }>> => {
+export const getCounselorById = async (
+  counselorId: string
+): Promise<ApiResponse<{ counselor: Counselor }>> => {
   try {
     const response = await apiClient.get<ApiResponse<{ counselor: Counselor }>>(
       `/api/counselor/${counselorId}`
@@ -206,23 +223,28 @@ export const getCounselorById = async (counselorId: string): Promise<ApiResponse
     const axiosError = error as AxiosError<ApiResponse>;
     return {
       success: false,
-      message: axiosError.response?.data?.message || "Failed to fetch counselor details",
+      message:
+        axiosError.response?.data?.message ||
+        "Failed to fetch counselor details",
     };
   }
 };
 
 // 8. GET SPECIALIZATIONS (Public)
-export const getSpecializations = async (): Promise<ApiResponse<{ specializations: string[] }>> => {
+export const getSpecializations = async (): Promise<
+  ApiResponse<{ specializations: string[] }>
+> => {
   try {
-    const response = await apiClient.get<ApiResponse<{ specializations: string[] }>>(
-      "/api/counselor/specializations/list"
-    );
+    const response = await apiClient.get<
+      ApiResponse<{ specializations: string[] }>
+    >("/api/counselor/specializations/list");
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<ApiResponse>;
     return {
       success: false,
-      message: axiosError.response?.data?.message || "Failed to fetch specializations",
+      message:
+        axiosError.response?.data?.message || "Failed to fetch specializations",
     };
   }
 };

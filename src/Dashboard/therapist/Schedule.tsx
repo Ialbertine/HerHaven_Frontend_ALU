@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, Plus, Edit2, Save, Trash2 } from 'lucide-react';
-import { getCounselorProfile, updateCounselorAvailability } from '@/apis/counselor';
-import { getCurrentUser } from '@/apis/auth';
-import DashboardLayout from '@/components/DashboardLayout';
+import React, { useState, useEffect, useCallback } from "react";
+import { Calendar, Clock, Plus, Edit2, Save, Trash2 } from "lucide-react";
+import {
+  getCounselorProfile,
+  updateCounselorAvailability,
+  type DayAvailability,
+} from "@/apis/counselor";
+import { getCurrentUser } from "@/apis/auth";
+import DashboardLayout from "@/components/DashboardLayout";
 
 // Types
 interface TimeSlot {
@@ -14,30 +18,43 @@ interface Availability {
   [key: string]: TimeSlot[];
 }
 
-type DayOfWeek = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+type DayOfWeek =
+  | "Monday"
+  | "Tuesday"
+  | "Wednesday"
+  | "Thursday"
+  | "Friday"
+  | "Saturday"
+  | "Sunday";
+
+const daysOfWeek: DayOfWeek[] = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
 
 const Schedule: React.FC = () => {
   const [availability, setAvailability] = useState<Availability>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [editedAvailability, setEditedAvailability] = useState<Availability>({});
-  const [userName, setUserName] = useState('');
+  const [editedAvailability, setEditedAvailability] = useState<Availability>(
+    {}
+  );
+  const [userName, setUserName] = useState("");
   const [saving, setSaving] = useState(false);
 
-  const daysOfWeek: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
-  useEffect(() => {
-    loadAvailability();
-  }, []);
-
-  const loadAvailability = async (): Promise<void> => {
+  const loadAvailability = useCallback(async (): Promise<void> => {
     try {
       setLoading(true);
 
       // Get current user for username
       const user = getCurrentUser();
       if (user) {
-        setUserName(user.username || 'Counselor');
+        setUserName(user.username || "Counselor");
       }
 
       // Fetch counselor profile to get availability
@@ -46,42 +63,47 @@ const Schedule: React.FC = () => {
         const backendAvailability = response.data.counselor.availability;
 
         // Transform backend format to frontend format
-        // Backend: [{ day: "Monday", slots: [{ startTime: "09:00", endTime: "12:00" }] }]
-        // Frontend: { Monday: [{ start: "09:00", end: "12:00" }] }
         const initializedAvailability: Availability = {};
-        daysOfWeek.forEach(day => {
+        daysOfWeek.forEach((day) => {
           initializedAvailability[day] = [];
         });
 
         if (backendAvailability && Array.isArray(backendAvailability)) {
-          backendAvailability.forEach((daySchedule: any) => {
+          backendAvailability.forEach((daySchedule: DayAvailability) => {
             if (daySchedule.day && daySchedule.slots) {
-              initializedAvailability[daySchedule.day] = daySchedule.slots.map((slot: any) => ({
-                start: slot.startTime,
-                end: slot.endTime
-              }));
+              initializedAvailability[daySchedule.day] = daySchedule.slots.map(
+                (slot) => ({
+                  start: slot.startTime,
+                  end: slot.endTime,
+                })
+              );
             }
           });
         }
 
         setAvailability(initializedAvailability);
-        setEditedAvailability(JSON.parse(JSON.stringify(initializedAvailability)));
+        setEditedAvailability(
+          JSON.parse(JSON.stringify(initializedAvailability))
+        );
       } else {
-        // Initialize with empty schedule if no profile found
         const emptyAvailability: Availability = {};
-        daysOfWeek.forEach(day => {
+        daysOfWeek.forEach((day) => {
           emptyAvailability[day] = [];
         });
         setAvailability(emptyAvailability);
         setEditedAvailability(emptyAvailability);
       }
     } catch (error) {
-      console.error('Error loading availability:', error);
-      alert('Failed to load availability. Please try again.');
+      console.error("Error loading availability:", error);
+      alert("Failed to load availability. Please try again.");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    void loadAvailability();
+  }, [loadAvailability]);
 
   const handleSaveAvailability = async (): Promise<void> => {
     try {
@@ -91,13 +113,15 @@ const Schedule: React.FC = () => {
       // Frontend: { Monday: [{ start: "09:00", end: "12:00" }] }
       // Backend: [{ day: "Monday", slots: [{ startTime: "09:00", endTime: "12:00" }] }]
       const availabilityArray = Object.keys(editedAvailability)
-        .filter(day => editedAvailability[day] && editedAvailability[day].length > 0)
-        .map(day => ({
+        .filter(
+          (day) => editedAvailability[day] && editedAvailability[day].length > 0
+        )
+        .map((day) => ({
           day: day,
-          slots: editedAvailability[day].map(slot => ({
+          slots: editedAvailability[day].map((slot) => ({
             startTime: slot.start,
-            endTime: slot.end
-          }))
+            endTime: slot.end,
+          })),
         }));
 
       // Call the API to update availability
@@ -106,13 +130,15 @@ const Schedule: React.FC = () => {
       if (response.success) {
         setAvailability(editedAvailability);
         setIsEditing(false);
-        alert('Availability updated successfully!');
+        alert("Availability updated successfully!");
       } else {
-        alert(response.message || 'Failed to update availability. Please try again.');
+        alert(
+          response.message || "Failed to update availability. Please try again."
+        );
       }
     } catch (error) {
-      console.error('Error saving availability:', error);
-      alert('Failed to update availability. Please try again.');
+      console.error("Error saving availability:", error);
+      alert("Failed to update availability. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -121,7 +147,7 @@ const Schedule: React.FC = () => {
   const addTimeSlot = (day: DayOfWeek): void => {
     const updated = { ...editedAvailability };
     if (!updated[day]) updated[day] = [];
-    updated[day].push({ start: '09:00', end: '10:00' });
+    updated[day].push({ start: "09:00", end: "10:00" });
     setEditedAvailability(updated);
   };
 
@@ -133,7 +159,12 @@ const Schedule: React.FC = () => {
     }
   };
 
-  const updateTimeSlot = (day: DayOfWeek, index: number, field: keyof TimeSlot, value: string): void => {
+  const updateTimeSlot = (
+    day: DayOfWeek,
+    index: number,
+    field: keyof TimeSlot,
+    value: string
+  ): void => {
     const updated = { ...editedAvailability };
     if (updated[day] && updated[day][index]) {
       updated[day][index][field] = value;
@@ -154,10 +185,16 @@ const Schedule: React.FC = () => {
     );
   }
 
-  const currentAvailability: Availability = isEditing ? editedAvailability : availability;
+  const currentAvailability: Availability = isEditing
+    ? editedAvailability
+    : availability;
 
   return (
-    <DashboardLayout userType="counselor" userName={userName} notificationCount={8}>
+    <DashboardLayout
+      userType="counselor"
+      userName={userName}
+      notificationCount={8}
+    >
       <div className="space-y-6 min-h-screen">
         <div className="flex items-center justify-between">
           <div>
@@ -179,7 +216,7 @@ const Schedule: React.FC = () => {
                   className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Save className="w-4 h-4" />
-                  {saving ? 'Saving...' : 'Save Changes'}
+                  {saving ? "Saving..." : "Save Changes"}
                 </button>
               </>
             ) : (
@@ -197,7 +234,10 @@ const Schedule: React.FC = () => {
         <div className="bg-white rounded-xl shadow-sm p-6">
           <div className="space-y-6">
             {daysOfWeek.map((day) => (
-              <div key={day} className="border-b border-gray-100 pb-6 last:border-b-0">
+              <div
+                key={day}
+                className="border-b border-gray-100 pb-6 last:border-b-0"
+              >
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <Calendar className="w-5 h-5 text-purple-600" />
@@ -224,14 +264,28 @@ const Schedule: React.FC = () => {
                             <input
                               type="time"
                               value={slot.start}
-                              onChange={(e) => updateTimeSlot(day, index, 'start', e.target.value)}
+                              onChange={(e) =>
+                                updateTimeSlot(
+                                  day,
+                                  index,
+                                  "start",
+                                  e.target.value
+                                )
+                              }
                               className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             />
                             <span className="text-gray-500">to</span>
                             <input
                               type="time"
                               value={slot.end}
-                              onChange={(e) => updateTimeSlot(day, index, 'end', e.target.value)}
+                              onChange={(e) =>
+                                updateTimeSlot(
+                                  day,
+                                  index,
+                                  "end",
+                                  e.target.value
+                                )
+                              }
                               className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             />
                             <button
@@ -257,7 +311,9 @@ const Schedule: React.FC = () => {
                   </div>
                 ) : (
                   <div className="text-center py-4">
-                    <p className="text-gray-400 text-sm">No availability set for this day</p>
+                    <p className="text-gray-400 text-sm">
+                      No availability set for this day
+                    </p>
                   </div>
                 )}
               </div>

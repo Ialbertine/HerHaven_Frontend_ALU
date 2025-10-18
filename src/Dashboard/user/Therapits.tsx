@@ -1,33 +1,55 @@
-import { useState, useEffect } from 'react';
-import { Search, Star, Calendar, MapPin, Award, X, Video, Phone, Clock, Users, User, Heart } from 'lucide-react';
-import { getAllCounselors, getSpecializations, type Counselor } from '@/apis/counselor';
-import { bookAppointment, getAvailableTimeSlots } from '@/apis/appointment';
-import { getCurrentUser } from '@/apis/auth';
-import DashboardLayout from '@/components/DashboardLayout';
-
+import { useState, useEffect } from "react";
+import {
+  Search,
+  Star,
+  Calendar,
+  MapPin,
+  Award,
+  X,
+  Video,
+  Phone,
+  Clock,
+  Users,
+  User,
+  Heart,
+} from "lucide-react";
+import {
+  getAllCounselors,
+  getSpecializations,
+  type Counselor,
+} from "@/apis/counselor";
+import {
+  bookAppointment,
+  getAvailableTimeSlots,
+  type TimeSlot,
+} from "@/apis/appointment";
+import { getCurrentUser } from "@/apis/auth";
+import DashboardLayout from "@/components/DashboardLayout";
 
 const Therapits = () => {
   const [counselors, setCounselors] = useState<Counselor[]>([]);
   const [specializations, setSpecializations] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedSpec, setSelectedSpec] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSpec, setSelectedSpec] = useState("all");
   const [showAvailable, setShowAvailable] = useState(false);
-  const [selectedCounselor, setSelectedCounselor] = useState<Counselor | null>(null);
+  const [selectedCounselor, setSelectedCounselor] = useState<Counselor | null>(
+    null
+  );
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [bookingData, setBookingData] = useState({
-    date: '',
-    time: '',
-    sessionMode: 'video',
-    reason: '',
-    urgencyLevel: 'medium',
+    date: "",
+    time: "",
+    sessionMode: "video",
+    reason: "",
+    urgencyLevel: "medium",
     duration: 60,
-    appointmentType: 'individual'
+    appointmentType: "individual",
   });
-  const [availableSlots, setAvailableSlots] = useState<any[]>([]);
+  const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([]);
   const [bookingLoading, setBookingLoading] = useState(false);
   const [slotsLoading, setSlotsLoading] = useState(false);
-  const [userName, setUserName] = useState('');
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     loadData();
@@ -38,12 +60,12 @@ const Therapits = () => {
       setLoading(true);
       const user = getCurrentUser();
       if (user) {
-        setUserName(user.username || 'User');
+        setUserName(user.username || "User");
       }
 
       const [counselorsRes, specsRes] = await Promise.all([
         getAllCounselors({}),
-        getSpecializations()
+        getSpecializations(),
       ]);
 
       if (counselorsRes.success && counselorsRes.data) {
@@ -54,7 +76,7 @@ const Therapits = () => {
         setSpecializations(specsRes.data.specializations);
       }
     } catch (error) {
-      console.error('Error loading counselors:', error);
+      console.error("Error loading counselors:", error);
     } finally {
       setLoading(false);
     }
@@ -65,7 +87,9 @@ const Therapits = () => {
       setSlotsLoading(true);
       setAvailableSlots([]); // Clear previous slots
 
-      console.log(`Fetching available slots for counselor ID: ${counselorId} on date: ${date}`);
+      console.log(
+        `Fetching available slots for counselor ID: ${counselorId} on date: ${date}`
+      );
 
       const response = await getAvailableTimeSlots(counselorId, date);
       if (response.success && response.data) {
@@ -73,11 +97,11 @@ const Therapits = () => {
         console.log(`Found ${slots.length} available slots:`, slots);
         setAvailableSlots(slots);
       } else {
-        console.error('Failed to load slots:', response.message);
+        console.error("Failed to load slots:", response.message);
         setAvailableSlots([]);
       }
     } catch (error) {
-      console.error('Error loading slots:', error);
+      console.error("Error loading slots:", error);
       setAvailableSlots([]);
     } finally {
       setSlotsLoading(false);
@@ -85,7 +109,7 @@ const Therapits = () => {
   };
 
   const handleDateChange = (date: string) => {
-    setBookingData({ ...bookingData, date, time: '' });
+    setBookingData({ ...bookingData, date, time: "" });
     if (selectedCounselor && date) {
       loadAvailableSlots(selectedCounselor._id, date);
     }
@@ -104,43 +128,62 @@ const Therapits = () => {
         reason: bookingData.reason,
         urgencyLevel: bookingData.urgencyLevel,
         duration: bookingData.duration,
-        appointmentType: bookingData.appointmentType
+        appointmentType: bookingData.appointmentType,
       });
 
       if (response.success) {
-        alert('Appointment booked successfully! Waiting for counselor confirmation.');
+        alert(
+          "Appointment booked successfully! Waiting for counselor confirmation."
+        );
         setShowBookingModal(false);
-        setBookingData({ date: '', time: '', sessionMode: 'video', reason: '', urgencyLevel: 'medium', duration: 60, appointmentType: 'individual' });
+        setBookingData({
+          date: "",
+          time: "",
+          sessionMode: "video",
+          reason: "",
+          urgencyLevel: "medium",
+          duration: 60,
+          appointmentType: "individual",
+        });
       } else {
-        alert(response.message || 'Failed to book appointment');
+        alert(response.message || "Failed to book appointment");
       }
     } catch (error) {
-      console.error('Error booking appointment:', error);
-      alert('Failed to book appointment');
+      console.error("Error booking appointment:", error);
+      alert("Failed to book appointment");
     } finally {
       setBookingLoading(false);
     }
   };
 
   const openBookingModal = (counselor: Counselor) => {
-    console.log('Opening booking modal for counselor:', {
+    console.log("Opening booking modal for counselor:", {
       id: counselor._id,
       name: `${counselor.firstName} ${counselor.lastName}`,
-      specialization: counselor.specialization
+      specialization: counselor.specialization,
     });
     setSelectedCounselor(counselor);
     setShowBookingModal(true);
-    setBookingData({ date: '', time: '', sessionMode: 'video', reason: '', urgencyLevel: 'medium', duration: 60, appointmentType: 'individual' });
+    setBookingData({
+      date: "",
+      time: "",
+      sessionMode: "video",
+      reason: "",
+      urgencyLevel: "medium",
+      duration: 60,
+      appointmentType: "individual",
+    });
     setAvailableSlots([]);
   };
 
-  const filteredCounselors = counselors.filter(counselor => {
+  const filteredCounselors = counselors.filter((counselor) => {
     const matchesSearch =
       counselor.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       counselor.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       counselor.specialization.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesSpec = selectedSpec === 'all' || counselor.specialization === selectedSpec;
+    const matchesSpec =
+      selectedSpec === "all" || counselor.specialization === selectedSpec;
     const matchesAvailable = !showAvailable || counselor.isAvailable;
 
     return matchesSearch && matchesSpec && matchesAvailable;
@@ -148,13 +191,11 @@ const Therapits = () => {
 
   const getTodayDate = () => {
     const today = new Date();
-    return today.toISOString().split('T')[0];
+    return today.toISOString().split("T")[0];
   };
-
 
   return (
     <DashboardLayout userType="user" userName={userName} notificationCount={8}>
-
       {loading ? (
         <div className="flex items-center justify-center h-screen">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
@@ -163,8 +204,12 @@ const Therapits = () => {
         <>
           <div className="space-y-6 min-h-screen">
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">Find Your Counselor</h1>
-              <p className="text-gray-600 mt-1">Browse verified counselors and book a session</p>
+              <h1 className="text-2xl font-bold text-gray-800">
+                Find Your Counselor
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Browse verified counselors and book a session
+              </p>
             </div>
 
             {/* Filters */}
@@ -187,8 +232,10 @@ const Therapits = () => {
                   className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 >
                   <option value="all">All Specializations</option>
-                  {specializations.map(spec => (
-                    <option key={spec} value={spec}>{spec}</option>
+                  {specializations.map((spec) => (
+                    <option key={spec} value={spec}>
+                      {spec}
+                    </option>
                   ))}
                 </select>
 
@@ -199,7 +246,9 @@ const Therapits = () => {
                     onChange={(e) => setShowAvailable(e.target.checked)}
                     className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
                   />
-                  <span className="text-sm font-medium text-gray-700">Available Now</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    Available Now
+                  </span>
                 </label>
               </div>
             </div>
@@ -207,11 +256,15 @@ const Therapits = () => {
             {/* Counselors Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCounselors.map((counselor) => (
-                <div key={counselor._id} className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-all">
+                <div
+                  key={counselor._id}
+                  className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-all"
+                >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <div className="w-16 h-16 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white text-xl font-bold">
-                        {counselor.firstName.charAt(0)}{counselor.lastName.charAt(0)}
+                        {counselor.firstName.charAt(0)}
+                        {counselor.lastName.charAt(0)}
                       </div>
                       <div>
                         <h3 className="font-semibold text-gray-800">
@@ -245,7 +298,9 @@ const Therapits = () => {
                     </div>
                   </div>
 
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-3">{counselor.bio}</p>
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+                    {counselor.bio}
+                  </p>
 
                   <button
                     onClick={() => openBookingModal(counselor)}
@@ -260,18 +315,33 @@ const Therapits = () => {
             {filteredCounselors.length === 0 && (
               <div className="text-center py-12 bg-white rounded-xl">
                 <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-600 mb-2">No counselors found</h3>
-                <p className="text-gray-500">Try adjusting your search or filters</p>
+                <h3 className="text-lg font-semibold text-gray-600 mb-2">
+                  No counselors found
+                </h3>
+                <p className="text-gray-500">
+                  Try adjusting your search or filters
+                </p>
               </div>
             )}
 
             {/* Booking Modal */}
             {showBookingModal && selectedCounselor && (
-              <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowBookingModal(false)}>
-                <div className="bg-white rounded-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              <div
+                className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+                onClick={() => setShowBookingModal(false)}
+              >
+                <div
+                  className="bg-white rounded-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800">Book Appointment</h2>
-                    <button onClick={() => setShowBookingModal(false)} className="text-gray-400 hover:text-gray-600">
+                    <h2 className="text-2xl font-bold text-gray-800">
+                      Book Appointment
+                    </h2>
+                    <button
+                      onClick={() => setShowBookingModal(false)}
+                      className="text-gray-400 hover:text-gray-600"
+                    >
                       <X className="w-6 h-6" />
                     </button>
                   </div>
@@ -279,17 +349,23 @@ const Therapits = () => {
                   <div className="mb-6">
                     <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg">
                       <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold">
-                        {selectedCounselor.firstName.charAt(0)}{selectedCounselor.lastName.charAt(0)}
+                        {selectedCounselor.firstName.charAt(0)}
+                        {selectedCounselor.lastName.charAt(0)}
                       </div>
                       <div className="flex-1">
                         <p className="font-semibold text-gray-800">
-                          {selectedCounselor.firstName} {selectedCounselor.lastName}
+                          {selectedCounselor.firstName}{" "}
+                          {selectedCounselor.lastName}
                         </p>
-                        <p className="text-sm text-gray-600">{selectedCounselor.specialization}</p>
+                        <p className="text-sm text-gray-600">
+                          {selectedCounselor.specialization}
+                        </p>
                       </div>
                       <div className="text-right">
                         <p className="text-xs text-gray-500">Booking with</p>
-                        <p className="text-sm font-medium text-purple-600">{selectedCounselor.experience} years exp</p>
+                        <p className="text-sm font-medium text-purple-600">
+                          {selectedCounselor.experience} years exp
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -297,7 +373,10 @@ const Therapits = () => {
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Select Date * <span className="text-gray-500 font-normal text-xs">(Check {selectedCounselor.firstName}'s availability)</span>
+                        Select Date *{" "}
+                        <span className="text-gray-500 font-normal text-xs">
+                          (Check {selectedCounselor.firstName}'s availability)
+                        </span>
                       </label>
                       <input
                         type="date"
@@ -312,45 +391,63 @@ const Therapits = () => {
                       <div className="flex items-center justify-center py-8">
                         <div className="text-center">
                           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-2"></div>
-                          <p className="text-sm text-gray-500">Loading available time slots...</p>
+                          <p className="text-sm text-gray-500">
+                            Loading available time slots...
+                          </p>
                         </div>
                       </div>
                     )}
 
-                    {bookingData.date && !slotsLoading && availableSlots.length > 0 && (
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Available Time Slots for {selectedCounselor.firstName} *
-                        </label>
-                        <div className="grid grid-cols-3 gap-2">
-                          {availableSlots.map((slot, index) => (
-                            <button
-                              key={`${slot.time}-${index}`}
-                              onClick={() => setBookingData({ ...bookingData, time: slot.time })}
-                              className={`px-4 py-2 rounded-lg border-2 transition-all ${bookingData.time === slot.time
-                                ? 'border-purple-600 bg-purple-50 text-purple-700 font-semibold'
-                                : 'border-gray-200 hover:border-purple-300'
+                    {bookingData.date &&
+                      !slotsLoading &&
+                      availableSlots.length > 0 && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Available Time Slots for{" "}
+                            {selectedCounselor.firstName} *
+                          </label>
+                          <div className="grid grid-cols-3 gap-2">
+                            {availableSlots.map((slot, index) => (
+                              <button
+                                key={`${slot.time}-${index}`}
+                                onClick={() =>
+                                  setBookingData({
+                                    ...bookingData,
+                                    time: slot.time,
+                                  })
+                                }
+                                className={`px-4 py-2 rounded-lg border-2 transition-all ${
+                                  bookingData.time === slot.time
+                                    ? "border-purple-600 bg-purple-50 text-purple-700 font-semibold"
+                                    : "border-gray-200 hover:border-purple-300"
                                 }`}
-                            >
-                              {slot.time}
-                            </button>
-                          ))}
+                              >
+                                {slot.time}
+                              </button>
+                            ))}
+                          </div>
+                          <p className="text-xs text-gray-500 mt-2">
+                            {availableSlots.length} slot
+                            {availableSlots.length !== 1 ? "s" : ""} available
+                            for selected date
+                          </p>
                         </div>
-                        <p className="text-xs text-gray-500 mt-2">
-                          {availableSlots.length} slot{availableSlots.length !== 1 ? 's' : ''} available for selected date
-                        </p>
-                      </div>
-                    )}
+                      )}
 
-                    {bookingData.date && !slotsLoading && availableSlots.length === 0 && (
-                      <div className="text-center py-6 bg-gray-50 rounded-lg border border-gray-200">
-                        <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                        <p className="text-sm font-medium text-gray-600">No available slots for this date</p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {selectedCounselor.firstName} doesn't have availability on this date. Please try another date.
-                        </p>
-                      </div>
-                    )}
+                    {bookingData.date &&
+                      !slotsLoading &&
+                      availableSlots.length === 0 && (
+                        <div className="text-center py-6 bg-gray-50 rounded-lg border border-gray-200">
+                          <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                          <p className="text-sm font-medium text-gray-600">
+                            No available slots for this date
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {selectedCounselor.firstName} doesn't have
+                            availability on this date. Please try another date.
+                          </p>
+                        </div>
+                      )}
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -358,21 +455,33 @@ const Therapits = () => {
                       </label>
                       <div className="grid grid-cols-2 gap-4">
                         <button
-                          onClick={() => setBookingData({ ...bookingData, sessionMode: 'video' })}
-                          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${bookingData.sessionMode === 'video'
-                            ? 'border-purple-600 bg-purple-50 text-purple-700'
-                            : 'border-gray-200 hover:border-purple-300'
-                            }`}
+                          onClick={() =>
+                            setBookingData({
+                              ...bookingData,
+                              sessionMode: "video",
+                            })
+                          }
+                          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
+                            bookingData.sessionMode === "video"
+                              ? "border-purple-600 bg-purple-50 text-purple-700"
+                              : "border-gray-200 hover:border-purple-300"
+                          }`}
                         >
                           <Video className="w-5 h-5" />
                           Video Call
                         </button>
                         <button
-                          onClick={() => setBookingData({ ...bookingData, sessionMode: 'phone' })}
-                          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${bookingData.sessionMode === 'phone'
-                            ? 'border-purple-600 bg-purple-50 text-purple-700'
-                            : 'border-gray-200 hover:border-purple-300'
-                            }`}
+                          onClick={() =>
+                            setBookingData({
+                              ...bookingData,
+                              sessionMode: "phone",
+                            })
+                          }
+                          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
+                            bookingData.sessionMode === "phone"
+                              ? "border-purple-600 bg-purple-50 text-purple-700"
+                              : "border-gray-200 hover:border-purple-300"
+                          }`}
                         >
                           <Phone className="w-5 h-5" />
                           Phone Call
@@ -386,31 +495,51 @@ const Therapits = () => {
                       </label>
                       <div className="grid grid-cols-3 gap-3">
                         <button
-                          onClick={() => setBookingData({ ...bookingData, appointmentType: 'individual' })}
-                          className={`flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${bookingData.appointmentType === 'individual'
-                            ? 'border-purple-600 bg-purple-50 text-purple-700'
-                            : 'border-gray-200 hover:border-purple-300'
-                            }`}
+                          onClick={() =>
+                            setBookingData({
+                              ...bookingData,
+                              appointmentType: "individual",
+                            })
+                          }
+                          className={`flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
+                            bookingData.appointmentType === "individual"
+                              ? "border-purple-600 bg-purple-50 text-purple-700"
+                              : "border-gray-200 hover:border-purple-300"
+                          }`}
                         >
                           <User className="w-5 h-5" />
-                          <span className="text-sm font-medium">Individual</span>
+                          <span className="text-sm font-medium">
+                            Individual
+                          </span>
                         </button>
                         <button
-                          onClick={() => setBookingData({ ...bookingData, appointmentType: 'couple' })}
-                          className={`flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${bookingData.appointmentType === 'couple'
-                            ? 'border-purple-600 bg-purple-50 text-purple-700'
-                            : 'border-gray-200 hover:border-purple-300'
-                            }`}
+                          onClick={() =>
+                            setBookingData({
+                              ...bookingData,
+                              appointmentType: "couple",
+                            })
+                          }
+                          className={`flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
+                            bookingData.appointmentType === "couple"
+                              ? "border-purple-600 bg-purple-50 text-purple-700"
+                              : "border-gray-200 hover:border-purple-300"
+                          }`}
                         >
                           <Heart className="w-5 h-5" />
                           <span className="text-sm font-medium">Couple</span>
                         </button>
                         <button
-                          onClick={() => setBookingData({ ...bookingData, appointmentType: 'group' })}
-                          className={`flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${bookingData.appointmentType === 'group'
-                            ? 'border-purple-600 bg-purple-50 text-purple-700'
-                            : 'border-gray-200 hover:border-purple-300'
-                            }`}
+                          onClick={() =>
+                            setBookingData({
+                              ...bookingData,
+                              appointmentType: "group",
+                            })
+                          }
+                          className={`flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
+                            bookingData.appointmentType === "group"
+                              ? "border-purple-600 bg-purple-50 text-purple-700"
+                              : "border-gray-200 hover:border-purple-300"
+                          }`}
                         >
                           <Users className="w-5 h-5" />
                           <span className="text-sm font-medium">Group</span>
@@ -420,13 +549,21 @@ const Therapits = () => {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Session Duration * <span className="text-gray-500 font-normal text-xs">(Max 3 hours)</span>
+                        Session Duration *{" "}
+                        <span className="text-gray-500 font-normal text-xs">
+                          (Max 3 hours)
+                        </span>
                       </label>
                       <div className="relative">
                         <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                         <select
                           value={bookingData.duration}
-                          onChange={(e) => setBookingData({ ...bookingData, duration: parseInt(e.target.value) })}
+                          onChange={(e) =>
+                            setBookingData({
+                              ...bookingData,
+                              duration: parseInt(e.target.value),
+                            })
+                          }
                           className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none bg-white"
                         >
                           <option value={30}>30 minutes</option>
@@ -445,7 +582,12 @@ const Therapits = () => {
                       </label>
                       <textarea
                         value={bookingData.reason}
-                        onChange={(e) => setBookingData({ ...bookingData, reason: e.target.value })}
+                        onChange={(e) =>
+                          setBookingData({
+                            ...bookingData,
+                            reason: e.target.value,
+                          })
+                        }
                         placeholder="Share what you'd like to discuss..."
                         rows={4}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
@@ -458,12 +600,21 @@ const Therapits = () => {
                       </label>
                       <select
                         value={bookingData.urgencyLevel}
-                        onChange={(e) => setBookingData({ ...bookingData, urgencyLevel: e.target.value })}
+                        onChange={(e) =>
+                          setBookingData({
+                            ...bookingData,
+                            urgencyLevel: e.target.value,
+                          })
+                        }
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       >
                         <option value="low">Low - General Support</option>
-                        <option value="medium">Medium - Need Support Soon</option>
-                        <option value="high">High - Urgent Support Needed</option>
+                        <option value="medium">
+                          Medium - Need Support Soon
+                        </option>
+                        <option value="high">
+                          High - Urgent Support Needed
+                        </option>
                       </select>
                     </div>
 
@@ -476,10 +627,14 @@ const Therapits = () => {
                       </button>
                       <button
                         onClick={handleBookAppointment}
-                        disabled={!bookingData.date || !bookingData.time || bookingLoading}
+                        disabled={
+                          !bookingData.date ||
+                          !bookingData.time ||
+                          bookingLoading
+                        }
                         className="flex-1 px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {bookingLoading ? 'Booking...' : 'Confirm Booking'}
+                        {bookingLoading ? "Booking..." : "Confirm Booking"}
                       </button>
                     </div>
                   </div>
