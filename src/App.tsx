@@ -22,6 +22,7 @@ import Therapits from "@/Dashboard/user/Therapits";
 import UserAppointment from "@/Dashboard/user/UserAppointment";
 import Community from "@/pages/community/community";
 
+
 const App: React.FC = () => {
   return (
     <BrowserRouter>
@@ -56,14 +57,14 @@ const App: React.FC = () => {
           <Route path="admin/community" element={<Community />} />
         </Route>
 
-        {/* User Routes (includes guest access) */}
+        {/* User Routes */}
         <Route element={<ProtectedRoute allowedRoles={["user", "guest"]} />}>
           <Route path="user/dashboard" element={<UserLanding />} />
           <Route path="user/resources" element={<Resources />} />
           <Route path="user/community" element={<Community />} />
         </Route>
 
-        {/* User-only Routes */}
+        {/* User only Routes */}
         <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
           <Route path="user/therapy" element={<Therapits />} />
           <Route path="user/appointment" element={<UserAppointment />} />

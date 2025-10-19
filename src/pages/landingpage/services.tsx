@@ -55,8 +55,7 @@ const Services: React.FC = () => {
   ];
 
   return (
-    <section className="relative min-h-screen py-20 px-6 bg-gradient-to-br from-purple-50 via-pink-50 to-lavender-50 overflow-hidden">
-      {/* Subtle Background Pattern */}
+    <section className="relative min-h-screen pt-24 pb-20 px-6 bg-gradient-to-br from-purple-50 via-pink-50 to-lavender-50 overflow-hidden">
       <div className="absolute inset-0 opacity-30">
         <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl animate-float-slow"></div>
         <div className="absolute bottom-20 right-10 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl animate-float-medium"></div>
@@ -69,7 +68,7 @@ const Services: React.FC = () => {
           <p className="text-[#9c27b0] text-lg mb-4 font-medium">
             Our Services
           </p>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6 leading-tight">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6 leading-tight">
             How HerHaven Helps
           </h1>
           <p className="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed">
@@ -91,9 +90,9 @@ const Services: React.FC = () => {
               >
                 {/* Icon with Gradient Background */}
                 <div
-                  className={`w-16 h-16 bg-gradient-to-br ${feature.gradient} rounded-full flex items-center justify-center mb-6 shadow-md`}
+                  className={`w-12 h-12 bg-gradient-to-br ${feature.gradient} rounded-full flex items-center justify-center mb-6 shadow-md`}
                 >
-                  <Icon className="w-8 h-8 text-white" strokeWidth={2} />
+                  <Icon className="w-6 h-6 text-white" strokeWidth={2} />
                 </div>
 
                 {/* Title */}

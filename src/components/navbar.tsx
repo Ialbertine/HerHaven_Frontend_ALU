@@ -23,8 +23,9 @@ const navLinks: NavLink[] = [
     label: "Services",
     hasDropdown: true,
     dropdownItems: [
+      { href: "/services", label: "All Services" },
       { href: "/therapy", label: "Therapy Services" },
-      { href: "/support", label: "Support" },
+      { href: "/havenchatbot", label: "Herhaven Chatbot" },
     ],
   },
   { href: "/resources", label: "Resources" },
