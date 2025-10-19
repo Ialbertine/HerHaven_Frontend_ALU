@@ -13,8 +13,6 @@ interface SessionStats {
   completed: number;
 }
 
-// Removed mock API - using real API calls now
-
 const Profile: React.FC = () => {
   const [profile, setProfile] = useState<Counselor | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -25,6 +23,7 @@ const Profile: React.FC = () => {
     username: '',
     phoneNumber: ''
   });
+  const [uploadingImage, setUploadingImage] = useState<boolean>(false);
 
   useEffect(() => {
     loadProfile();
@@ -56,7 +55,6 @@ const Profile: React.FC = () => {
       // Process appointment stats for session count
       if (statsResponse.success && statsResponse.data?.stats) {
         const stats = statsResponse.data.stats;
-        console.log('📊 Appointment Stats:', stats);
 
         // Get completed sessions count
         const completedCount = stats.breakdown.find(
@@ -107,6 +105,62 @@ const Profile: React.FC = () => {
     }));
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file.');
+      return;
+    }
+
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB.');
+      return;
+    }
+
+    try {
+      setUploadingImage(true);
+
+      // Convert file to base64
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64String = reader.result as string;
+
+        // Update profile with new image
+        const response = await updateCounselorProfile({
+          profilePicture: base64String
+        });
+
+        if (response.success && response.data?.counselor) {
+          setProfile(response.data.counselor);
+          alert('Profile picture updated successfully!');
+          // Clear the file input to allow selecting the same file again
+          const fileInput = document.getElementById('profile-picture-upload') as HTMLInputElement;
+          if (fileInput) {
+            fileInput.value = '';
+          }
+        } else {
+          alert(response.message || 'Failed to update profile picture');
+        }
+      };
+
+      reader.onerror = () => {
+        alert('Failed to read image file. Please try again.');
+        setUploadingImage(false);
+      };
+
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Failed to upload image. Please try again.');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -142,13 +196,51 @@ const Profile: React.FC = () => {
             <div className="bg-white rounded-xl shadow-sm p-6">
               <div className="flex flex-col items-center">
                 <div className="relative">
-                  <div className="w-32 h-32 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white text-4xl font-bold">
-                    {profile.firstName.charAt(0)}{profile.lastName.charAt(0)}
-                  </div>
+                  {profile.profilePicture ? (
+                    <img
+                      src={profile.profilePicture}
+                      alt={`${profile.firstName} ${profile.lastName}`}
+                      className="w-32 h-32 rounded-full object-cover shadow-lg"
+                      onError={(e) => {
+                        // Fallback to initials if image fails to load
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const parent = target.parentElement;
+                        if (parent) {
+                          const fallback = document.createElement('div');
+                          fallback.className = 'w-32 h-32 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white text-4xl font-bold';
+                          fallback.textContent = `${profile.firstName.charAt(0)}${profile.lastName.charAt(0)}`;
+                          parent.appendChild(fallback);
+                        }
+                      }}
+                    />
+                  ) : (
+                    <div className="w-32 h-32 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white text-4xl font-bold">
+                      {profile.firstName.charAt(0)}{profile.lastName.charAt(0)}
+                    </div>
+                  )}
                   {isEditing && (
-                    <button className="absolute bottom-0 right-0 bg-purple-600 p-2 rounded-full text-white hover:bg-purple-700">
-                      <Camera className="w-4 h-4" />
-                    </button>
+                    <div className="absolute bottom-0 right-0">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                        id="profile-picture-upload"
+                        disabled={uploadingImage}
+                      />
+                      <label
+                        htmlFor="profile-picture-upload"
+                        className={`bg-purple-600 p-2 rounded-full text-white hover:bg-purple-700 cursor-pointer transition-colors ${uploadingImage ? 'opacity-50 cursor-not-allowed' : ''
+                          }`}
+                      >
+                        {uploadingImage ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Camera className="w-4 h-4" />
+                        )}
+                      </label>
+                    </div>
                   )}
                 </div>
 

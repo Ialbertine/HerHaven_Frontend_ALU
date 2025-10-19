@@ -1,7 +1,6 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  BarChart3,
   Calendar,
   Users,
   Settings,
@@ -11,6 +10,7 @@ import {
   Activity,
   BookOpen,
   Home,
+  MessageSquare,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { logout } from "@/apis/auth";
@@ -23,13 +23,13 @@ export interface MenuItem {
 }
 
 interface SidebarProps {
-  userType: "user" | "counselor" | "super_admin";
+  userType: "user" | "counselor" | "super_admin" | "guest";
   isMobileOpen: boolean;
   onCloseMobile: () => void;
   onLogout?: () => void;
 }
 
-const menuConfig: Record<"user" | "counselor" | "super_admin", MenuItem[]> = {
+const menuConfig: Record<"user" | "counselor" | "super_admin" | "guest", MenuItem[]> = {
   user: [
     {
       id: "dashboard",
@@ -57,7 +57,27 @@ const menuConfig: Record<"user" | "counselor" | "super_admin", MenuItem[]> = {
     },
     {
       id: "community",
-      icon: Users,
+      icon: MessageSquare,
+      label: "Community",
+      path: "/user/community",
+    },
+  ],
+  guest: [
+    {
+      id: "dashboard",
+      icon: Home,
+      label: "Dashboard",
+      path: "/user/dashboard",
+    },
+    {
+      id: "resources",
+      icon: BookOpen,
+      label: "Resources",
+      path: "/user/resources",
+    },
+    {
+      id: "community",
+      icon: MessageSquare,
       label: "Community",
       path: "/user/community",
     },
@@ -87,6 +107,12 @@ const menuConfig: Record<"user" | "counselor" | "super_admin", MenuItem[]> = {
       label: "Appointments",
       path: "/counselor/appointments",
     },
+    {
+      id: "community",
+      icon: MessageSquare,
+      label: "Community",
+      path: "/counselor/community",
+    },
   ],
   super_admin: [
     {
@@ -103,17 +129,17 @@ const menuConfig: Record<"user" | "counselor" | "super_admin", MenuItem[]> = {
       path: "/admin/therapy-management",
     },
     {
-      id: "analytics",
-      icon: BarChart3,
-      label: "Analytics",
-      path: "/admin/analytics",
-    },
-   {
       id: "content",
-      icon: Users,
+      icon: BookOpen,
       label: "Content",
       path: "/admin/content",
-   }
+    },
+    {
+      id: "community",
+      icon: MessageSquare,
+      label: "Community",
+      path: "/admin/community",
+    },
   ],
 };
 
@@ -181,10 +207,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                 className={`
                   w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-2
                   transition-all duration-200
-                  ${
-                    isActive
-                      ? "bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700"
-                      : "text-gray-600 hover:bg-gray-50"
+                  ${isActive
+                    ? "bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700"
+                    : "text-gray-600 hover:bg-gray-50"
                   }
                 `}
               >
@@ -197,13 +222,15 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Bottom Actions */}
         <div className="p-4 border-t border-gray-100 space-y-2">
-          <Link
-            to={`/${userType}/settings`}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition-all"
-          >
-            <Settings className="w-5 h-5" />
-            <span className="font-medium">Settings</span>
-          </Link>
+          {userType !== "guest" && (
+            <Link
+              to={`/${userType === "super_admin" ? "admin" : userType}/settings`}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition-all"
+            >
+              <Settings className="w-5 h-5" />
+              <span className="font-medium">Settings</span>
+            </Link>
+          )}
           <button
             onClick={() => {
               try {

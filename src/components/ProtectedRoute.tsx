@@ -7,9 +7,18 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
   const userRole = localStorage.getItem("userRole");
+  const accessType = localStorage.getItem("accessType");
 
-  if (!allowedRoles.includes(userRole || "")) {
-    return <Navigate to="/" replace />; 
+  // Check if user is authenticated (either as registered user with token or as guest with session)
+  const isAuthenticated = () => {
+    const token = localStorage.getItem("token");
+    const guestSessionId = localStorage.getItem("guestSessionId");
+    return !!(token || (accessType === "guest" && guestSessionId));
+  };
+
+  // Allow access if user role is in allowed roles and user is authenticated
+  if (!allowedRoles.includes(userRole || "") || !isAuthenticated()) {
+    return <Navigate to="/" replace />;
   }
 
   return <Outlet />;

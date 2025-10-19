@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Calendar, Heart, CheckCircle, BookOpen, Users } from "lucide-react";
 import { getUserAppointments } from "@/apis/appointment";
 import { getCurrentUser } from "@/apis/auth";
@@ -34,48 +34,59 @@ const UserLanding = () => {
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState("");
 
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
+  // Check if user is a guest
+  const userRole = localStorage.getItem("userRole");
+  const isGuest = userRole === "guest";
 
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     try {
       setLoading(true);
-      const user = getCurrentUser();
-      if (user) {
-        setUserName(user.username || "User");
-      }
 
-      // Get upcoming appointments
-      const upcomingResponse = await getUserAppointments({ upcoming: true });
-      if (upcomingResponse.success && upcomingResponse.data) {
-        setUpcomingAppointments(upcomingResponse.data.appointments.slice(0, 3));
-      }
+      if (isGuest) {
+        setUserName("Guest");
+        setStats({ upcoming: 0, completed: 0, total: 0 });
+        setUpcomingAppointments([]);
+      } else {
+        const user = getCurrentUser();
+        if (user) {
+          setUserName(user.username || "User");
+        }
 
-      // Get all appointments for stats
-      const allResponse = await getUserAppointments({});
-      if (allResponse.success && allResponse.data) {
-        const appointments = allResponse.data.appointments;
-        setStats({
-          upcoming: (
-            appointments as Array<{ status: string; appointmentDate: string }>
-          ).filter(
-            (a) =>
-              ["pending", "confirmed"].includes(a.status) &&
-              new Date(a.appointmentDate) >= new Date()
-          ).length,
-          completed: (appointments as Array<{ status: string }>).filter(
-            (a) => a.status === "completed"
-          ).length,
-          total: appointments.length,
-        });
+        // Get upcoming appointments
+        const upcomingResponse = await getUserAppointments({ upcoming: true });
+        if (upcomingResponse.success && upcomingResponse.data) {
+          setUpcomingAppointments(upcomingResponse.data.appointments.slice(0, 3));
+        }
+
+        // Get all appointments for stats
+        const allResponse = await getUserAppointments({});
+        if (allResponse.success && allResponse.data) {
+          const appointments = allResponse.data.appointments;
+          setStats({
+            upcoming: (
+              appointments as Array<{ status: string; appointmentDate: string }>
+            ).filter(
+              (a) =>
+                ["pending", "confirmed"].includes(a.status) &&
+                new Date(a.appointmentDate) >= new Date()
+            ).length,
+            completed: (appointments as Array<{ status: string }>).filter(
+              (a) => a.status === "completed"
+            ).length,
+            total: appointments.length,
+          });
+        }
       }
     } catch (error) {
       console.error("Error loading dashboard:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [isGuest]);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, [loadDashboardData]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -101,7 +112,7 @@ const UserLanding = () => {
   };
 
   return (
-    <DashboardLayout userType="user" userName={userName}>
+    <DashboardLayout userType={isGuest ? "guest" : "user"} userName={userName}>
       {loading ? (
         <div className="flex items-center justify-center h-screen">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
@@ -112,131 +123,157 @@ const UserLanding = () => {
             {/* Welcome Section */}
             <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8 text-white">
               <h1 className="text-3xl font-bold mb-2">
-                Welcome Back, {userName}!
+                {isGuest ? `Welcome, ${userName}!` : `Welcome Back, ${userName}!`}
               </h1>
               <p className="text-purple-100">
-                Your safe space for healing and growth
+                {isGuest
+                  ? "You're browsing as a guest. Create an account to unlock all features."
+                  : "Your safe space for healing and growth"
+                }
               </p>
-            </div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="bg-purple-100 p-3 rounded-lg">
-                    <Calendar className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <span className="text-2xl font-bold text-purple-600">
-                    {stats.upcoming}
-                  </span>
-                </div>
-                <h3 className="text-gray-600 font-medium">Upcoming Sessions</h3>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="bg-green-100 p-3 rounded-lg">
-                    <CheckCircle className="w-6 h-6 text-green-600" />
-                  </div>
-                  <span className="text-2xl font-bold text-green-600">
-                    {stats.completed}
-                  </span>
-                </div>
-                <h3 className="text-gray-600 font-medium">
-                  Completed Sessions
-                </h3>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="bg-pink-100 p-3 rounded-lg">
-                    <Heart className="w-6 h-6 text-pink-600" />
-                  </div>
-                  <span className="text-2xl font-bold text-pink-600">
-                    {stats.total}
-                  </span>
-                </div>
-                <h3 className="text-gray-600 font-medium">Total Sessions</h3>
-              </div>
-            </div>
-
-            {/* Upcoming Appointments */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-800">
-                  Upcoming Appointments
-                </h2>
-                <a
-                  href="/user/appointment"
-                  className="text-purple-600 hover:text-purple-700 font-medium text-sm"
-                >
-                  View All
-                </a>
-              </div>
-              {upcomingAppointments.length > 0 ? (
-                <div className="space-y-4">
-                  {upcomingAppointments.map((apt) => (
-                    <div
-                      key={apt._id}
-                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold">
-                          {apt.counselor.firstName?.charAt(0) || "C"}
-                        </div>
-                        <div>
-                          <p className="font-semibold text-gray-800">
-                            {apt.counselor.firstName} {apt.counselor.lastName}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            {apt.counselor.specialization}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {formatDate(apt.appointmentDate)} at{" "}
-                            {apt.appointmentTime}
-                          </p>
-                        </div>
-                      </div>
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                          apt.status
-                        )}`}
-                      >
-                        {apt.status}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500 mb-4">No upcoming appointments</p>
-                  <a
-                    href="/user/therapy"
-                    className="inline-block px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              {isGuest && (
+                <div className="mt-4 flex flex-wrap gap-4">
+                  <button
+                    onClick={() => window.location.href = '/signup'}
+                    className="px-6 py-3 bg-white text-purple-600 rounded-xl font-semibold hover:shadow-lg transition-all"
                   >
-                    Book a Session
-                  </a>
+                    Create Account
+                  </button>
+                  <button
+                    onClick={() => window.location.href = '/login'}
+                    className="px-6 py-3 bg-purple-700 text-white rounded-xl font-semibold hover:bg-purple-800 transition-all"
+                  >
+                    Sign In
+                  </button>
                 </div>
               )}
             </div>
 
-            {/* Quick Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <a
-                href="/user/therapy"
-                className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all group"
-              >
-                <div className="bg-purple-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-200 transition-colors">
-                  <Calendar className="w-6 h-6 text-purple-600" />
+            {/* Stats Grid - Only show for registered users */}
+            {!isGuest && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="bg-purple-100 p-3 rounded-lg">
+                      <Calendar className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <span className="text-2xl font-bold text-purple-600">
+                      {stats.upcoming}
+                    </span>
+                  </div>
+                  <h3 className="text-gray-600 font-medium">Upcoming Sessions</h3>
                 </div>
-                <h3 className="font-semibold text-gray-800 mb-2">
-                  Find a Counselor
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Browse and book with verified counselors
-                </p>
-              </a>
+
+                <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="bg-green-100 p-3 rounded-lg">
+                      <CheckCircle className="w-6 h-6 text-green-600" />
+                    </div>
+                    <span className="text-2xl font-bold text-green-600">
+                      {stats.completed}
+                    </span>
+                  </div>
+                  <h3 className="text-gray-600 font-medium">
+                    Completed Sessions
+                  </h3>
+                </div>
+
+                <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="bg-pink-100 p-3 rounded-lg">
+                      <Heart className="w-6 h-6 text-pink-600" />
+                    </div>
+                    <span className="text-2xl font-bold text-pink-600">
+                      {stats.total}
+                    </span>
+                  </div>
+                  <h3 className="text-gray-600 font-medium">Total Sessions</h3>
+                </div>
+              </div>
+            )}
+
+            {/* Upcoming Appointments - Only show for registered users */}
+            {!isGuest && (
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-gray-800">
+                    Upcoming Appointments
+                  </h2>
+                  <a
+                    href="/user/appointment"
+                    className="text-purple-600 hover:text-purple-700 font-medium text-sm"
+                  >
+                    View All
+                  </a>
+                </div>
+                {upcomingAppointments.length > 0 ? (
+                  <div className="space-y-4">
+                    {upcomingAppointments.map((apt) => (
+                      <div
+                        key={apt._id}
+                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold">
+                            {apt.counselor.firstName?.charAt(0) || "C"}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-800">
+                              {apt.counselor.firstName} {apt.counselor.lastName}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              {apt.counselor.specialization}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {formatDate(apt.appointmentDate)} at{" "}
+                              {apt.appointmentTime}
+                            </p>
+                          </div>
+                        </div>
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                            apt.status
+                          )}`}
+                        >
+                          {apt.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500 mb-4">No upcoming appointments</p>
+                    <a
+                      href="/user/therapy"
+                      className="inline-block px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                    >
+                      Book a Session
+                    </a>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Quick Actions */}
+            <div className={`grid gap-6 ${isGuest ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-3'}`}>
+              {/* Find a Counselor - Only show for registered users */}
+              {!isGuest && (
+                <a
+                  href="/user/therapy"
+                  className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all group"
+                >
+                  <div className="bg-purple-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-200 transition-colors">
+                    <Calendar className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <h3 className="font-semibold text-gray-800 mb-2">
+                    Find a Counselor
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Browse and book with verified counselors
+                  </p>
+                </a>
+              )}
 
               <a
                 href="/user/resources"

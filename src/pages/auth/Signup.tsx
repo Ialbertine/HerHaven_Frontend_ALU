@@ -150,9 +150,13 @@ const Signup: React.FC = () => {
       const response = await continueAsGuest();
 
       if (response.success) {
+        // Set guest role in localStorage for ProtectedRoute
+        localStorage.setItem("userRole", "guest");
+        localStorage.setItem("accessType", "guest");
+
         setMessage({ type: "success", text: "Continuing as guest" });
-        //redirect to user dashboard but with minimal features
-        navigate("/");
+        // Redirect to user dashboard with limited features
+        navigate("/user/dashboard");
       } else {
         setMessage({
           type: "error",
@@ -207,11 +211,10 @@ const Signup: React.FC = () => {
               {/* Inline success / error message (replaces toasts) */}
               {message && (
                 <div
-                  className={`p-3 rounded-md text-sm font-medium ${
-                    message.type === "success"
-                      ? "bg-green-50 text-green-800"
-                      : "bg-red-50 text-red-800"
-                  }`}
+                  className={`p-3 rounded-md text-sm font-medium ${message.type === "success"
+                    ? "bg-green-50 text-green-800"
+                    : "bg-red-50 text-red-800"
+                    }`}
                 >
                   {message.text}
                 </div>
@@ -235,9 +238,8 @@ const Signup: React.FC = () => {
                     name="username"
                     value={formData.username}
                     onChange={handleChange}
-                    className={`w-full pl-12 pr-4 py-3 rounded-full border ${
-                      errors.username ? "border-red-500" : "border-gray-300"
-                    } focus:outline-none focus:ring-2 focus:ring-[#9c27b0] focus:border-transparent transition-all`}
+                    className={`w-full pl-12 pr-4 py-3 rounded-full border ${errors.username ? "border-red-500" : "border-gray-300"
+                      } focus:outline-none focus:ring-2 focus:ring-[#9c27b0] focus:border-transparent transition-all`}
                     placeholder="Enter your username"
                   />
                 </div>
@@ -269,9 +271,8 @@ const Signup: React.FC = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className={`w-full pl-12 pr-4 py-3 rounded-full border ${
-                      errors.email ? "border-red-500" : "border-gray-300"
-                    } focus:outline-none focus:ring-2 focus:ring-[#9c27b0] focus:border-transparent transition-all`}
+                    className={`w-full pl-12 pr-4 py-3 rounded-full border ${errors.email ? "border-red-500" : "border-gray-300"
+                      } focus:outline-none focus:ring-2 focus:ring-[#9c27b0] focus:border-transparent transition-all`}
                     placeholder="Enter your email"
                   />
                 </div>
@@ -300,9 +301,8 @@ const Signup: React.FC = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className={`w-full pl-12 pr-12 py-3 rounded-full border ${
-                      errors.password ? "border-red-500" : "border-gray-300"
-                    } focus:outline-none focus:ring-2 focus:ring-[#9c27b0] focus:border-transparent transition-all`}
+                    className={`w-full pl-12 pr-12 py-3 rounded-full border ${errors.password ? "border-red-500" : "border-gray-300"
+                      } focus:outline-none focus:ring-2 focus:ring-[#9c27b0] focus:border-transparent transition-all`}
                     placeholder="Enter your password"
                   />
                   <button

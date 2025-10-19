@@ -6,7 +6,7 @@ import { getUnreadNotificationCount } from "@/apis/notification";
 interface DashboardHeaderProps {
   userName: string;
   onMenuToggle: () => void;
-  userType?: "user" | "counselor" | "super_admin";
+  userType?: "user" | "counselor" | "super_admin" | "guest";
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
@@ -18,14 +18,17 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
 
   useEffect(() => {
-    loadUnreadCount();
-    
-    const interval = setInterval(() => {
+    // Skip notification loading for guests
+    if (userType !== "guest") {
       loadUnreadCount();
-    }, 30000);
 
-    return () => clearInterval(interval);
-  }, []);
+      const interval = setInterval(() => {
+        loadUnreadCount();
+      }, 30000);
+
+      return () => clearInterval(interval);
+    }
+  }, [userType]);
 
   const loadUnreadCount = async () => {
     try {
@@ -46,8 +49,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     userType === "super_admin"
       ? "Administrator"
       : userType === "counselor"
-      ? "Counselor"
-      : "User";
+        ? "Counselor"
+        : userType === "guest"
+          ? "Guest"
+          : "User";
 
   return (
     <>
@@ -69,26 +74,29 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="relative">
-            <button
-              onClick={() => setIsNotificationPanelOpen(!isNotificationPanelOpen)}
-              className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-all relative"
-              aria-label="Notifications"
-            >
-              <Bell className="w-6 h-6" />
-              {notificationCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                  {notificationCount > 9 ? '9+' : notificationCount}
-                </span>
-              )}
-            </button>
+          {/* Hide notifications for guests */}
+          {userType !== "guest" && (
+            <div className="relative">
+              <button
+                onClick={() => setIsNotificationPanelOpen(!isNotificationPanelOpen)}
+                className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-all relative"
+                aria-label="Notifications"
+              >
+                <Bell className="w-6 h-6" />
+                {notificationCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                    {notificationCount > 9 ? '9+' : notificationCount}
+                  </span>
+                )}
+              </button>
 
-            <NotificationPanel
-              isOpen={isNotificationPanelOpen}
-              onClose={() => setIsNotificationPanelOpen(false)}
-              onNotificationCountChange={handleNotificationCountChange}
-            />
-          </div>
+              <NotificationPanel
+                isOpen={isNotificationPanelOpen}
+                onClose={() => setIsNotificationPanelOpen(false)}
+                onNotificationCountChange={handleNotificationCountChange}
+              />
+            </div>
+          )}
         </div>
       </header>
     </>

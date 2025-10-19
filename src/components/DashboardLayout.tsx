@@ -5,7 +5,7 @@ import DashboardHeader from "./DashboardHeader";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
-  userType: "user" | "counselor" | "super_admin";
+  userType: "user" | "counselor" | "super_admin" | "guest";
   userName: string;
 }
 

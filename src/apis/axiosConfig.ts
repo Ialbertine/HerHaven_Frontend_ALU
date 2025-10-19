@@ -22,8 +22,14 @@ apiClient.interceptors.request.use(
     }
     
     const token = localStorage.getItem('token');
+    const guestSessionId = localStorage.getItem('guestSessionId');
+    const accessType = localStorage.getItem('accessType');
+    
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else if (accessType === 'guest' && guestSessionId) {
+      // For guest users
+      config.headers['X-Guest-Session-Id'] = guestSessionId;
     }
     
     config.headers['Content-Type'] = 'application/json';
