@@ -15,6 +15,7 @@ import {
 } from "@/apis/counselor";
 import { getCurrentUser } from "@/apis/auth";
 import DashboardLayout from "@/components/DashboardLayout";
+import FeedbackForm from "@/components/FeedbackForm";
 
 // Types
 interface DashboardStats {
@@ -288,6 +289,9 @@ const TherapyLanding: React.FC = () => {
             <p className="text-sm text-gray-600">Update your profile</p>
           </a>
         </div>
+
+        {/* Feedback Form */}
+        <FeedbackForm />
       </div>
     </DashboardLayout>
   );

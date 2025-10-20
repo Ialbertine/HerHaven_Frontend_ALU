@@ -15,6 +15,7 @@ import Services from "@/pages/landingpage/services";
 import TherapyService from "@/pages/landingpage/TherapyService";
 import TherapistLanding from "@/Dashboard/therapist/therapyLanding";
 import TherapyManagement from "./Dashboard/admin/TherapyManagement";
+import FeedbackManagement from "./Dashboard/admin/FeedbackManagement";
 import Profile from "@/Dashboard/therapist/Profile";
 import Schedule from "@/Dashboard/therapist/Schedule";
 import Sessions from "@/Dashboard/therapist/Session";
@@ -54,6 +55,7 @@ const App: React.FC = () => {
             path="admin/therapy-management"
             element={<TherapyManagement />}
           />
+          <Route path="admin/content" element={<FeedbackManagement />} />
           <Route path="admin/community" element={<Community />} />
         </Route>
 

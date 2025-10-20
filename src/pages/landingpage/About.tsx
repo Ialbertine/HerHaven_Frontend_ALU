@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Handshake,
   Globe,
@@ -10,16 +10,10 @@ import {
   Link2,
   ArrowRight,
   Smartphone,
-  Star,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const About: React.FC = () => {
-  const [feedbackForm, setFeedbackForm] = useState({
-    message: "",
-  });
-
-  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
   const coreValues = [
     {
@@ -72,15 +66,6 @@ const About: React.FC = () => {
     "UN Women Rwanda",
   ];
 
-  const handleFeedbackSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Feedback submitted:", feedbackForm);
-    setFeedbackSubmitted(true);
-    setTimeout(() => {
-      setFeedbackSubmitted(false);
-      setFeedbackForm({ message: "" });
-    }, 3000);
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-lavender-50 to-white">
@@ -204,7 +189,7 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      {/* What We Do / How We Work */}
+      {/* What We Do */}
       <section className="py-16 px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
         <h2 className="text-4xl font-bold text-purple-900 text-center mb-12">
           How We Work
@@ -240,7 +225,7 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      {/* Section 6: Impact / Why It Matters */}
+      {/* Why It Matters */}
       <section className="py-16 px-4 md:px-8 lg:px-16 bg-gradient-to-r from-purple-900 to-purple-700 text-white">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">
@@ -270,75 +255,10 @@ const About: React.FC = () => {
             </div>
           </div>
 
-          {/* Feedback Form */}
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border-l-4 border-lavender-300">
-              <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                <Star className="w-6 h-6" />
-                Share Your Feedback
-              </h3>
-
-              {feedbackSubmitted ? (
-                <div className="text-center py-8">
-                  <div className="flex justify-center mb-4">
-                    <div className="bg-green-500 rounded-full p-3">
-                      <svg
-                        className="w-8 h-8 text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                  <p className="text-xl font-semibold">
-                    Thank you for your feedback!
-                  </p>
-                  <p className="text-lavender-200 mt-2">
-                    Your input helps us improve our services.
-                  </p>
-                </div>
-              ) : (
-                <form onSubmit={handleFeedbackSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Your Feedback
-                    </label>
-                    <textarea
-                      required
-                      rows={4}
-                      value={feedbackForm.message}
-                      onChange={(e) =>
-                        setFeedbackForm({
-                          ...feedbackForm,
-                          message: e.target.value,
-                        })
-                      }
-                      className="w-full px-4 py-2 rounded-lg bg-white/20 border border-white/30 focus:outline-none focus:border-lavender-300 text-white placeholder-white/60 resize-none"
-                      placeholder="Share your experience with us..."
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full md:w-auto px-8 py-3 bg-lavender-500 hover:bg-lavender-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                  >
-                    Submit Feedback
-                  </button>
-                </form>
-              )}
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* Get Involved / Contact */}
+      {/* Contact */}
       <section className="py-16 px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-purple-900 mb-6">
