@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MessageSquare, BookOpen, UserPlus, LogIn, Shield, Heart, Calendar, Users } from 'lucide-react';
+import FeedbackForm from '@/components/FeedbackForm';
 
 const GuestDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -128,13 +129,18 @@ const GuestDashboard: React.FC = () => {
           </div>
         </div>
 
+        {/* Feedback Form */}
+        <div className="mt-12">
+          <FeedbackForm />
+        </div>
+
         {/* Call to Action */}
         <div className="mt-12 bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
           <h3 className="text-2xl font-bold text-gray-800 mb-4">
             Ready to Get Started?
           </h3>
           <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            Join HerHaven today to access professional counseling, personalized care plans, 
+            Join HerHaven today to access professional counseling, personalized care plans,
             appointment scheduling, and much more. Your journey to better mental health starts here.
           </p>
           <button

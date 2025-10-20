@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/apis/auth";
 import DashboardLayout from "@/components/DashboardLayout";
 import EmergencyCallButton from "@/components/EmergencyCall";
 import QuickExitButton from "@/components/QuickExit";
+import FeedbackForm from "@/components/FeedbackForm";
 
 interface Stats {
   upcoming: number;
@@ -149,7 +150,7 @@ const UserLanding = () => {
               )}
             </div>
 
-            {/* Stats Grid - Only show for registered users */}
+            {/*Only show for registered users */}
             {!isGuest && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
@@ -192,7 +193,7 @@ const UserLanding = () => {
               </div>
             )}
 
-            {/* Upcoming Appointments - Only show for registered users */}
+            {/* Upcoming Appointments */}
             {!isGuest && (
               <div className="bg-white rounded-xl shadow-sm p-6">
                 <div className="flex items-center justify-between mb-6">
@@ -301,6 +302,9 @@ const UserLanding = () => {
                 </p>
               </a>
             </div>
+
+            {/* Feedback Form */}
+            <FeedbackForm />
 
             {/* Supportive Message */}
             <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-100">

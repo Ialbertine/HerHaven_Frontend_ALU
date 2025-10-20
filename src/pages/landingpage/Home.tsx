@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import AnimatedBackground from "@/components/AnimatedBackground";
+import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import { Heart, Users, MessageCircle, ArrowRight, Check } from "lucide-react";
 import { useState } from "react";
 import { IoMdPlay } from "react-icons/io";
@@ -203,7 +204,7 @@ export const Home: React.FC = () => {
             </p>
           </div>
 
-          {/* Services Cards */}
+          {/* Cards */}
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             {CONFIG.servicesPreview.map((service, index) => {
               const Icon = service.icon;
@@ -240,6 +241,9 @@ export const Home: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Testimonials Section */}
+      <TestimonialsCarousel />
     </>
   );
 };

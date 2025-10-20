@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Mail, Phone, Award, Briefcase, FileText, Edit2, Camera, Save, X, } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { getCounselorProfile, updateCounselorProfile, getAppointmentStats, type Counselor } from '@/apis/counselor';
+import FeedbackForm from '@/components/FeedbackForm';
 
 interface FormData {
   username: string;
@@ -357,6 +358,9 @@ const Profile: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Feedback Form */}
+        <FeedbackForm />
       </div>
     </DashboardLayout>
   );
