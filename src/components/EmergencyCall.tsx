@@ -12,7 +12,7 @@ const EmergencyCallButton: React.FC = () => {
 
   const emergencyContacts: EmergencyContact[] = [
     {
-      name: "Isange One Stop Center",
+      name: "Isange One Stop Center(GBV)",
       number: "3029",
       type: "crisis",
     },
@@ -23,7 +23,7 @@ const EmergencyCallButton: React.FC = () => {
     },
     {
       name: "Emergency Services",
-      number: "911",
+      number: "112",
       type: "crisis",
     },
   ];
@@ -94,7 +94,7 @@ const EmergencyCallButton: React.FC = () => {
               <div className="flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-gray-700">
-                  If you're experiencing a medical emergency, please call 911
+                  If you're experiencing a medical emergency, please call 912
                   immediately.
                 </p>
               </div>
