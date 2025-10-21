@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import { Navbar } from "@/components/navbar";
 import Footer from "@/components/footer";
 import EmergencyCallButton from "@/components/EmergencyCall";
+import { FloatingChatbot } from "@/components/chatbot";
 
 const SkipLink: React.FC = () => (
   <a
@@ -23,6 +24,7 @@ export default function Layout() {
       </main>
       <Footer />
       <EmergencyCallButton />
+      <FloatingChatbot />
     </div>
   );
 }

@@ -22,6 +22,7 @@ import Sessions from "@/Dashboard/therapist/Session";
 import Therapits from "@/Dashboard/user/Therapits";
 import UserAppointment from "@/Dashboard/user/UserAppointment";
 import Community from "@/pages/community/community";
+import HavenChatbot from "@/pages/chatbot/HavenChatbot";
 
 
 const App: React.FC = () => {
@@ -39,6 +40,7 @@ const App: React.FC = () => {
           <Route path="contact" element={<Contact />} />
           <Route path="services" element={<Services />} />
           <Route path="therapy" element={<TherapyService />} />
+          <Route path="havenchatbot" element={<HavenChatbot />} />
         </Route>
 
         <Route path="signup" element={<Signup />} />

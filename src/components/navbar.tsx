@@ -85,13 +85,13 @@ interface DropdownMenuProps {
 const DropdownMenu: React.FC<DropdownMenuProps> = ({ items }) => (
   <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
     {items.map((item) => (
-      <a
+      <Link
         key={item.href}
-        href={item.href}
+        to={item.href}
         className="block px-4 py-3 hover:bg-purple-50 transition-colors"
       >
         <div className="font-medium text-black">{item.label}</div>
-      </a>
+      </Link>
     ))}
   </div>
 );
@@ -118,21 +118,20 @@ const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
           >
             {link.label}
             <ChevronDown
-              className={`w-4 h-4 transition-transform ${
-                mobileDropdownOpen ? "rotate-180" : ""
-              }`}
+              className={`w-4 h-4 transition-transform ${mobileDropdownOpen ? "rotate-180" : ""
+                }`}
             />
           </button>
           {mobileDropdownOpen && (
             <div className="pl-4 mt-2 space-y-2">
               {link.dropdownItems.map((item) => (
-                <a
+                <Link
                   key={item.href}
-                  href={item.href}
+                  to={item.href}
                   className="block py-2 text-gray-700 hover:text-[#9c27b0] transition-colors"
                 >
                   <div className="font-medium">{item.label}</div>
-                </a>
+                </Link>
               ))}
             </div>
           )}
