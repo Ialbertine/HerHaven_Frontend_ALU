@@ -25,6 +25,7 @@ import {
   Calendar,
   ChevronDown
 } from 'lucide-react';
+import { useModal } from '@/contexts/useModal';
 
 interface FeedbackFilters {
   status: string;
@@ -32,6 +33,7 @@ interface FeedbackFilters {
 }
 
 const FeedbackManagement: React.FC = () => {
+  const { showDeleteConfirm } = useModal();
   const [feedback, setFeedback] = useState<Feedback[]>([]);
   const [stats, setStats] = useState<FeedbackStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -436,9 +438,10 @@ const FeedbackManagement: React.FC = () => {
                         )}
                         <button
                           onClick={() => {
-                            if (window.confirm('Are you sure you want to delete this feedback? This action cannot be undone.')) {
-                              handleAction('delete', item._id);
-                            }
+                            showDeleteConfirm(
+                              'Are you sure you want to delete this feedback? This action cannot be undone.',
+                              () => handleAction('delete', item._id)
+                            );
                           }}
                           disabled={actionLoading === item._id}
                           className="flex items-center gap-1 px-3 py-1.5 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors disabled:opacity-50"

@@ -10,6 +10,7 @@ import {
   deleteComment
 } from '@/apis/community';
 import { getCurrentUser } from '@/apis/auth';
+import { useModal } from '@/contexts/useModal';
 
 interface PostDetailModalProps {
   post: Post;
@@ -18,6 +19,7 @@ interface PostDetailModalProps {
 }
 
 const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
+  const { showDeleteConfirm } = useModal();
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentText, setCommentText] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
@@ -116,18 +118,21 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
   };
 
   const handleDeleteComment = async (commentId: string) => {
-    if (!confirm('Are you sure you want to delete this comment?')) return;
-
-    try {
-      const response = await deleteComment(commentId);
-      if (response.success) {
-        setCommentCount(prev => Math.max(0, prev - 1));
-        fetchComments();
+    showDeleteConfirm(
+      'Are you sure you want to delete this comment?',
+      async () => {
+        try {
+          const response = await deleteComment(commentId);
+          if (response.success) {
+            setCommentCount(prev => Math.max(0, prev - 1));
+            fetchComments();
+          }
+        } catch (error) {
+          console.error('Error deleting comment:', error);
+        }
+        setShowCommentMenu(null);
       }
-    } catch (error) {
-      console.error('Error deleting comment:', error);
-    }
-    setShowCommentMenu(null);
+    );
   };
 
   return (

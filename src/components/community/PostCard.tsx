@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Heart, MessageSquare, MoreVertical, Trash2 } from 'lucide-react';
 import { type Post, likePost, deletePost } from '@/apis/community';
 import { getCurrentUser } from '@/apis/auth';
+import { useModal } from '@/contexts/useModal';
 
 interface PostCardProps {
   post: Post;
@@ -10,11 +11,12 @@ interface PostCardProps {
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post, onClick, onUpdate }) => {
+  const { showDeleteConfirm } = useModal();
   const [showMenu, setShowMenu] = useState(false);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likeCount);
   const [isLiking, setIsLiking] = useState(false);
-  
+
   const currentUser = getCurrentUser();
   const isOwner = currentUser && post.author && post.author._id === currentUser.id;
   const isAdmin = currentUser && ['admin', 'super_admin'].includes(currentUser.role || '');
@@ -60,17 +62,20 @@ const PostCard: React.FC<PostCardProps> = ({ post, onClick, onUpdate }) => {
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm('Are you sure you want to delete this post?')) return;
-
-    try {
-      const response = await deletePost(post._id);
-      if (response.success) {
-        onUpdate();
+    showDeleteConfirm(
+      'Are you sure you want to delete this post?',
+      async () => {
+        try {
+          const response = await deletePost(post._id);
+          if (response.success) {
+            onUpdate();
+          }
+        } catch (error) {
+          console.error('Error deleting post:', error);
+        }
+        setShowMenu(false);
       }
-    } catch (error) {
-      console.error('Error deleting post:', error);
-    }
-    setShowMenu(false);
+    );
   };
 
   const truncateContent = (content: string, maxLength: number = 150) => {
@@ -158,11 +163,10 @@ const PostCard: React.FC<PostCardProps> = ({ post, onClick, onUpdate }) => {
         <button
           onClick={handleLike}
           disabled={isLiking}
-          className={`flex items-center gap-2 transition-all ${
-            liked
-              ? 'text-pink-600'
-              : 'text-gray-600 hover:text-pink-600'
-          }`}
+          className={`flex items-center gap-2 transition-all ${liked
+            ? 'text-pink-600'
+            : 'text-gray-600 hover:text-pink-600'
+            }`}
         >
           <Heart
             className={`w-5 h-5 ${liked ? 'fill-current' : ''}`}

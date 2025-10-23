@@ -4,10 +4,13 @@ import { confirmAppointment, rejectAppointment, startSession, endSession, cancel
 import { getAllCounselorAppointments, type Appointment } from '@/apis/counselor';
 import { getCurrentUser } from '@/apis/auth';
 import DashboardLayout from '@/components/DashboardLayout';
+import EmbeddedMeeting from '@/components/EmbeddedMeeting';
+import { useModal } from '@/contexts/useModal';
 
 type FilterType = 'all' | 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'ended';
 
 const Sessions: React.FC = () => {
+  const { showAlert, showConfirm, showDeleteConfirm } = useModal();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [filter, setFilter] = useState<FilterType>('all');
@@ -20,6 +23,9 @@ const Sessions: React.FC = () => {
   const [copied, setCopied] = useState<boolean>(false);
   const [markingAsEnded, setMarkingAsEnded] = useState<string | null>(null);
   const [deletingAppointment, setDeletingAppointment] = useState<string | null>(null);
+  const [showEmbeddedMeeting, setShowEmbeddedMeeting] = useState<boolean>(false);
+  const [currentMeeting, setCurrentMeeting] = useState<{ url: string, id: string } | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   useEffect(() => {
     loadAppointments();
@@ -55,33 +61,39 @@ const Sessions: React.FC = () => {
           apt._id === appointmentId ? { ...apt, status: 'confirmed' } : apt
         );
         setAppointments(updated);
-        alert('Appointment confirmed successfully!');
+        showAlert('Appointment confirmed successfully!', 'Success', 'success');
       } else {
-        alert(response.message || 'Failed to confirm appointment');
+        showAlert(response.message || 'Failed to confirm appointment', 'Error', 'danger');
       }
     } catch (error) {
       console.error('Error confirming appointment:', error);
-      alert('Failed to confirm appointment');
+      showAlert('Failed to confirm appointment', 'Error', 'danger');
     }
   };
 
   const handleReject = async (appointmentId: string): Promise<void> => {
-    try {
-      const reason = prompt('Please provide a reason for rejection (optional):');
-      const response = await rejectAppointment(appointmentId, reason || undefined);
-      if (response.success) {
-        const updated = appointments.map(apt =>
-          apt._id === appointmentId ? { ...apt, status: 'cancelled' } : apt
-        );
-        setAppointments(updated);
-        alert('Appointment rejected successfully!');
-      } else {
-        alert(response.message || 'Failed to reject appointment');
-      }
-    } catch (error) {
-      console.error('Error rejecting appointment:', error);
-      alert('Failed to reject appointment');
-    }
+    showConfirm(
+      'Please provide a reason for rejection (optional):',
+      async () => {
+        try {
+          const response = await rejectAppointment(appointmentId, undefined);
+          if (response.success) {
+            const updated = appointments.map(apt =>
+              apt._id === appointmentId ? { ...apt, status: 'cancelled' } : apt
+            );
+            setAppointments(updated);
+            showAlert('Appointment rejected successfully!', 'Success', 'success');
+          } else {
+            showAlert(response.message || 'Failed to reject appointment', 'Error', 'danger');
+          }
+        } catch (error) {
+          console.error('Error rejecting appointment:', error);
+          showAlert('Failed to reject appointment', 'Error', 'danger');
+        }
+      },
+      'Reject Appointment',
+      'warning'
+    );
   };
 
   const handleStartSession = async (appointmentId: string): Promise<void> => {
@@ -102,23 +114,39 @@ const Sessions: React.FC = () => {
             : apt
         );
         setAppointments(updated);
-        window.open(response.data.meetingDetails.meetingUrl, '_blank');
-        alert('Session started! Meeting link opened in new tab. User has been notified.');
+
+        // Instead of opening in new tab, show embedded meeting
+        setCurrentMeeting({
+          url: response.data.meetingDetails.meetingUrl,
+          id: response.data.meetingDetails.meetingId
+        });
+        setShowEmbeddedMeeting(true);
+        showAlert('Session started! Meeting is now available in the platform. User has been notified.', 'Success', 'success');
       } else {
-        alert(response.message || 'Failed to start session');
+        showAlert(response.message || 'Failed to start session', 'Error', 'danger');
       }
     } catch (error) {
       console.error('Error starting session:', error);
-      alert('Failed to start session');
+      showAlert('Failed to start session', 'Error', 'danger');
     } finally {
       setStartingSession(null);
     }
   };
 
   const handleJoinMeeting = (appointment: Appointment): void => {
-    setSelectedMeeting(appointment);
-    setShowMeetingModal(true);
-    setCopied(false);
+    if (appointment.meetingDetails?.meetingUrl) {
+      // Show embedded meeting instead of modal
+      setCurrentMeeting({
+        url: appointment.meetingDetails.meetingUrl,
+        id: appointment.meetingDetails.meetingId
+      });
+      setShowEmbeddedMeeting(true);
+    } else {
+      // Fallback to modal if no meeting details
+      setSelectedMeeting(appointment);
+      setShowMeetingModal(true);
+      setCopied(false);
+    }
   };
 
   const handleEndSession = async (): Promise<void> => {
@@ -134,16 +162,53 @@ const Sessions: React.FC = () => {
         setAppointments(updated);
         setShowMeetingModal(false);
         setSelectedMeeting(null);
-        alert('Session ended successfully!');
+        showAlert('Session ended successfully!', 'Success', 'success');
       } else {
-        alert(response.message || 'Failed to end session');
+        showAlert(response.message || 'Failed to end session', 'Error', 'danger');
       }
     } catch (error) {
       console.error('Error ending session:', error);
-      alert('Failed to end session');
+      showAlert('Failed to end session', 'Error', 'danger');
     } finally {
       setEndingSession(false);
     }
+  };
+
+  const handleEndEmbeddedMeeting = async (): Promise<void> => {
+    if (!currentMeeting) return;
+    const notes = prompt('Add session notes (optional):');
+    try {
+      setEndingSession(true);
+      // Find the appointment that matches the current meeting
+      const appointment = appointments.find(apt =>
+        apt.meetingDetails?.meetingId === currentMeeting.id
+      );
+
+      if (appointment) {
+        const response = await endSession(appointment._id, notes || undefined);
+        if (response.success) {
+          const updated = appointments.map(apt =>
+            apt._id === appointment._id ? { ...apt, status: 'completed' } : apt
+          );
+          setAppointments(updated);
+          setShowEmbeddedMeeting(false);
+          setCurrentMeeting(null);
+          setIsFullscreen(false);
+          showAlert('Session ended successfully!', 'Success', 'success');
+        } else {
+          showAlert(response.message || 'Failed to end session', 'Error', 'danger');
+        }
+      }
+    } catch (error) {
+      console.error('Error ending session:', error);
+      showAlert('Failed to end session', 'Error', 'danger');
+    } finally {
+      setEndingSession(false);
+    }
+  };
+
+  const handleToggleFullscreen = (): void => {
+    setIsFullscreen(!isFullscreen);
   };
 
   const copyToClipboard = async (text: string): Promise<void> => {
@@ -153,51 +218,61 @@ const Sessions: React.FC = () => {
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       console.error('Failed to copy:', error);
-      alert('Failed to copy link');
+      showAlert('Failed to copy link', 'Error', 'danger');
     }
   };
 
   const handleMarkAsEnded = async (appointmentId: string): Promise<void> => {
-    if (!confirm('Mark this appointment as ended? This appointment was not completed.')) return;
-    try {
-      setMarkingAsEnded(appointmentId);
-      const response = await cancelAppointment(appointmentId, 'Appointment not attended - marked as ended');
-      if (response.success) {
-        // Backend sets it to 'cancelled', so reflect that in UI
-        const updated = appointments.map(apt =>
-          apt._id === appointmentId ? { ...apt, status: 'cancelled' } : apt
-        );
-        setAppointments(updated);
-        alert('Appointment marked as ended');
-      } else {
-        alert(response.message || 'Failed to mark as ended');
-      }
-    } catch (error) {
-      console.error('Error marking as ended:', error);
-      alert('Failed to mark as ended');
-    } finally {
-      setMarkingAsEnded(null);
-    }
+    showConfirm(
+      'Mark this appointment as ended? This appointment was not completed.',
+      async () => {
+        try {
+          setMarkingAsEnded(appointmentId);
+          const response = await cancelAppointment(appointmentId, 'Appointment not attended - marked as ended');
+          if (response.success) {
+            // Backend sets it to 'cancelled', so reflect that in UI
+            const updated = appointments.map(apt =>
+              apt._id === appointmentId ? { ...apt, status: 'cancelled' } : apt
+            );
+            setAppointments(updated);
+            showAlert('Appointment marked as ended', 'Success', 'success');
+          } else {
+            showAlert(response.message || 'Failed to mark as ended', 'Error', 'danger');
+          }
+        } catch (error) {
+          console.error('Error marking as ended:', error);
+          showAlert('Failed to mark as ended', 'Error', 'danger');
+        } finally {
+          setMarkingAsEnded(null);
+        }
+      },
+      'Mark as Ended',
+      'warning'
+    );
   };
 
   const handleDeleteAppointment = async (appointmentId: string): Promise<void> => {
-    if (!confirm('Are you sure you want to delete this appointment? This action cannot be undone.')) return;
-    try {
-      setDeletingAppointment(appointmentId);
-      const response = await deleteAppointment(appointmentId);
-      if (response.success) {
-        const updated = appointments.filter(apt => apt._id !== appointmentId);
-        setAppointments(updated);
-        alert('Appointment deleted successfully');
-      } else {
-        alert(response.message || 'Failed to delete appointment');
+    showDeleteConfirm(
+      'Are you sure you want to delete this appointment? This action cannot be undone.',
+      async () => {
+        try {
+          setDeletingAppointment(appointmentId);
+          const response = await deleteAppointment(appointmentId);
+          if (response.success) {
+            const updated = appointments.filter(apt => apt._id !== appointmentId);
+            setAppointments(updated);
+            showAlert('Appointment deleted successfully', 'Success', 'success');
+          } else {
+            showAlert(response.message || 'Failed to delete appointment', 'Error', 'danger');
+          }
+        } catch (error) {
+          console.error('Error deleting appointment:', error);
+          showAlert('Failed to delete appointment', 'Error', 'danger');
+        } finally {
+          setDeletingAppointment(null);
+        }
       }
-    } catch (error) {
-      console.error('Error deleting appointment:', error);
-      alert('Failed to delete appointment');
-    } finally {
-      setDeletingAppointment(null);
-    }
+    );
   };
 
   const canDelete = (appointment: Appointment): boolean => {
@@ -602,6 +677,21 @@ const Sessions: React.FC = () => {
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Embedded Meeting Component */}
+        {showEmbeddedMeeting && currentMeeting && (
+          <div className={`fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 ${isFullscreen ? 'p-0' : ''}`}>
+            <div className={`${isFullscreen ? 'w-full h-full' : 'w-full max-w-4xl h-[80vh]'}`}>
+              <EmbeddedMeeting
+                meetingUrl={currentMeeting.url}
+                meetingId={currentMeeting.id}
+                onMeetingEnd={handleEndEmbeddedMeeting}
+                isFullscreen={isFullscreen}
+                onToggleFullscreen={handleToggleFullscreen}
+              />
             </div>
           </div>
         )}

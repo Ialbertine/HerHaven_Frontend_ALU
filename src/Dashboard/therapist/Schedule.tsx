@@ -7,6 +7,7 @@ import {
 } from "@/apis/counselor";
 import { getCurrentUser } from "@/apis/auth";
 import DashboardLayout from "@/components/DashboardLayout";
+import { useModal } from "@/contexts/useModal";
 
 // Types
 interface TimeSlot {
@@ -38,6 +39,7 @@ const daysOfWeek: DayOfWeek[] = [
 ];
 
 const Schedule: React.FC = () => {
+  const { showAlert } = useModal();
   const [availability, setAvailability] = useState<Availability>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -95,11 +97,11 @@ const Schedule: React.FC = () => {
       }
     } catch (error) {
       console.error("Error loading availability:", error);
-      alert("Failed to load availability. Please try again.");
+      showAlert("Failed to load availability. Please try again.", "Error", "danger");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [showAlert]);
 
   useEffect(() => {
     void loadAvailability();
@@ -130,15 +132,17 @@ const Schedule: React.FC = () => {
       if (response.success) {
         setAvailability(editedAvailability);
         setIsEditing(false);
-        alert("Availability updated successfully!");
+        showAlert("Availability updated successfully!", "Success", "success");
       } else {
-        alert(
-          response.message || "Failed to update availability. Please try again."
+        showAlert(
+          response.message || "Failed to update availability. Please try again.",
+          "Error",
+          "danger"
         );
       }
     } catch (error) {
       console.error("Error saving availability:", error);
-      alert("Failed to update availability. Please try again.");
+      showAlert("Failed to update availability. Please try again.", "Error", "danger");
     } finally {
       setSaving(false);
     }
