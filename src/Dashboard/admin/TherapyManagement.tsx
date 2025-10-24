@@ -20,6 +20,7 @@ import {
   Edit,
   Trash,
 } from "lucide-react";
+import { useModal } from "@/contexts/useModal";
 
 interface Counselor {
   _id: string;
@@ -149,6 +150,7 @@ const InviteModal: React.FC<InviteModalProps> = ({
 };
 
 const TherapyManagement: React.FC = () => {
+  const { showAlert, showConfirm, showDeleteConfirm } = useModal();
   const [counselors, setCounselors] = useState<Counselor[]>([]);
   const [filteredCounselors, setFilteredCounselors] = useState<Counselor[]>([]);
   const [loading, setLoading] = useState(true);
@@ -226,17 +228,17 @@ const TherapyManagement: React.FC = () => {
       >("/api/admin/counselors/invite", data);
 
       if (response.data.success) {
-        alert(response.data.message || "Invitation sent successfully!");
+        showAlert(response.data.message || "Invitation sent successfully!", "Success", "success");
         setIsInviteModalOpen(false);
         fetchCounselors();
       } else {
-        alert(response.data.message || "Failed to send invitation");
+        showAlert(response.data.message || "Failed to send invitation", "Error", "danger");
       }
     } catch (err) {
       const axiosError = err as AxiosError<ApiResponse<unknown>>;
       const errorMsg =
         axiosError.response?.data?.message || "Failed to send invitation";
-      alert(errorMsg);
+      showAlert(errorMsg, "Error", "danger");
       console.error("Failed to invite counselor:", err);
     } finally {
       setInviteLoading(false);
@@ -244,31 +246,38 @@ const TherapyManagement: React.FC = () => {
   };
 
   const handleApprove = async (counselorId: string) => {
-    if (!confirm("Are you sure you want to approve this counselor?")) return;
+    showConfirm(
+      "Are you sure you want to approve this counselor?",
+      async () => {
+        try {
+          setActionLoading(counselorId);
+          setError(null);
 
-    try {
-      setActionLoading(counselorId);
-      setError(null);
+          const response = await apiClient.put<
+            ApiResponse<{ counselor: Counselor }>
+          >(`/api/admin/counselors/${counselorId}/approve`);
 
-      const response = await apiClient.put<
-        ApiResponse<{ counselor: Counselor }>
-      >(`/api/admin/counselors/${counselorId}/approve`);
-
-      if (response.data.success) {
-        alert(response.data.message || "Counselor approved successfully!");
-        fetchCounselors();
-      } else {
-        alert(response.data.message || "Failed to approve counselor");
-      }
-    } catch (err) {
-      const axiosError = err as AxiosError<ApiResponse<unknown>>;
-      alert(
-        axiosError.response?.data?.message || "Failed to approve counselor"
-      );
-      console.error("Failed to approve counselor:", err);
-    } finally {
-      setActionLoading(null);
-    }
+          if (response.data.success) {
+            showAlert(response.data.message || "Counselor approved successfully!", "Success", "success");
+            fetchCounselors();
+          } else {
+            showAlert(response.data.message || "Failed to approve counselor", "Error", "danger");
+          }
+        } catch (err) {
+          const axiosError = err as AxiosError<ApiResponse<unknown>>;
+          showAlert(
+            axiosError.response?.data?.message || "Failed to approve counselor",
+            "Error",
+            "danger"
+          );
+          console.error("Failed to approve counselor:", err);
+        } finally {
+          setActionLoading(null);
+        }
+      },
+      "Approve Counselor",
+      "success"
+    );
   };
 
   const handleReject = async (counselorId: string) => {
@@ -286,14 +295,14 @@ const TherapyManagement: React.FC = () => {
       });
 
       if (response.data.success) {
-        alert(response.data.message || "Counselor rejected");
+        showAlert(response.data.message || "Counselor rejected", "Success", "success");
         fetchCounselors();
       } else {
-        alert(response.data.message || "Failed to reject counselor");
+        showAlert(response.data.message || "Failed to reject counselor", "Error", "danger");
       }
     } catch (err) {
       const axiosError = err as AxiosError<ApiResponse<unknown>>;
-      alert(axiosError.response?.data?.message || "Failed to reject counselor");
+      showAlert(axiosError.response?.data?.message || "Failed to reject counselor", "Error", "danger");
       console.error("Failed to reject counselor:", err);
     } finally {
       setActionLoading(null);
@@ -301,31 +310,39 @@ const TherapyManagement: React.FC = () => {
   };
 
   const handleDeactivate = async (counselorId: string) => {
-    if (!confirm("Are you sure you want to deactivate this counselor?")) return;
+    showConfirm(
+      "Are you sure you want to deactivate this counselor?",
+      async () => {
 
-    try {
-      setActionLoading(counselorId);
-      setError(null);
+        try {
+          setActionLoading(counselorId);
+          setError(null);
 
-      const response = await apiClient.put<
-        ApiResponse<{ counselor: Counselor }>
-      >(`/api/admin/counselors/${counselorId}/deactivate`);
+          const response = await apiClient.put<
+            ApiResponse<{ counselor: Counselor }>
+          >(`/api/admin/counselors/${counselorId}/deactivate`);
 
-      if (response.data.success) {
-        alert(response.data.message || "Counselor deactivated");
-        fetchCounselors();
-      } else {
-        alert(response.data.message || "Failed to deactivate counselor");
-      }
-    } catch (err) {
-      const axiosError = err as AxiosError<ApiResponse<unknown>>;
-      alert(
-        axiosError.response?.data?.message || "Failed to deactivate counselor"
-      );
-      console.error("Failed to deactivate counselor:", err);
-    } finally {
-      setActionLoading(null);
-    }
+          if (response.data.success) {
+            showAlert(response.data.message || "Counselor deactivated", "Success", "success");
+            fetchCounselors();
+          } else {
+            showAlert(response.data.message || "Failed to deactivate counselor", "Error", "danger");
+          }
+        } catch (err) {
+          const axiosError = err as AxiosError<ApiResponse<unknown>>;
+          showAlert(
+            axiosError.response?.data?.message || "Failed to deactivate counselor",
+            "Error",
+            "danger"
+          );
+          console.error("Failed to deactivate counselor:", err);
+        } finally {
+          setActionLoading(null);
+        }
+      },
+      "Deactivate Counselor",
+      "warning"
+    );
   };
 
   const handleView = (counselorId: string) => {
@@ -338,34 +355,33 @@ const TherapyManagement: React.FC = () => {
   };
 
   const handleDelete = async (counselorId: string) => {
-    if (
-      !confirm(
-        "Are you sure you want to delete this counselor? This action cannot be undone."
-      )
-    )
-      return;
+    showDeleteConfirm(
+      "Are you sure you want to delete this counselor? This action cannot be undone.",
+      async () => {
 
-    try {
-      setActionLoading(counselorId);
-      setError(null);
+        try {
+          setActionLoading(counselorId);
+          setError(null);
 
-      const response = await apiClient.delete<ApiResponse<unknown>>(
-        `/api/admin/counselors/${counselorId}`
-      );
+          const response = await apiClient.delete<ApiResponse<unknown>>(
+            `/api/admin/counselors/${counselorId}`
+          );
 
-      if (response.data.success) {
-        alert(response.data.message || "Counselor deleted");
-        fetchCounselors();
-      } else {
-        alert(response.data.message || "Failed to delete counselor");
+          if (response.data.success) {
+            showAlert(response.data.message || "Counselor deleted", "Success", "success");
+            fetchCounselors();
+          } else {
+            showAlert(response.data.message || "Failed to delete counselor", "Error", "danger");
+          }
+        } catch (err) {
+          const axiosError = err as AxiosError<ApiResponse<unknown>>;
+          showAlert(axiosError.response?.data?.message || "Failed to delete counselor", "Error", "danger");
+          console.error("Failed to delete counselor:", err);
+        } finally {
+          setActionLoading(null);
+        }
       }
-    } catch (err) {
-      const axiosError = err as AxiosError<ApiResponse<unknown>>;
-      alert(axiosError.response?.data?.message || "Failed to delete counselor");
-      console.error("Failed to delete counselor:", err);
-    } finally {
-      setActionLoading(null);
-    }
+    );
   };
 
   const getStatusBadge = (status: string) => {

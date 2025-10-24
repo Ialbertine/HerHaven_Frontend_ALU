@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Mail, Phone, Award, Briefcase, FileText, Edit2, Camera, Save, X, } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { getCounselorProfile, updateCounselorProfile, getAppointmentStats, type Counselor } from '@/apis/counselor';
 import FeedbackForm from '@/components/FeedbackForm';
+import { useModal } from '@/contexts/useModal';
 
 interface FormData {
   username: string;
@@ -15,6 +16,7 @@ interface SessionStats {
 }
 
 const Profile: React.FC = () => {
+  const { showAlert } = useModal();
   const [profile, setProfile] = useState<Counselor | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -26,11 +28,7 @@ const Profile: React.FC = () => {
   });
   const [uploadingImage, setUploadingImage] = useState<boolean>(false);
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
-
-  const loadProfile = async (): Promise<void> => {
+  const loadProfile = useCallback(async (): Promise<void> => {
     try {
       setLoading(true);
 
@@ -50,7 +48,7 @@ const Profile: React.FC = () => {
         });
       } else {
         console.error('Failed to load profile:', profileResponse.message);
-        alert(profileResponse.message || 'Failed to load profile');
+        showAlert(profileResponse.message || 'Failed to load profile', 'Error', 'danger');
       }
 
       // Process appointment stats for session count
@@ -69,11 +67,15 @@ const Profile: React.FC = () => {
       }
     } catch (error) {
       console.error('Error loading profile:', error);
-      alert('Failed to load profile. Please try again.');
+      showAlert('Failed to load profile. Please try again.', 'Error', 'danger');
     } finally {
       setLoading(false);
     }
-  };
+  }, [showAlert]);
+
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
 
   const handleUpdateProfile = async (): Promise<void> => {
     try {
@@ -86,13 +88,13 @@ const Profile: React.FC = () => {
       if (response.success && response.data?.counselor) {
         setProfile(response.data.counselor);
         setIsEditing(false);
-        alert('Profile updated successfully!');
+        showAlert('Profile updated successfully!', 'Success', 'success');
       } else {
-        alert(response.message || 'Failed to update profile');
+        showAlert(response.message || 'Failed to update profile', 'Error', 'danger');
       }
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert('Failed to update profile. Please try again.');
+      showAlert('Failed to update profile. Please try again.', 'Error', 'danger');
     } finally {
       setUpdating(false);
     }
@@ -112,13 +114,13 @@ const Profile: React.FC = () => {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert('Please select a valid image file.');
+      showAlert('Please select a valid image file.', 'Validation Error', 'warning');
       return;
     }
 
     // Validate file size (5MB limit)
     if (file.size > 5 * 1024 * 1024) {
-      alert('Image size should be less than 5MB.');
+      showAlert('Image size should be less than 5MB.', 'Validation Error', 'warning');
       return;
     }
 
@@ -137,26 +139,26 @@ const Profile: React.FC = () => {
 
         if (response.success && response.data?.counselor) {
           setProfile(response.data.counselor);
-          alert('Profile picture updated successfully!');
+          showAlert('Profile picture updated successfully!', 'Success', 'success');
           // Clear the file input to allow selecting the same file again
           const fileInput = document.getElementById('profile-picture-upload') as HTMLInputElement;
           if (fileInput) {
             fileInput.value = '';
           }
         } else {
-          alert(response.message || 'Failed to update profile picture');
+          showAlert(response.message || 'Failed to update profile picture', 'Error', 'danger');
         }
       };
 
       reader.onerror = () => {
-        alert('Failed to read image file. Please try again.');
+        showAlert('Failed to read image file. Please try again.', 'Error', 'danger');
         setUploadingImage(false);
       };
 
       reader.readAsDataURL(file);
     } catch (error) {
       console.error('Error uploading image:', error);
-      alert('Failed to upload image. Please try again.');
+      showAlert('Failed to upload image. Please try again.', 'Error', 'danger');
     } finally {
       setUploadingImage(false);
     }

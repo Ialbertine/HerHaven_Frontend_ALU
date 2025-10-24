@@ -25,8 +25,10 @@ import {
 } from "@/apis/appointment";
 import { getCurrentUser } from "@/apis/auth";
 import DashboardLayout from "@/components/DashboardLayout";
+import { useModal } from "@/contexts/useModal";
 
 const Therapits = () => {
+  const { showAlert } = useModal();
   const [counselors, setCounselors] = useState<Counselor[]>([]);
   const [specializations, setSpecializations] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -123,15 +125,15 @@ const Therapits = () => {
 
     // Validate required fields
     if (!bookingData.firstName.trim()) {
-      alert("Please enter your first name");
+      showAlert("Please enter your first name", "Validation Error", "warning");
       return;
     }
     if (!bookingData.lastName.trim()) {
-      alert("Please enter your last name");
+      showAlert("Please enter your last name", "Validation Error", "warning");
       return;
     }
     if (!bookingData.phoneNumber.trim()) {
-      alert("Please enter your phone number");
+      showAlert("Please enter your phone number", "Validation Error", "warning");
       return;
     }
 
@@ -152,8 +154,10 @@ const Therapits = () => {
       });
 
       if (response.success) {
-        alert(
-          "Appointment booked successfully! Waiting for counselor confirmation."
+        showAlert(
+          "Appointment booked successfully! Waiting for counselor confirmation.",
+          "Success",
+          "success"
         );
         setShowBookingModal(false);
         setBookingData({
@@ -169,11 +173,11 @@ const Therapits = () => {
           appointmentType: "individual",
         });
       } else {
-        alert(response.message || "Failed to book appointment");
+        showAlert(response.message || "Failed to book appointment", "Error", "danger");
       }
     } catch (error) {
       console.error("Error booking appointment:", error);
-      alert("Failed to book appointment");
+      showAlert("Failed to book appointment", "Error", "danger");
     } finally {
       setBookingLoading(false);
     }

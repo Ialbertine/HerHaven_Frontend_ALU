@@ -18,6 +18,8 @@ import {
   deleteAppointment,
 } from "@/apis/appointment";
 import DashboardLayout from "@/components/DashboardLayout";
+import EmbeddedMeeting from "@/components/EmbeddedMeeting";
+import { useModal } from "@/contexts/useModal";
 
 interface Appointment {
   _id: string;
@@ -41,6 +43,7 @@ interface Appointment {
 }
 
 const UserAppointments = () => {
+  const { showAlert, showDeleteConfirm } = useModal();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
@@ -50,6 +53,9 @@ const UserAppointments = () => {
   const [cancelReason, setCancelReason] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
   const [deletingAppointment, setDeletingAppointment] = useState<string | null>(null);
+  const [showEmbeddedMeeting, setShowEmbeddedMeeting] = useState<boolean>(false);
+  const [currentMeeting, setCurrentMeeting] = useState<{ url: string, id: string } | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   useEffect(() => {
     loadAppointments();
@@ -87,9 +93,9 @@ const UserAppointments = () => {
       if (response.success) {
         await loadAppointments();
         setShowCancelModal(false);
-        alert("Appointment cancelled successfully");
+        showAlert("Appointment cancelled successfully", "Success", "success");
       } else {
-        alert(response.message || "Failed to cancel appointment");
+        showAlert(response.message || "Failed to cancel appointment", "Error", "danger");
       }
     } catch (error: unknown) {
       console.error("Error cancelling appointment:", error);
@@ -97,8 +103,10 @@ const UserAppointments = () => {
       const axiosErr = error as
         | { response?: { data?: { message?: string } } }
         | undefined;
-      alert(
-        axiosErr?.response?.data?.message || "Failed to cancel appointment"
+      showAlert(
+        axiosErr?.response?.data?.message || "Failed to cancel appointment",
+        "Error",
+        "danger"
       );
     } finally {
       setActionLoading(false);
@@ -109,35 +117,53 @@ const UserAppointments = () => {
     try {
       const response = await getMeetingDetails(appointmentId);
       if (response.success && response.data?.meeting?.meetingUrl) {
-        window.open(response.data.meeting.meetingUrl, "_blank");
+        // Show embedded meeting instead of opening in new tab
+        setCurrentMeeting({
+          url: response.data.meeting.meetingUrl,
+          id: response.data.meeting.meetingId
+        });
+        setShowEmbeddedMeeting(true);
       } else {
-        alert("Meeting link not available yet");
+        showAlert("Meeting link not available yet", "Info", "info");
       }
     } catch (error) {
       console.error("Error getting meeting details:", error);
-      alert("Failed to get meeting details");
+      showAlert("Failed to get meeting details", "Error", "danger");
     }
   };
 
   const handleDeleteAppointment = async (appointmentId: string) => {
-    if (!confirm('Are you sure you want to delete this appointment? This action cannot be undone.')) return;
-
-    try {
-      setDeletingAppointment(appointmentId);
-      const response = await deleteAppointment(appointmentId);
-      if (response.success) {
-        // Remove from local state
-        setAppointments(appointments.filter(apt => apt._id !== appointmentId));
-        alert('Appointment deleted successfully');
-      } else {
-        alert(response.message || 'Failed to delete appointment');
+    showDeleteConfirm(
+      'Are you sure you want to delete this appointment? This action cannot be undone.',
+      async () => {
+        try {
+          setDeletingAppointment(appointmentId);
+          const response = await deleteAppointment(appointmentId);
+          if (response.success) {
+            // Remove from local state
+            setAppointments(appointments.filter(apt => apt._id !== appointmentId));
+            showAlert('Appointment deleted successfully', 'Success', 'success');
+          } else {
+            showAlert(response.message || 'Failed to delete appointment', 'Error', 'danger');
+          }
+        } catch (error) {
+          console.error('Error deleting appointment:', error);
+          showAlert('Failed to delete appointment', 'Error', 'danger');
+        } finally {
+          setDeletingAppointment(null);
+        }
       }
-    } catch (error) {
-      console.error('Error deleting appointment:', error);
-      alert('Failed to delete appointment');
-    } finally {
-      setDeletingAppointment(null);
-    }
+    );
+  };
+
+  const handleCloseEmbeddedMeeting = (): void => {
+    setShowEmbeddedMeeting(false);
+    setCurrentMeeting(null);
+    setIsFullscreen(false);
+  };
+
+  const handleToggleFullscreen = (): void => {
+    setIsFullscreen(!isFullscreen);
   };
 
   const canDelete = (appointment: Appointment) => {
@@ -532,6 +558,20 @@ const UserAppointments = () => {
             )}
           </div>
         </>
+      )}
+      {/* Embedded Meeting Component */}
+      {showEmbeddedMeeting && currentMeeting && (
+        <div className={`fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 ${isFullscreen ? 'p-0' : ''}`}>
+          <div className={`${isFullscreen ? 'w-full h-full' : 'w-full max-w-4xl h-[80vh]'}`}>
+            <EmbeddedMeeting
+              meetingUrl={currentMeeting.url}
+              meetingId={currentMeeting.id}
+              onMeetingEnd={handleCloseEmbeddedMeeting}
+              isFullscreen={isFullscreen}
+              onToggleFullscreen={handleToggleFullscreen}
+            />
+          </div>
+        </div>
       )}
     </DashboardLayout>
   );
