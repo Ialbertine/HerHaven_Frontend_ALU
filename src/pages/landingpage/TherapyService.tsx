@@ -122,7 +122,7 @@ const TherapyService: React.FC = () => {
   };
 
   return (
-    <section className="relative min-h-screen pt-24 pb-20 px-6 bg-gradient-to-br from-purple-50 via-pink-50 to-white">
+    <section className="relative min-h-screen pt-24 pb-20 px-6 bg-lavender-50">
       <div className="absolute inset-0 opacity-30">
         <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl animate-float-slow"></div>
         <div className="absolute bottom-20 right-10 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl animate-float-medium"></div>
@@ -152,7 +152,6 @@ const TherapyService: React.FC = () => {
             {/* Filters & Search */}
             <div className="bg-white/80 backdrop-blur-sm w-[70%] mx-auto rounded-2xl shadow-lg p-6 mb-8 animate-fade-in-up animation-delay-200">
               <div className="flex flex-col lg:flex-row gap-4">
-                {/* Search Bar */}
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input

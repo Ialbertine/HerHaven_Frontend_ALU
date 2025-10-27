@@ -1,5 +1,6 @@
 import React from 'react';
 import { Bot, User } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import type { ChatMessage as ChatMessageType } from './types';
 
 interface ChatMessageProps {
@@ -40,7 +41,24 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
               <span className="text-sm text-gray-500 ml-2">Haven AI is typing...</span>
             </div>
           ) : (
-            <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+            <div className="text-sm prose prose-sm max-w-none">
+              {isUser ? (
+                <p className="whitespace-pre-wrap">{message.content}</p>
+              ) : (
+                <ReactMarkdown
+                  className="markdown-content"
+                  components={{
+                    p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                    em: ({ children }) => <span>{children}</span>,
+                    strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                    ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
+                    li: ({ children }) => <li className="ml-2">{children}</li>,
+                  }}
+                >
+                  {message.content}
+                </ReactMarkdown>
+              )}
+            </div>
           )}
 
           {/* Timestamp */}
