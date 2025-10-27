@@ -32,7 +32,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     }
   };
 
-  // Auto-resize textarea
+  // Auto resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -42,7 +42,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="flex items-end gap-2 p-4 border-t border-gray-200 bg-white">
-      {/* Attachment button - placeholder for future feature */}
       <button
         type="button"
         className="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 transition-colors"

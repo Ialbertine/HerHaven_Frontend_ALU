@@ -55,7 +55,7 @@ const Services: React.FC = () => {
   ];
 
   return (
-    <section className="relative min-h-screen pt-24 pb-20 px-6 bg-gradient-to-br from-purple-50 via-pink-50 to-lavender-50 overflow-hidden">
+    <section className="relative min-h-screen pt-24 pb-20 px-6 bg-lavender-50 overflow-hidden">
       <div className="absolute inset-0 opacity-30">
         <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl animate-float-slow"></div>
         <div className="absolute bottom-20 right-10 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl animate-float-medium"></div>

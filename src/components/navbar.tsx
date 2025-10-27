@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Menu, X, Globe, ALargeSmall, ChevronDown } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 interface DropdownItem {
   href: string;
@@ -16,7 +16,7 @@ interface NavLink {
 }
 
 const navLinks: NavLink[] = [
-  { href: "/", label: "Home", isActive: true },
+  { href: "/", label: "Home" },
   { href: "/aboutus", label: "About us" },
   {
     href: "/services",
@@ -61,6 +61,26 @@ const LanguageToggle: React.FC = () => (
   </button>
 );
 
+// Function to determine if a navigation item should be active
+const isNavItemActive = (navItem: NavLink, currentPath: string): boolean => {
+  // For dropdown items, check if any dropdown item is active
+  if (navItem.hasDropdown && navItem.dropdownItems) {
+    return navItem.dropdownItems.some(item => {
+      if (item.href === "/") {
+        return currentPath === "/";
+      }
+      return currentPath.startsWith(item.href);
+    });
+  }
+
+  // For regular items
+  if (navItem.href === "/") {
+    return currentPath === "/";
+  }
+
+  return currentPath.startsWith(navItem.href);
+};
+
 const SignUpButton: React.FC<{ fullWidth?: boolean }> = ({
   fullWidth = false,
 }) => (
@@ -103,8 +123,11 @@ interface NavItemProps {
 
 const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
+  const location = useLocation();
+  const isActive = isNavItemActive(link, location.pathname);
+
   const baseClasses = isMobile ? "block py-2" : "";
-  const activeClasses = link.isActive
+  const activeClasses = isActive
     ? "text-[#9c27b0]"
     : "text-black hover:text-[#9c27b0]";
 
@@ -144,7 +167,7 @@ const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
         <a
           href={link.href}
           className={`${baseClasses} ${activeClasses} transition-colors flex items-center gap-1`}
-          aria-current={link.isActive ? "page" : undefined}
+          aria-current={isActive ? "page" : undefined}
         >
           {link.label}
           <ChevronDown className="w-4 h-4" />
@@ -159,7 +182,7 @@ const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
       <Link
         to={link.href}
         className={`${baseClasses} ${activeClasses} transition-colors`}
-        aria-current={link.isActive ? "page" : undefined}
+        aria-current={isActive ? "page" : undefined}
       >
         {link.label}
       </Link>

@@ -92,21 +92,6 @@ const Footer: React.FC = () => {
         />
       ))}
 
-      {/* Animated background */}
-      <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-        <svg
-          className="w-full h-full"
-          viewBox="0 0 1200 120"
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M0,50 Q300,0 600,50 T1200,50 L1200,120 L0,120 Z"
-            fill="white"
-            style={{ animation: "wave 8s ease-in-out infinite" }}
-          />
-        </svg>
-      </div>
-
       {/* Meditation circles - floating mandalas */}
       <div className="absolute top-1/4 left-10 opacity-20 pointer-events-none">
         <div className="w-16 h-16 rounded-full border-2 border-white animate-pulse" />
@@ -137,9 +122,7 @@ const Footer: React.FC = () => {
                   </span>
                 </div>
                 <p className="text-[14px] mt-4 text-white">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
-                  elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus
-                  leo.
+                  A free space supporting women and survivors of abuse with confidential mental health resources, empowering recovery through safety, compassion, and hope
                 </p>
               </div>
               <form className="flex items-center gap-2">
@@ -150,7 +133,7 @@ const Footer: React.FC = () => {
                 />
                 <button
                   type="submit"
-                  className="px-6 py-3 rounded-full border border-transparent bg-gradient-to-r from-[#9c27b0] to-[#7b2cbf] text-white font-bold hover:from-[#7b2cbf] hover:to-[#6a1b9a] hover:shadow-lg transform hover:scale-105 transition-all duration-300 ease-in-out"
+                  className="px-6 py-3 rounded-full border border-transparent  bg-[#9c27b0] text-white font-bold hover:bg-[#7b1fa2] hover:shadow-lg transform hover:scale-105 transition-all duration-300 ease-in-out"
                 >
                   Subscribe
                 </button>
