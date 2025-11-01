@@ -129,10 +129,10 @@ const menuConfig: Record<"user" | "counselor" | "super_admin" | "guest", MenuIte
       path: "/admin/therapy-management",
     },
     {
-      id: "content",
+      id: "feedback",
       icon: BookOpen,
-      label: "Content",
-      path: "/admin/content",
+      label: "Feedbacks",
+      path: "/admin/feedbacks",
     },
     {
       id: "community",
@@ -162,7 +162,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Mobile Overlay */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 bg-opacity-50 z-40 lg:hidden"
           onClick={onCloseMobile}
         />
       )}

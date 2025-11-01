@@ -13,6 +13,7 @@ if ('serviceWorker' in navigator) {
       .catch((registrationError) => {
         console.log('SW registration failed: ', registrationError);
       });
+
   });
 }
 
@@ -21,3 +22,4 @@ createRoot(document.getElementById("root")!).render(
     <App />
   </StrictMode>
 );
+

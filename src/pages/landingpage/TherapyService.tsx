@@ -1,19 +1,21 @@
-import React, { useState, useEffect } from "react";
-import {
-  Search,
-  Star,
-  Calendar,
-  Award,
-  X,
-  User,
-  Shield,
-} from "lucide-react";
+import React, { useState, useEffect, useCallback } from "react";
+import { Search, Star, Calendar, Award, X, User, Shield } from "lucide-react";
 import {
   getAllCounselors,
   getCounselorById,
   getSpecializations,
   type Counselor,
 } from "@/apis/counselor";
+import { loadFromCache, saveToCache } from "@/utils/offlineCache";
+import useOfflineStatus from "@/hooks/useOfflineStatus";
+
+const COUNSELORS_CACHE_KEY = "therapy_service_counselors_v1";
+const SPECIALIZATIONS_CACHE_KEY = "therapy_service_specializations_v1";
+const COUNSELOR_DETAIL_CACHE_PREFIX = "therapy_service_counselor_detail_v1::";
+const CACHE_TTL = 1000 * 60 * 60 * 12;
+
+const buildCounselorDetailCacheKey = (id: string) =>
+  `${COUNSELOR_DETAIL_CACHE_PREFIX}${id}`;
 
 const TherapyService: React.FC = () => {
   const [counselors, setCounselors] = useState<Counselor[]>([]);
@@ -21,50 +23,145 @@ const TherapyService: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSpec, setSelectedSpec] = useState("all");
-  const [selectedCounselor, setSelectedCounselor] = useState<Counselor | null>(null);
+  const [selectedCounselor, setSelectedCounselor] = useState<Counselor | null>(
+    null
+  );
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
+  const [dataError, setDataError] = useState<string | null>(null);
+  const isOffline = useOfflineStatus();
+
+  const loadData = useCallback(
+    async ({ showLoader = true }: { showLoader?: boolean } = {}) => {
+      if (showLoader) setLoading(true);
+      setDataError(null);
+
+      try {
+        const [counselorsRes, specsRes] = await Promise.all([
+          getAllCounselors({}),
+          getSpecializations(),
+        ]);
+
+        if (!counselorsRes.success || !counselorsRes.data) {
+          throw new Error(counselorsRes.message || "Failed to load counselors");
+        }
+
+        if (!specsRes.success || !specsRes.data) {
+          throw new Error(specsRes.message || "Failed to load specializations");
+        }
+
+        setCounselors(counselorsRes.data.counselors);
+        saveToCache(COUNSELORS_CACHE_KEY, counselorsRes.data.counselors);
+
+        setSpecializations(specsRes.data.specializations);
+        saveToCache(SPECIALIZATIONS_CACHE_KEY, specsRes.data.specializations);
+      } catch (error) {
+        console.error("Error loading counselors:", error);
+        const cachedCounselors = loadFromCache<Counselor[]>(
+          COUNSELORS_CACHE_KEY,
+          CACHE_TTL
+        );
+        const cachedSpecializations = loadFromCache<string[]>(
+          SPECIALIZATIONS_CACHE_KEY,
+          CACHE_TTL
+        );
+        const hasCachedCounselors = Boolean(
+          cachedCounselors && cachedCounselors.length
+        );
+        const hasCachedSpecializations = Boolean(
+          cachedSpecializations && cachedSpecializations.length
+        );
+        if (hasCachedCounselors) setCounselors(cachedCounselors as Counselor[]);
+        if (hasCachedSpecializations)
+          setSpecializations(cachedSpecializations as string[]);
+        if (!hasCachedCounselors && !hasCachedSpecializations) {
+          setDataError(
+            "Unable to load therapist information right now. Please try again later."
+          );
+        }
+      } finally {
+        if (showLoader) setLoading(false);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
-    loadData();
-  }, []);
+    const cachedCounselors = loadFromCache<Counselor[]>(
+      COUNSELORS_CACHE_KEY,
+      CACHE_TTL
+    );
+    const cachedSpecializations = loadFromCache<string[]>(
+      SPECIALIZATIONS_CACHE_KEY,
+      CACHE_TTL
+    );
+    const hasAnyCached = Boolean(
+      (cachedCounselors && cachedCounselors.length) ||
+        (cachedSpecializations && cachedSpecializations.length)
+    );
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      const [counselorsRes, specsRes] = await Promise.all([
-        getAllCounselors({}),
-        getSpecializations(),
-      ]);
-
-      if (counselorsRes.success && counselorsRes.data) {
-        setCounselors(counselorsRes.data.counselors);
-      }
-
-      if (specsRes.success && specsRes.data) {
-        setSpecializations(specsRes.data.specializations);
-      }
-    } catch (error) {
-      console.error("Error loading counselors:", error);
-    } finally {
+    if (cachedCounselors && cachedCounselors.length) {
+      setCounselors(cachedCounselors);
       setLoading(false);
     }
-  };
+
+    if (cachedSpecializations && cachedSpecializations.length) {
+      setSpecializations(cachedSpecializations);
+      setLoading(false);
+    }
+
+    if (!isOffline) {
+      const showLoader = !hasAnyCached;
+      void loadData({ showLoader });
+    } else if (!hasAnyCached) {
+      setLoading(false);
+      setDataError(
+        (prev) =>
+          prev ?? "Therapist information will load once you're back online."
+      );
+    }
+  }, [isOffline, loadData]);
 
   const handleCounselorClick = async (counselorId: string) => {
+    const counselorFromList =
+      counselors.find((c) => c._id === counselorId) || null;
+
+    if (isOffline && counselorFromList) {
+      setSelectedCounselor(counselorFromList);
+      setShowDetailsModal(true);
+      return;
+    }
+
     try {
       setDetailsLoading(true);
       const response = await getCounselorById(counselorId);
 
       if (response.success && response.data) {
         setSelectedCounselor(response.data.counselor);
+        saveToCache(
+          buildCounselorDetailCacheKey(counselorId),
+          response.data.counselor
+        );
+        setShowDetailsModal(true);
+      } else if (counselorFromList) {
+        setSelectedCounselor(counselorFromList);
         setShowDetailsModal(true);
       } else {
         console.error("Failed to load counselor details:", response.message);
       }
     } catch (error) {
       console.error("Error loading counselor details:", error);
+      const cachedCounselor =
+        loadFromCache<Counselor>(
+          buildCounselorDetailCacheKey(counselorId),
+          CACHE_TTL
+        ) || counselorFromList;
+
+      if (cachedCounselor) {
+        setSelectedCounselor(cachedCounselor);
+        setShowDetailsModal(true);
+      }
     } finally {
       setDetailsLoading(false);
     }
@@ -74,7 +171,9 @@ const TherapyService: React.FC = () => {
     const matchesSearch =
       counselor.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       counselor.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      counselor.specialization.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      counselor.specialization
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
       counselor.bio.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesSpec =
@@ -84,20 +183,27 @@ const TherapyService: React.FC = () => {
   });
 
   // Helper function to render profile picture or initials
-  const renderProfilePicture = (counselor: Counselor, size: "sm" | "lg" = "sm") => {
-    const sizeClasses = size === "lg" ? "w-16 h-16 text-xl" : "w-16 h-16 text-xl";
+  const renderProfilePicture = (
+    counselor: Counselor,
+    size: "sm" | "lg" = "sm"
+  ) => {
+    const sizeClasses =
+      size === "lg" ? "w-16 h-16 text-xl" : "w-16 h-16 text-xl";
     const hasImageError = imageErrors.has(counselor._id);
     const profilePicture = counselor.profilePicture;
 
-    const hasValidImage = profilePicture &&
-      typeof profilePicture === 'string' &&
+    const hasValidImage =
+      profilePicture &&
+      typeof profilePicture === "string" &&
       profilePicture.trim() !== "" &&
-      profilePicture !== 'null' &&
-      profilePicture !== 'undefined' &&
+      profilePicture !== "null" &&
+      profilePicture !== "undefined" &&
       !hasImageError;
 
     const initialsDiv = (
-      <div className={`${sizeClasses} bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold shadow-md`}>
+      <div
+        className={`${sizeClasses} bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold shadow-md`}
+      >
         {counselor.firstName.charAt(0)}
         {counselor.lastName.charAt(0)}
       </div>
@@ -111,7 +217,7 @@ const TherapyService: React.FC = () => {
             alt={`${counselor.firstName} ${counselor.lastName}`}
             className={`${sizeClasses} rounded-full object-cover shadow-md`}
             onError={() => {
-              setImageErrors(prev => new Set(prev).add(counselor._id));
+              setImageErrors((prev) => new Set(prev).add(counselor._id));
             }}
           />
         </div>
@@ -138,10 +244,17 @@ const TherapyService: React.FC = () => {
             Our Expert Therapists
           </h1>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
-            Connect with licensed, verified Therapists who specialize in trauma recovery,
-            mental health support, and empowering women on their healing journey.
+            Connect with licensed, verified Therapists who specialize in trauma
+            recovery, mental health support, and empowering women on their
+            healing journey.
           </p>
         </div>
+
+        {dataError && (
+          <div className="mb-8 text-center text-sm text-red-700 bg-red-100 px-4 py-2 rounded-lg">
+            {dataError}
+          </div>
+        )}
 
         {loading ? (
           <div className="flex items-center justify-center h-64">
@@ -198,8 +311,12 @@ const TherapyService: React.FC = () => {
                         </h3>
                         <div className="flex items-center gap-1 text-sm text-gray-600">
                           <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                          <span className="font-medium">{counselor.averageRating}</span>
-                          <span className="text-gray-400">({counselor.totalSessions} reviews)</span>
+                          <span className="font-medium">
+                            {counselor.averageRating}
+                          </span>
+                          <span className="text-gray-400">
+                            ({counselor.totalSessions} reviews)
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -238,14 +355,16 @@ const TherapyService: React.FC = () => {
                   )}
 
                   <div className="flex items-center justify-between text-xs text-gray-500 pt-4 border-t border-gray-200">
-                    <span className="text-purple-600 font-medium">Click to view details</span>
+                    <span className="text-purple-600 font-medium">
+                      Click to view details
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
 
             {/* No Results */}
-            {filteredCounselors.length === 0 && !loading && (
+            {filteredCounselors.length === 0 && !loading && !dataError && (
               <div className="text-center py-16 bg-white/80 backdrop-blur-sm rounded-2xl">
                 <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-600 mb-2">
@@ -277,10 +396,12 @@ const TherapyService: React.FC = () => {
                       <div className="sticky top-0 bg-white border-b border-gray-200 p-6 rounded-t-2xl">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4">
-                            {selectedCounselor && renderProfilePicture(selectedCounselor, "lg")}
+                            {selectedCounselor &&
+                              renderProfilePicture(selectedCounselor, "lg")}
                             <div>
                               <h2 className="text-2xl font-bold text-gray-800">
-                                {selectedCounselor.firstName} {selectedCounselor.lastName}
+                                {selectedCounselor.firstName}{" "}
+                                {selectedCounselor.lastName}
                               </h2>
                               <div className="flex items-center gap-2 text-sm text-purple-600 font-medium">
                                 <Award className="w-4 h-4" />
@@ -336,13 +457,17 @@ const TherapyService: React.FC = () => {
                           </h3>
                           <div className="grid grid-cols-2 gap-4">
                             <div className="p-4 bg-gray-50 rounded-lg">
-                              <div className="text-sm text-gray-500">Years of Experience</div>
+                              <div className="text-sm text-gray-500">
+                                Years of Experience
+                              </div>
                               <div className="text-xl font-bold text-purple-600">
                                 {selectedCounselor.experience}
                               </div>
                             </div>
                             <div className="p-4 bg-gray-50 rounded-lg">
-                              <div className="text-sm text-gray-500">Sessions Completed</div>
+                              <div className="text-sm text-gray-500">
+                                Sessions Completed
+                              </div>
                               <div className="text-xl font-bold text-purple-600">
                                 {selectedCounselor.totalSessions}
                               </div>

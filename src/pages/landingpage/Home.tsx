@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import { Heart, Users, MessageCircle, ArrowRight, Check } from "lucide-react";
-import { useState } from "react";
 import { IoMdPlay } from "react-icons/io";
 
 const CONFIG = {
