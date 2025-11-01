@@ -9,7 +9,7 @@
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "en",
-  "categories": ["health", "lifestyle", "social"],
+  "categories": ["Mental-health", "GBV", "trauma-informed care"],
   "icons": [
     {
       "src": "/herhaven.svg",

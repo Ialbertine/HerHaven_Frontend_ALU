@@ -1,44 +1,80 @@
-import React, { useState, useEffect } from 'react';
-import { getPublishedTestimonials, type Feedback } from '@/apis/feedback';
-import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from "react";
+import { getPublishedTestimonials, type Feedback } from "@/apis/feedback";
+import { Star, ChevronLeft, ChevronRight, Quote } from "lucide-react";
+import { loadFromCache, saveToCache } from "@/utils/offlineCache";
+import useOfflineStatus from "@/hooks/useOfflineStatus";
 
 interface TestimonialsCarouselProps {
   className?: string;
 }
 
-const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({ className = "" }) => {
+const TESTIMONIALS_CACHE_KEY = "landing_testimonials_v1";
+const TESTIMONIALS_CACHE_TTL = 1000 * 60 * 60 * 12; // 12 hours
+
+const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({
+  className = "",
+}) => {
   const [testimonials, setTestimonials] = useState<Feedback[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isOffline = useOfflineStatus();
 
-  useEffect(() => {
-    loadTestimonials();
-  }, []);
-
-  const loadTestimonials = async () => {
-    try {
-      setLoading(true);
+  const loadTestimonials = useCallback(
+    async ({ showLoader = true }: { showLoader?: boolean } = {}) => {
+      if (showLoader) setLoading(true);
       setError(null);
 
-      const response = await getPublishedTestimonials({ limit: 20 });
+      try {
+        const response = await getPublishedTestimonials({ limit: 20 });
 
-      if (response.success && response.data) {
+        if (!response.success || !response.data) {
+          throw new Error(response.message || "Failed to load testimonials");
+        }
+
         setTestimonials(response.data.feedback);
-      } else {
-        setError(response.message || 'Failed to load testimonials');
+        saveToCache(TESTIMONIALS_CACHE_KEY, response.data.feedback);
+      } catch (err) {
+        console.error("Error loading testimonials:", err);
+        const cachedTestimonials = loadFromCache<Feedback[]>(
+          TESTIMONIALS_CACHE_KEY,
+          TESTIMONIALS_CACHE_TTL
+        );
+
+        if (cachedTestimonials && cachedTestimonials.length > 0) {
+          setTestimonials(cachedTestimonials);
+          setError(null);
+        } else {
+          setError("Unable to load testimonials at the moment.");
+        }
+      } finally {
+        if (showLoader) setLoading(false);
       }
-    } catch (err) {
-      setError('An error occurred while loading testimonials');
-      console.error('Error loading testimonials:', err);
-    } finally {
+    },
+    []
+  );
+
+  useEffect(() => {
+    const cachedTestimonials = loadFromCache<Feedback[]>(
+      TESTIMONIALS_CACHE_KEY,
+      TESTIMONIALS_CACHE_TTL
+    );
+
+    if (cachedTestimonials && cachedTestimonials.length > 0) {
+      setTestimonials(cachedTestimonials);
+      setLoading(false);
+    } else if (isOffline) {
       setLoading(false);
     }
-  };
+
+    if (!isOffline) {
+      const showLoader = !(cachedTestimonials && cachedTestimonials.length > 0);
+      void loadTestimonials({ showLoader });
+    }
+  }, [isOffline, loadTestimonials]);
 
   // Calculate how many slides we have
   const slidesCount = Math.ceil(testimonials.length / 3);
-
 
   const nextTestimonial = () => {
     if (slidesCount <= 1) return;
@@ -69,8 +105,9 @@ const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({ className =
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
-            className={`w-4 h-4 ${star <= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
-              }`}
+            className={`w-4 h-4 ${
+              star <= rating ? "text-yellow-400 fill-current" : "text-gray-300"
+            }`}
           />
         ))}
       </div>
@@ -78,9 +115,9 @@ const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({ className =
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
     });
   };
 
@@ -94,9 +131,7 @@ const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({ className =
       </div>
 
       {/* rating */}
-      <div className="mb-4">
-        {renderStars(testimonial.rating)}
-      </div>
+      <div className="mb-4">{renderStars(testimonial.rating)}</div>
 
       {/* Testimonial Text */}
       <blockquote className="text-base text-gray-700 leading-relaxed mb-4 font-light italic">
@@ -107,12 +142,16 @@ const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({ className =
       <div className="border-t border-gray-100 pt-4">
         <div className="flex flex-col items-center">
           <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white text-sm font-bold mb-2">
-            {(testimonial.isAnonymous === true) ? 'A' : testimonial.fullName.charAt(0).toUpperCase()}
+            {testimonial.isAnonymous === true
+              ? "A"
+              : testimonial.fullName.charAt(0).toUpperCase()}
           </div>
           <h4 className="text-sm font-semibold text-gray-900">
-            {(testimonial.isAnonymous === true) ? 'Anonymous' : testimonial.fullName}
+            {testimonial.isAnonymous === true
+              ? "Anonymous"
+              : testimonial.fullName}
           </h4>
-          {(testimonial.isAnonymous !== true) && testimonial.email && (
+          {testimonial.isAnonymous !== true && testimonial.email && (
             <p className="text-xs text-gray-600">Verified User</p>
           )}
           <p className="text-xs text-gray-500 mt-1">
@@ -176,16 +215,21 @@ const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({ className =
   const currentTestimonials = getCurrentTestimonials();
 
   return (
-    <div className={`py-12 px-4 bg-gradient-to-br from-purple-50 via-pink-50 to-white ${className}`}>
+    <div
+      className={`py-12 px-4 bg-gradient-to-br from-purple-50 via-pink-50 to-white ${className}`}
+    >
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-10">
-          <p className="text-purple-600 text-base mb-3 font-medium">What People Say</p>
+          <p className="text-purple-600 text-base mb-3 font-medium">
+            What People Say
+          </p>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
             Stories of Hope & Healing
           </h2>
           <p className="text-gray-600 text-base max-w-xl mx-auto">
-            Real stories from women who found strength and support through HerHaven
+            Real stories from women who found strength and support through
+            HerHaven
           </p>
         </div>
 
@@ -193,7 +237,10 @@ const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({ className =
         <div className="relative">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {currentTestimonials.map((testimonial, index) => (
-              <div key={testimonial._id || index} className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+              <div
+                key={testimonial._id || index}
+                className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300"
+              >
                 {renderTestimonial(testimonial)}
               </div>
             ))}
@@ -226,10 +273,11 @@ const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({ className =
                 <button
                   key={index}
                   onClick={() => goToSlide(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentIndex
-                    ? 'bg-purple-600 scale-125'
-                    : 'bg-gray-300 hover:bg-gray-400'
-                    }`}
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                    index === currentIndex
+                      ? "bg-purple-600 scale-125"
+                      : "bg-gray-300 hover:bg-gray-400"
+                  }`}
                   aria-label={`Go to slide ${index + 1}`}
                 />
               ))}
@@ -240,7 +288,8 @@ const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({ className =
         {/* Testimonial Counter */}
         {slidesCount > 1 && (
           <div className="text-center mt-6 text-sm text-gray-500">
-            {currentIndex + 1} of {slidesCount} pages ({testimonials.length} testimonials)
+            {currentIndex + 1} of {slidesCount} pages ({testimonials.length}{" "}
+            testimonials)
           </div>
         )}
       </div>
