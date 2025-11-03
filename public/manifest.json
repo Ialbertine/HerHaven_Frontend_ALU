@@ -11,38 +11,8 @@
   "categories": ["Mental-health", "GBV", "trauma-informed care"],
   "icons": [
     {
-      "src": "/herhaven.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-96x96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-152x152.png",
-      "sizes": "152x152",
+      "src": "/icons/apple-icon-180.png",
+      "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
     },
@@ -57,18 +27,6 @@
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
-    },
-    {
-      "src": "/icons/icon-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
     },
     {
       "src": "/icons/manifest-icon-512.maskable.png",
@@ -101,8 +59,8 @@
       "url": "/emergency-sos?trigger=true",
       "icons": [
         {
-          "src": "/icons/icon-96x96.png",
-          "sizes": "96x96"
+          "src": "/icons/apple-icon-180.png",
+          "sizes": "180x180"
         }
       ]
     },
@@ -113,8 +71,8 @@
       "url": "/user/community",
       "icons": [
         {
-          "src": "/icons/community-icon.png",
-          "sizes": "96x96"
+          "src": "/icons/apple-icon-180.png",
+          "sizes": "180x180"
         }
       ]
     },
@@ -125,8 +83,8 @@
       "url": "/havenchatbot",
       "icons": [
         {
-          "src": "/icons/chatbot-icon.png",
-          "sizes": "96x96"
+          "src": "/icons/apple-icon-180.png",
+          "sizes": "180x180"
         }
       ]
     },
@@ -137,8 +95,8 @@
       "url": "/resources",
       "icons": [
         {
-          "src": "/icons/resources-icon.png",
-          "sizes": "96x96"
+          "src": "/icons/apple-icon-180.png",
+          "sizes": "180x180"
         }
       ]
     }
