@@ -38,16 +38,16 @@
   "screenshots": [
     {
       "src": "/screenshots/desktop-screenshot.png",
-      "sizes": "1280x720",
+      "sizes": "5760x3056",
       "type": "image/png",
       "form_factor": "wide",
       "label": "HerHaven Desktop View"
     },
     {
       "src": "/screenshots/mobile-screenshot.png",
-      "sizes": "540x720",
+      "sizes": "5760x3056",
       "type": "image/png",
-      "form_factor": "narrow",
+      "form_factor": "wide",
       "label": "HerHaven Mobile View"
     }
   ],

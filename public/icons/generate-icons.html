@@ -181,14 +181,8 @@
         canvas.height = size;
         const ctx = canvas.getContext("2d");
 
-        // Solid background with brand color for maskable icons
-        const gradient = ctx.createLinearGradient(0, 0, size, size);
-        gradient.addColorStop(0, "#9c27b0");
-        gradient.addColorStop(1, "#7b2cbf");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, size, size);
+        ctx.clearRect(0, 0, size, size);
 
-        // Load and draw SVG with more padding for safe area
         const img = new Image();
         const svgBlob = new Blob([logo], { type: "image/svg+xml" });
         const url = URL.createObjectURL(svgBlob);
@@ -205,8 +199,7 @@
             const x = (size - scaledWidth) / 2;
             const y = (size - scaledHeight) / 2;
 
-            // Create white version of logo for contrast
-            ctx.globalCompositeOperation = "source-over";
+            // Draw logo with transparent background
             ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
             URL.revokeObjectURL(url);
 
