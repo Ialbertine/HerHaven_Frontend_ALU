@@ -23,6 +23,7 @@ import Therapits from "@/Dashboard/user/Therapits";
 import UserAppointment from "@/Dashboard/user/UserAppointment";
 import Community from "@/pages/community/community";
 import HavenChatbot from "@/pages/chatbot/HavenChatbot";
+import EmergencySOSPage from "@/pages/emergency/EmergencySOSPage";
 import { ModalProvider } from "@/contexts/ModalContext";
 
 const App: React.FC = () => {
@@ -46,24 +47,28 @@ const App: React.FC = () => {
 
           <Route path="signup" element={<Signup />} />
           <Route path="login" element={<Login />} />
+          <Route path="emergency-sos" element={<EmergencySOSPage />} />
           <Route
             path="counselor/complete-registration/:token"
             element={<CounselorApplicationForm mode="complete" />}
           />
 
           {/* Admin Routes */}
-          <Route path="admin" element={<ProtectedRoute allowedRoles={["super_admin"]} />}>
+          <Route
+            path="admin"
+            element={<ProtectedRoute allowedRoles={["super_admin"]} />}
+          >
             <Route path="dashboard" element={<AdminLanding />} />
-            <Route
-              path="therapy-management"
-              element={<TherapyManagement />}
-            />
+            <Route path="therapy-management" element={<TherapyManagement />} />
             <Route path="community" element={<Community />} />
             <Route path="feedbacks" element={<FeedbackManagement />} />
           </Route>
 
           {/* User Routes */}
-          <Route path="user" element={<ProtectedRoute allowedRoles={["user", "guest"]} />}>
+          <Route
+            path="user"
+            element={<ProtectedRoute allowedRoles={["user", "guest"]} />}
+          >
             <Route path="dashboard" element={<UserLanding />} />
             <Route path="resources" element={<Resources />} />
             <Route path="community" element={<Community />} />
@@ -76,7 +81,10 @@ const App: React.FC = () => {
           </Route>
 
           {/* Counselor Routes */}
-          <Route path="counselor" element={<ProtectedRoute allowedRoles={["counselor"]} />}>
+          <Route
+            path="counselor"
+            element={<ProtectedRoute allowedRoles={["counselor"]} />}
+          >
             <Route path="dashboard" element={<TherapistLanding />} />
             <Route path="profile" element={<Profile />} />
             <Route path="schedule" element={<Schedule />} />

@@ -1,11 +1,10 @@
 {
-  "name": "HerHaven - Mental Health Support Platform",
+  "name": "HerHaven - Trauma-Informed Mental Health Support",
   "short_name": "HerHaven",
-  "description": "A comprehensive mental health support platform providing therapy services, community support, and wellness resources",
+  "description": "A comprehensive trauma-informed mental health support platform providing therapy services, community support, and wellness resources",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#8B5CF6",
+  "theme_color": "#9c27b0",
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "en",
@@ -15,7 +14,7 @@
       "src": "/herhaven.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/icons/icon-72x72.png",
@@ -51,7 +50,7 @@
       "src": "/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/icons/icon-384x384.png",
@@ -63,7 +62,7 @@
       "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ],
   "screenshots": [
@@ -83,6 +82,18 @@
     }
   ],
   "shortcuts": [
+    {
+      "name": "Emergency SOS",
+      "short_name": "SOS",
+      "description": "Trigger emergency SOS alert to contacts",
+      "url": "/emergency-sos?trigger=true",
+      "icons": [
+        {
+          "src": "/icons/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
     {
       "name": "Community",
       "short_name": "Community",
