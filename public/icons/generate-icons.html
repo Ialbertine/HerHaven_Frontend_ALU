@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Icon Generator</title>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script>
+      // This script generates placeholder icons for the PWA
+      const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+
+      sizes.forEach((size) => {
+        const canvas = document.createElement("canvas");
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext("2d");
+
+        // Background gradient
+        const gradient = ctx.createLinearGradient(0, 0, size, size);
+        gradient.addColorStop(0, "#9c27b0");
+        gradient.addColorStop(1, "#7b2cbf");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, size, size);
+
+        // Draw letter 'H' for HerHaven
+        ctx.fillStyle = "white";
+        ctx.font = `bold ${size * 0.6}px Arial`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("H", size / 2, size / 2);
+
+        // Download the image
+        canvas.toBlob((blob) => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `icon-${size}x${size}.png`;
+          a.click();
+          URL.revokeObjectURL(url);
+        });
+      });
+
+      // Generate shortcut icons
+      const shortcuts = ["community", "chatbot", "resources"];
+      shortcuts.forEach((name) => {
+        const canvas = document.createElement("canvas");
+        canvas.width = 96;
+        canvas.height = 96;
+        const ctx = canvas.getContext("2d");
+
+        // Background
+        ctx.fillStyle = "#9c27b0";
+        ctx.fillRect(0, 0, 96, 96);
+
+        // Icon text
+        ctx.fillStyle = "white";
+        ctx.font = "bold 40px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(name.charAt(0).toUpperCase(), 48, 48);
+
+        // Download
+        canvas.toBlob((blob) => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `${name}-icon.png`;
+          a.click();
+          URL.revokeObjectURL(url);
+        });
+      });
+    </script>
+  </body>
+</html>

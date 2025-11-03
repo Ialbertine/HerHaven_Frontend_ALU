@@ -7,103 +7,137 @@ import { resolve } from "path";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react(), 
+    react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'herhaven.svg', 'home.png', 'Aboutus1.jpg', 'videoplay.jpg'],
+      registerType: "autoUpdate",
+      includeAssets: [
+        "favicon.ico",
+        "herhaven.svg",
+        "home.png",
+        "Aboutus1.jpg",
+        "videoplay.jpg",
+      ],
       manifest: {
-        name: 'HerHaven',
-        short_name: 'HerHaven',
-        description: 'A comprehensive mental health support platform providing therapy services, community support, and wellness resources',
-        theme_color: '#8B5CF6',
-        background_color: '#ffffff',
-        display: 'standalone',
-        orientation: 'portrait-primary',
-        scope: '/',
-        start_url: '/',
+        name: "HerHaven - Mental Health Support",
+        short_name: "HerHaven",
+        description:
+          "A comprehensive mental health support platform providing therapy services, community support, and emergency SOS features",
+        theme_color: "#9c27b0",
+        display: "standalone",
+        orientation: "portrait-primary",
+        scope: "/",
+        start_url: "/",
         icons: [
           {
-            src: 'herhaven.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
-            purpose: 'any maskable'
-          }
-        ]
+            src: "herhaven.svg",
+            sizes: "any",
+            type: "image/svg+xml",
+            purpose: "any maskable",
+          },
+          {
+            src: "/icons/icon-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "any maskable",
+          },
+          {
+            src: "/icons/icon-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any maskable",
+          },
+        ],
+        shortcuts: [
+          {
+            name: "Emergency SOS",
+            short_name: "SOS",
+            description: "Trigger emergency SOS alert to contacts",
+            url: "/emergency-sos?trigger=true",
+            icons: [
+              {
+                src: "/icons/icon-96x96.png",
+                sizes: "96x96",
+                type: "image/png",
+              },
+            ],
+          },
+        ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,svg,jpg,jpeg,webp,woff,woff2}'],
+        globPatterns: ["**/*.{js,css,html,ico,svg,jpg,jpeg,webp,woff,woff2}"],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10 MB
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'CacheFirst',
+            handler: "CacheFirst",
             options: {
-              cacheName: 'google-fonts-cache',
+              cacheName: "google-fonts-cache",
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
-              }
-            }
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+              },
+            },
           },
           {
             urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-            handler: 'CacheFirst',
+            handler: "CacheFirst",
             options: {
-              cacheName: 'gstatic-fonts-cache',
+              cacheName: "gstatic-fonts-cache",
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
-              }
-            }
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+              },
+            },
           },
           {
-            urlPattern: /^https:\/\/ialbertine-herhaven-backend\.onrender\.com\/.*/i,
-            handler: 'NetworkFirst',
+            urlPattern:
+              /^https:\/\/ialbertine-herhaven-backend\.onrender\.com\/.*/i,
+            handler: "NetworkFirst",
             options: {
-              cacheName: 'api-cache',
+              cacheName: "api-cache",
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 // 1 day
+                maxAgeSeconds: 60 * 60 * 24, // 1 day
               },
               networkTimeoutSeconds: 10,
               cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
+                statuses: [0, 200],
+              },
+            },
           },
           {
             urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
-            handler: 'CacheFirst',
+            handler: "CacheFirst",
             options: {
-              cacheName: 'images-cache',
+              cacheName: "images-cache",
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
-              }
-            }
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+              },
+            },
           },
           {
             urlPattern: /\.(?:js|css)$/,
-            handler: 'StaleWhileRevalidate',
+            handler: "StaleWhileRevalidate",
             options: {
-              cacheName: 'static-resources-cache',
+              cacheName: "static-resources-cache",
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 * 7 // 1 week
-              }
-            }
-          }
+                maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
+              },
+            },
+          },
         ],
         skipWaiting: true,
         clientsClaim: true,
-        cleanupOutdatedCaches: true
+        cleanupOutdatedCaches: true,
       },
       devOptions: {
         enabled: true,
-        type: 'module'
-      }
-    })
+        type: "module",
+      },
+    }),
   ],
   resolve: {
     alias: {
