@@ -1,0 +1,260 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About us",
+    "services": "Services",
+    "allServices": "All Services",
+    "therapyServices": "Therapy Services",
+    "havenchatbot": "Herhaven Chatbot",
+    "resources": "Resources",
+    "contact": "Contact Us",
+    "login": "Login",
+    "signup": "Sign Up",
+    "getStarted": "Get Started",
+    "continueasguest": "Continue as Guest"
+  },
+  "hero": {
+    "tagline": "Find support and healing",
+    "heading": "Guiding you toward mental wellness",
+    "description": "A trauma-informed, stigma-free space supporting women and victims of abuse with confidential mental health resources, crisis support, and healing pathways, empowering recovery through safety, compassion, and hope",
+    "getStarted": "Get Started",
+    "learnMore": "Learn more",
+    "watchVideo": "Watch Video"
+  },
+  "servicesSection": {
+    "title": "Our Services",
+    "subtitle": "Comprehensive support tailored to your healing journey",
+    "professional": {
+      "title": "Professional Support",
+      "description": "Connect with licensed counselors specializing in trauma and gender-based violence."
+    },
+    "community": {
+      "title": "Peer Community",
+      "description": "Join a supportive community of women who understand your experiences."
+    },
+    "aiChat": {
+      "title": "AI Support Chat",
+      "description": "Get instant, confidential guidance available 24/7 to provide immediate assistance."
+    },
+    "viewAll": "View All Services"
+  },
+
+  "homeabout": {
+    "tagline": "Empowering Mental Wellness",
+    "heading": "HerHaven is more than a platform, it's a sanctuary for women reclaiming their voice after trauma.",
+    "features": {
+      "confidentialSupport": "Confidential support from licensed counselors specializing in trauma care",
+      "safeCommunity": "Safe community space for healing and recovery journey"
+    },
+    "learnMore": "Learn more",
+    "imageAlt": "Group of women supporting each other"
+  },
+
+  "testimonials": {
+    "title": "What Our Community Says",
+    "subtitle": "Real stories from victims on their healing journey"
+  },
+
+  "about": {
+    "title": "About HerHaven",
+    "subtitle": "Empowering women victims through compassionate support",
+    "description": "HerHaven is a multidisciplinary initiative bringing together mental health professionals, technologists, and advocates, dedicated to promoting psychological well-being among victims of gender-based violence through innovative digital tools and community-centered care.",
+    "vision": {
+      "title": "Vision",
+      "description": "HerHaven envisions a Rwanda where every person impacted by gender-based violence has access to compassionate, holistic care that fosters healing, dignity, and hope."
+    },
+    "mission": {
+      "title": "Mission",
+      "description": "To support people who have experienced gender-based violence in Rwanda by expanding access to mental health care, reducing stigma, and building safe, inclusive networks for recovery and empowerment."
+    },
+    "whyHerHaven": {
+      "title": "Why HerHaven?",
+      "description": "In Rwanda, nearly half of women experience abuse or violence. HerHaven is a digital platform that provides safe, compassionate support, helping women access care, heal, and build fulfilling lives."
+    },
+    "values": {
+      "title": "Our Core Values",
+      "empathy": {
+        "title": "Empathy",
+        "description": "Every survivor's story matters."
+      },
+      "safety": {
+        "title": "Safety",
+        "description": "Confidentiality and data protection come first."
+      },
+      "healing": {
+        "title": "Healing",
+        "description": "Encouraging personal growth and recovery."
+      },
+      "collaboration": {
+        "title": "Collaboration",
+        "description": "Working with communities and experts."
+      }
+    },
+    "howWeWork": {
+      "title": "How We Work",
+      "listen": {
+        "title": "Listen with Compassion",
+        "description": "We create a safe space where women victims can share their experiences, be heard without judgment, and have their voices truly valued."
+      },
+      "build": {
+        "title": "Build Safe Spaces",
+        "description": "We create a secure, confidential space where women can access support, resources, and healing without fear or judgment."
+      },
+      "empower": {
+        "title": "Empower & Connect",
+        "description": "We link victims to professional care and supportive communities."
+      }
+    },
+    "whyMatters": {
+      "title": "Why This Work Matters",
+      "stat1": "46%",
+      "stat1Description": "of women in Rwanda have experienced partner violence",
+      "stat2": "5.6%",
+      "stat2Description": "of those affected access mental health care",
+      "stat3Description": "Digital platforms can reduce stigma and improve access"
+    },
+    "partners": {
+      "title": "Our Partners",
+      "subtitle": "Working together to create safer communities"
+    },
+    "joinUs": {
+      "title": "Join Us in Making a Difference",
+      "description": "If you are a mental health professional, NGO, or individual interested in supporting our mission, we'd love to hear from you.",
+      "partner": "Partner With Us",
+      "joinCounselor": "Join as a Counselor"
+    }
+  },
+  "resources": {
+    "title": "Educational Hub",
+    "subtitle": "Empowering you with knowledge and understanding about mental health, trauma recovery, and community support",
+    "searchPlaceholder": "Search articles...",
+    "categories": {
+      "all": "All",
+      "mentalHealth": "Understanding Mental Health",
+      "coping": "Coping and Healing",
+      "gbv": "GBV Awareness",
+      "rights": "Rights & Protection",
+      "community": "Community Support"
+    },
+    "noArticles": "No articles found matching your criteria.",
+    "readMore": "Read More",
+    "support": {
+      "title": "Need Support?",
+      "description": "If you're struggling or need someone to talk to, our support services are available 24/7. You're not alone on this journey.",
+      "button": "Get Support Now"
+    }
+  },
+  "services": {
+    "title": "Our Services",
+    "subtitle": "How HerHaven Helps",
+    "description": "HerHaven offers a comprehensive approach to mental health support, focusing on empowering women with the tools and resources needed to heal, grow, and thrive.",
+    "getStarted": "Get Started Today",
+    "readyToStart": "Ready to take the first step towards healing?",
+    "professionalSupport": {
+      "title": "Professional Support",
+      "description": "Connect with licensed counselors specializing in trauma and gender-based violence. Our platform ensures confidentiality and a safe space for your journey towards healing."
+    },
+    "peerCommunity": {
+      "title": "Peer Community",
+      "description": "Join a supportive community of women who understand your experiences. Share your story, find encouragement, and grow together in a safe and moderated environment."
+    },
+    "aiChat": {
+      "title": "AI Support Chat",
+      "description": "Get instant, confidential guidance from our AI support chat, designed with trauma-informed principles. Available 24/7 to provide immediate assistance and resources."
+    },
+    "safeConfidential": {
+      "title": "Safe & Confidential",
+      "description": "Your privacy and safety are our top priorities. All conversations are encrypted and secure, ensuring a protected environment for your healing journey."
+    },
+    "crisisSupport": {
+      "title": "24/7 Crisis Support",
+      "description": "Immediate help when you need it most. Access emergency resources and crisis intervention services at any time, day or night."
+    },
+    "educational": {
+      "title": "Educational Resources",
+      "description": "Explore our library of articles, guides, and tools designed to empower you with knowledge about mental health, trauma recovery, and self-care practices."
+    }
+  },
+  "contact": {
+    "title": "Get In Touch",
+    "subtitle": "Have questions or need support? We're here to help. Fill out the form below and we'll get back to you as soon as possible.",
+    "form": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "message": "Message",
+      "send": "Send Message",
+      "firstNamePlaceholder": "First name",
+      "lastNamePlaceholder": "Last name",
+      "emailPlaceholder": "Email",
+      "phonePlaceholder": "07xx xxx xxx",
+      "messagePlaceholder": "Please describe how we can help you...",
+      "required": "*"
+    },
+    "info": {
+      "title": "Contact Information",
+      "email": "Email",
+      "emailAddress": "herhaven@counseling.com",
+      "phone": "Phone",
+      "phoneNumber": "+250785512714",
+      "address": "Address",
+      "addressLine1": "Kigali, Rwanda",
+      "addressLine2": "Gasabo"
+    },
+    "success": {
+      "title": "Message Sent Successfully!",
+      "message": "Thank you for reaching out. We'll get back to you within 24 hours."
+    }
+  },
+  "therapy": {
+    "title": "Our Expert Therapists",
+    "subtitle": "Professional Support",
+    "description": "Connect with licensed, verified Therapists who specialize in trauma recovery, mental health support, and empowering women on their healing journey.",
+    "searchPlaceholder": "Search by name, specialization, or bio...",
+    "allSpecializations": "All Specializations",
+    "available": "Available",
+    "yearsExperience": "years of experience",
+    "sessionsCompleted": "sessions completed",
+    "reviews": "reviews",
+    "verified": "Verified Professional",
+    "verifiedLicensed": "Verified and Licensed Professional",
+    "clickToView": "Click to view details",
+    "bookSession": "Book a Session",
+    "close": "Close",
+    "noResults": "No counselors found",
+    "noResultsMessage": "Try adjusting your search criteria or filters",
+    "modal": {
+      "about": "About",
+      "experience": "Experience",
+      "specialization": "Specialization",
+      "verification": "Verification",
+      "yearsOfExperience": "Years of Experience",
+      "sessionsCompleted": "Sessions Completed",
+      "availableForSessions": "Available for sessions"
+    }
+  },
+  "footer": {
+    "description": "A free space supporting women and victims of abuse with confidential mental health resources, empowering recovery through safety, compassion, and hope",
+    "quickLinks": "Quick Links",
+    "ourServices": "Our Services",
+    "contactUs": "Contact Us",
+    "emailPlaceholder": "Email",
+    "subscribe": "Subscribe",
+    "copyright": "Copyright © {{year}} Her Haven. All Rights Reserved.",
+    "links": {
+      "aboutUs": "About Us",
+      "ourServices": "Our Services",
+      "educationHub": "Education Hub",
+      "havenAI": "haven AI Chatbot",
+      "mentalHealth": "Mental health",
+      "counseling": "counseling",
+      "peerCommunity": "peer community",
+      "gbvAwareness": "GBV awareness"
+    },
+    "contactInfo": {
+      "phone": "Phone: +(250) 789 123 456",
+      "email": "Email: herhaven@example.com"
+    }
+  }
+}

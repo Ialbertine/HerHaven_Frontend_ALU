@@ -2,16 +2,12 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
+import { useTranslation } from "react-i18next";
 import { Heart, Users, MessageCircle, ArrowRight, Check } from "lucide-react";
 import { IoMdPlay } from "react-icons/io";
 
 const CONFIG = {
-  heroContent: {
-    tagline: "Find support and healing",
-    heading: "Guiding you toward mental wellness",
-    description:
-      "A trauma-informed, stigma-free space supporting women and survivors of abuse with confidential mental health resources, crisis support, and healing pathways, empowering recovery through safety, compassion, and hope",
-  },
+  heroContent: {},
   dotIndicators: [
     { delay: "0.1s", color: "bg-purple-400" },
     { delay: "0.2s", color: "bg-pink-400" },
@@ -20,30 +16,28 @@ const CONFIG = {
   servicesPreview: [
     {
       icon: Heart,
-      title: "Professional Support",
-      description:
-        "Connect with licensed counselors specializing in trauma and gender-based violence.",
+      key: "professional",
       gradient: "from-purple-400 to-pink-400",
     },
     {
       icon: Users,
-      title: "Peer Community",
-      description:
-        "Join a supportive community of women who understand your experiences.",
+      key: "community",
       gradient: "from-pink-400 to-purple-400",
     },
     {
       icon: MessageCircle,
-      title: "AI Support Chat",
-      description:
-        "Get instant, confidential guidance available 24/7 to provide immediate assistance.",
+      key: "aiChat",
       gradient: "from-purple-500 to-pink-500",
     },
   ],
 } as const;
 
 export const Home: React.FC = () => {
-  const { tagline, heading, description } = CONFIG.heroContent;
+  const { t } = useTranslation("landing");
+
+  const tagline = t("hero.tagline");
+  const heading = t("hero.heading");
+  const description = t("hero.description");
 
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -89,7 +83,7 @@ export const Home: React.FC = () => {
 
             <Link to="/login">
               <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-3 rounded-full font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 animate-fade-in-up animation-delay-600">
-                Begin Your Journey
+                {t("hero.getStarted")}
               </button>
             </Link>
 
@@ -119,12 +113,11 @@ export const Home: React.FC = () => {
             {/* Content Side */}
             <div className="animate-fade-in-up animation-delay-200">
               <p className="text-[#9c27b0] text-sm font-semibold tracking-wide mb-4 uppercase">
-                Empowering Mental Wellness
+                {t("homeabout.tagline")}
               </p>
 
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
-                HerHaven is more than a platform, it's a sanctuary for women
-                reclaiming their voice after trauma.
+                {t("homeabout.heading")}
               </h2>
 
               {/* Feature List */}
@@ -132,22 +125,21 @@ export const Home: React.FC = () => {
                 <div className="flex items-start gap-3">
                   <Check className="w-4 h-4 text-[#9c27b0]" />
                   <p className="text-gray-700 text-lg">
-                    Confidential support from licensed counselors specializing
-                    in trauma care
+                    {t("homeabout.features.confidentialSupport")}
                   </p>
                 </div>
 
                 <div className="flex items-start gap-3">
                   <Check className="w-4 h-4 text-[#9c27b0]" />
                   <p className="text-gray-700 text-lg">
-                    Safe community space for healing and recovery journey
+                    {t("homeabout.features.safeCommunity")}
                   </p>
                 </div>
               </div>
 
               <Link to="/about">
                 <button className="inline-flex items-center gap-1 px-4 py-3 rounded-full border border-transparent bg-gradient-to-r from-[#9c27b0] to-[#7b2cbf] text-white font-bold group hover:from-[#7b2cbf] hover:to-[#6a1b9a] hover:shadow-lg transform hover:scale-105 transition-all duration-300 ease-in-out">
-                  <span>Learn more</span>
+                  <span>{t("homeabout.learnMore")}</span>
                   <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                 </button>
               </Link>
@@ -193,13 +185,13 @@ export const Home: React.FC = () => {
           {/* Header */}
           <div className="text-center mb-12 animate-fade-in-up">
             <p className="text-[#9c27b0] text-lg mb-4 font-medium">
-              Our Services
+              {t("servicesSection.title")}
             </p>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4 leading-tight">
-              Services Designed for You
+              {t("servicesSection.title")}
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              Comprehensive support tailored to your healing journey
+              {t("servicesSection.subtitle")}
             </p>
           </div>
 
@@ -219,10 +211,10 @@ export const Home: React.FC = () => {
                     <Icon className="w-7 h-7 text-white" strokeWidth={2} />
                   </div>
                   <h3 className="text-xl font-bold text-gray-800 mb-3">
-                    {service.title}
+                    {t(`servicesSection.${service.key}.title`)}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {service.description}
+                    {t(`servicesSection.${service.key}.description`)}
                   </p>
                 </div>
               );
@@ -233,7 +225,7 @@ export const Home: React.FC = () => {
           <div className="text-center animate-fade-in-up animation-delay-400">
             <Link to="/services">
               <button className="inline-flex items-center gap-2 text-[#9c27b0] font-semibold text-lg hover:gap-3 transition-all duration-300 group">
-                View All Services
+                {t("servicesSection.viewAll")}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
             </Link>

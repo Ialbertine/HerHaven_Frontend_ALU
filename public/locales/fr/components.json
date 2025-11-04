@@ -1,0 +1,79 @@
+{
+  "navbar": {
+    "home": "Accueil",
+    "about": "À propos de nous",
+    "services": "Services",
+    "resources": "Ressources",
+    "contact": "Contactez-nous",
+    "login": "Connexion",
+    "signup": "S'inscrire"
+  },
+  "sidebar": {
+    "dashboard": "Tableau de bord",
+    "appointments": "Rendez-vous",
+    "therapy": "Trouver un thérapeute",
+    "community": "Communauté",
+    "resources": "Ressources",
+    "profile": "Profil",
+    "schedule": "Emploi du temps",
+    "sessions": "Sessions",
+    "management": "Gestion",
+    "feedback": "Commentaires",
+    "settings": "Paramètres"
+  },
+  "modal": {
+    "title": "Confirmer l'action",
+    "areYouSure": "Êtes-vous sûr?",
+    "cannotUndo": "Cette action ne peut pas être annulée.",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "close": "Fermer",
+    "delete": "Supprimer",
+    "save": "Enregistrer"
+  },
+  "notification": {
+    "title": "Notifications",
+    "markAllRead": "Tout marquer comme lu",
+    "noNotifications": "Aucune notification",
+    "newAppointment": "Nouveau rendez-vous planifié",
+    "appointmentCancelled": "Rendez-vous annulé",
+    "appointmentConfirmed": "Rendez-vous confirmé",
+    "newMessage": "Nouveau message",
+    "clear": "Effacer"
+  },
+  "feedback": {
+    "title": "Nous aimerions connaître votre avis",
+    "subtitle": "Aidez-nous à améliorer HerHaven",
+    "name": "Nom",
+    "email": "Email",
+    "message": "Vos commentaires",
+    "messagePlaceholder": "Partagez vos réflexions avec nous...",
+    "rating": "Comment évalueriez-vous votre expérience?",
+    "submit": "Soumettre les commentaires",
+    "submitting": "Soumission en cours...",
+    "thankYou": "Merci pour vos commentaires!",
+    "success": "Vos commentaires ont été envoyés avec succès"
+  },
+  "quickExit": {
+    "title": "Sortie rapide",
+    "description": "Quittez rapidement ce site et effacez l'historique",
+    "button": "Sortie rapide",
+    "confirm": "Êtes-vous sûr de vouloir quitter?"
+  },
+  "sosButton": {
+    "title": "SOS d'urgence",
+    "description": "Obtenir de l'aide immédiate",
+    "activate": "Activer le SOS",
+    "emergency": "Urgence"
+  },
+  "testimonial": {
+    "previous": "Précédent",
+    "next": "Suivant"
+  },
+  "languageSwitcher": {
+    "selectLanguage": "Sélectionner la langue",
+    "english": "Anglais",
+    "french": "Français",
+    "kinyarwanda": "Kinyarwanda"
+  }
+}

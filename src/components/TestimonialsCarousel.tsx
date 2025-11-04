@@ -3,6 +3,7 @@ import { getPublishedTestimonials, type Feedback } from "@/apis/feedback";
 import { Star, ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { loadFromCache, saveToCache } from "@/utils/offlineCache";
 import useOfflineStatus from "@/hooks/useOfflineStatus";
+import { useTranslation } from "react-i18next";
 
 interface TestimonialsCarouselProps {
   className?: string;
@@ -14,6 +15,7 @@ const TESTIMONIALS_CACHE_TTL = 1000 * 60 * 60 * 12; // 12 hours
 const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({
   className = "",
 }) => {
+  const { t } = useTranslation("components");
   const [testimonials, setTestimonials] = useState<Feedback[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -148,11 +150,13 @@ const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({
           </div>
           <h4 className="text-sm font-semibold text-gray-900">
             {testimonial.isAnonymous === true
-              ? "Anonymous"
+              ? t("testimonial.anonymous")
               : testimonial.fullName}
           </h4>
           {testimonial.isAnonymous !== true && testimonial.email && (
-            <p className="text-xs text-gray-600">Verified User</p>
+            <p className="text-xs text-gray-600">
+              {t("testimonial.verifiedUser")}
+            </p>
           )}
           <p className="text-xs text-gray-500 mt-1">
             {formatDate(testimonial.createdAt)}
@@ -202,9 +206,9 @@ const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({
         <div className="max-w-6xl mx-auto text-center">
           <div className="text-gray-500">
             {error ? (
-              <p>Unable to load testimonials at the moment.</p>
+              <p>{t("testimonial.unableToLoad")}</p>
             ) : (
-              <p>No testimonials available yet.</p>
+              <p>{t("testimonial.noTestimonials")}</p>
             )}
           </div>
         </div>
@@ -222,14 +226,13 @@ const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({
         {/* Section Header */}
         <div className="text-center mb-10">
           <p className="text-purple-600 text-base mb-3 font-medium">
-            What People Say
+            {t("testimonial.heading")}
           </p>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-            Stories of Hope & Healing
+            {t("testimonial.title")}
           </h2>
           <p className="text-gray-600 text-base max-w-xl mx-auto">
-            Real stories from women who found strength and support through
-            HerHaven
+            {t("testimonial.description")}
           </p>
         </div>
 
@@ -288,8 +291,9 @@ const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({
         {/* Testimonial Counter */}
         {slidesCount > 1 && (
           <div className="text-center mt-6 text-sm text-gray-500">
-            {currentIndex + 1} of {slidesCount} pages ({testimonials.length}{" "}
-            testimonials)
+            {currentIndex + 1} {t("testimonial.pageOf")} {slidesCount}{" "}
+            {t("testimonial.pages")} ({testimonials.length}{" "}
+            {t("testimonial.testimonials")})
           </div>
         )}
       </div>

@@ -2,7 +2,8 @@
 
 <div align="center">
 
-  ### A Safe Haven for Healing and Support
+### A Safe Haven for Healing and Support
+
 </div>
 
 ---
@@ -29,20 +30,20 @@
 
 ### Mission
 
-To create a safe, accessible, and empowering digital platform that breaks the silence around gender-based violence and connects survivors with the resources they need to heal and thrive.
+To create a safe, accessible, and empowering digital platform that breaks the silence around gender-based violence and connects victims with the resources they need to heal and thrive.
 
 ---
 
 ### URLs
 
-- Backend Repository: https://github.com/Ialbertine/HerHaven_Backend_ALU  
+- Backend Repository: https://github.com/Ialbertine/HerHaven_Backend_ALU
 
 - Backend API: https://ialbertine-herhaven-backend.onrender.com
-you will need to add Routes accordingly
+  you will need to add Routes accordingly
 
-- Recorded video: https://youtu.be/v71nfkuDqYs 
+- Recorded video: https://youtu.be/v71nfkuDqYs
 
-- Figma link: https://www.figma.com/design/MKR357S6f32m7JAjewQqf8/HerHaven_Design?node-id=0-1&t=lXnetUpHHEw4LFuX-1 
+- Figma link: https://www.figma.com/design/MKR357S6f32m7JAjewQqf8/HerHaven_Design?node-id=0-1&t=lXnetUpHHEw4LFuX-1
 
 ## Features
 
@@ -114,6 +115,7 @@ Using npm:
 ```bash
 npm install
 ```
+
 ---
 
 ## Configuration
@@ -125,7 +127,7 @@ Create a `.env` file in the root directory:
 ```env
 # API Configuration
 VITE_REACT_API_URL=http://localhost:5000/api or deployed URL
-MONGO_URI= your url 
+MONGO_URI= your url
 JWT_SECRET=your secret key
 
 ```
@@ -198,10 +200,10 @@ The application supports three distinct user roles:
 
 ## Available Scripts
 
-- `npm run dev`: Start development server 
-- `npm run build`: Build for production   
+- `npm run dev`: Start development server
+- `npm run build`: Build for production
 - `npm run preview`: Preview production build
-- `npm run lint`: Run ESLint for code quality 
+- `npm run lint`: Run ESLint for code quality
 
 ---
 
@@ -216,8 +218,7 @@ The application supports three distinct user roles:
 3. Add environment variables in Netlify dashboard
 4. Deploy!
 
-The `_redirects` file is already configured for SPA routing.
----
+## The `_redirects` file is already configured for SPA routing.
 
 ## Contributing
 
@@ -238,7 +239,6 @@ We welcome contributions from the community! To contribute:
 - Ensure all tests pass before submitting
 
 ---
-
 
 <div align="center">
   <p><strong>Together, we create safe spaces for healing</strong></p>

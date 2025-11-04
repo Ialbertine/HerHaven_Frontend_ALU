@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Eye, EyeOff, Mail, Lock, X, Loader2 } from "lucide-react";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import { login } from "@/apis/auth";
 
 const Login: React.FC = () => {
+  const { t } = useTranslation("auth");
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -156,7 +158,7 @@ const Login: React.FC = () => {
                   htmlFor="email"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  Email Address
+                  {t("login.email")}
                 </label>
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
@@ -171,7 +173,7 @@ const Login: React.FC = () => {
                     className={`w-full pl-12 pr-4 py-3 rounded-full border ${
                       errors.email ? "border-red-500" : "border-gray-300"
                     } focus:outline-none focus:ring-2 focus:ring-[#9c27b0] focus:border-transparent transition-all`}
-                    placeholder="Enter your email"
+                    placeholder={t("login.email")}
                   />
                 </div>
                 {errors.email && (
@@ -187,7 +189,7 @@ const Login: React.FC = () => {
                   htmlFor="password"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  Password
+                  {t("login.password")}
                 </label>
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
@@ -202,7 +204,7 @@ const Login: React.FC = () => {
                     className={`w-full pl-12 pr-12 py-3 rounded-full border ${
                       errors.password ? "border-red-500" : "border-gray-300"
                     } focus:outline-none focus:ring-2 focus:ring-[#9c27b0] focus:border-transparent transition-all`}
-                    placeholder="Enter your password"
+                    placeholder={t("login.password")}
                   />
                   <button
                     type="button"
@@ -232,13 +234,15 @@ const Login: React.FC = () => {
                     onChange={handleChange}
                     className="w-4 h-4 rounded border-gray-300 text-[#9c27b0] focus:ring-[#9c27b0]"
                   />
-                  <span className="text-sm text-gray-700">Remember me</span>
+                  <span className="text-sm text-gray-700">
+                    {t("login.rememberMe")}
+                  </span>
                 </label>
                 <Link
                   to="/forgot-password"
                   className="text-sm text-[#9c27b0] hover:underline font-medium"
                 >
-                  Forgot Password?
+                  {t("login.forgotPassword")}
                 </Link>
               </div>
 
@@ -251,10 +255,10 @@ const Login: React.FC = () => {
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
                     <Loader2 className="animate-spin h-5 w-5" />
-                    Signing In...
+                    {t("login.loggingIn")}
                   </span>
                 ) : (
-                  "Sign In"
+                  t("login.loginButton")
                 )}
               </button>
             </form>
@@ -262,12 +266,12 @@ const Login: React.FC = () => {
 
           <div className="text-center animate-fade-in-up animation-delay-400">
             <p className="text-gray-600">
-              Don't have an account?{" "}
+              {t("login.noAccount")}{" "}
               <Link
                 to="/signup"
                 className="text-[#9c27b0] hover:underline font-semibold"
               >
-                Sign Up
+                {t("login.signUp")}
               </Link>
             </p>
           </div>

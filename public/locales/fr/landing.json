@@ -1,0 +1,260 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "about": "À propos",
+    "services": "Services",
+    "allServices": "Tous les services",
+    "therapyServices": "Services de thérapie",
+    "havenchatbot": "Chatbot HerHaven",
+    "resources": "Ressources",
+    "contact": "Contactez-nous",
+    "login": "Connexion",
+    "signup": "S'inscrire",
+    "getStarted": "Commencer",
+    "continueasguest": "Continuer en tant qu'invité"
+  },
+  "hero": {
+    "tagline": "Trouvez soutien et guérison",
+    "heading": "Vous guider vers le bien-être mental",
+    "description": "Un espace informé par le traumatisme et sans stigmatisation, soutenant les femmes et victimes d'abus avec des ressources confidentielles en santé mentale, un soutien en cas de crise et des voies de guérison, favorisant la reprise grâce à la sécurité, la compassion et l'espoir.",
+    "getStarted": "Commencer",
+    "learnMore": "En savoir plus",
+    "watchVideo": "Regarder la vidéo"
+  },
+  "servicesSection": {
+    "title": "Nos services",
+    "subtitle": "Un soutien complet adapté à votre parcours de guérison",
+    "professional": {
+      "title": "Soutien professionnel",
+      "description": "Mettez-vous en relation avec des conseillers agréés spécialisés dans les traumatismes et les violences basées sur le genre."
+    },
+    "community": {
+      "title": "Communauté de pairs",
+      "description": "Rejoignez une communauté solidaire de femmes qui comprennent vos expériences."
+    },
+    "aiChat": {
+      "title": "Chat d'assistance IA",
+      "description": "Obtenez des conseils instantanés et confidentiels disponibles 24h/24 et 7j/7 pour une aide immédiate."
+    },
+    "viewAll": "Voir tous les services"
+  },
+
+  "homeabout": {
+    "tagline": "Renforcer le bien-être mental",
+    "heading": "HerHaven est plus qu'une plateforme, c'est un sanctuaire pour les femmes qui reprennent leur voix après un traumatisme.",
+    "features": {
+      "confidentialSupport": "Soutien confidentiel de conseillers agréés spécialisés dans les soins liés aux traumatismes",
+      "safeCommunity": "Un espace communautaire sûr pour le parcours de guérison et de rétablissement"
+    },
+    "learnMore": "En savoir plus",
+    "imageAlt": "Groupe de femmes se soutenant mutuellement"
+  },
+
+  "testimonials": {
+    "title": "Ce que dit notre communauté",
+    "subtitle": "Témoignages réels de personnes sur leur parcours de guérison"
+  },
+
+  "about": {
+    "title": "À propos d'HerHaven",
+    "subtitle": "Accompagner les femmes victimes par un soutien bienveillant",
+    "description": "HerHaven est une initiative multidisciplinaire réunissant des professionnels de la santé mentale, des technologues et des défenseurs, dédiée à la promotion du bien-être psychologique des victimes de violences basées sur le genre via des outils numériques innovants et des soins centrés sur la communauté.",
+    "vision": {
+      "title": "Vision",
+      "description": "HerHaven imagine un Rwanda où chaque personne touchée par des violences basées sur le genre a accès à des soins compatissants et holistiques favorisant la guérison, la dignité et l'espoir."
+    },
+    "mission": {
+      "title": "Mission",
+      "description": "Soutenir les personnes ayant vécu des violences basées sur le genre au Rwanda en élargissant l'accès aux soins en santé mentale, en réduisant la stigmatisation et en construisant des réseaux sûrs et inclusifs pour la récupération et l'autonomisation."
+    },
+    "whyHerHaven": {
+      "title": "Pourquoi HerHaven ?",
+      "description": "Au Rwanda, près de la moitié des femmes subissent des actes de violence. HerHaven est une plateforme numérique qui offre un soutien sûr et compatissant, aidant les femmes à accéder aux soins, à guérir et à construire une vie épanouissante."
+    },
+    "values": {
+      "title": "Nos valeurs fondamentales",
+      "empathy": {
+        "title": "Empathie",
+        "description": "L'histoire de chaque survivant(e) compte."
+      },
+      "safety": {
+        "title": "Sécurité",
+        "description": "La confidentialité et la protection des données passent en premier."
+      },
+      "healing": {
+        "title": "Guérison",
+        "description": "Encourager la croissance personnelle et le rétablissement."
+      },
+      "collaboration": {
+        "title": "Collaboration",
+        "description": "Travailler avec les communautés et les expert·e·s."
+      }
+    },
+    "howWeWork": {
+      "title": "Comment nous travaillons",
+      "listen": {
+        "title": "Écouter avec compassion",
+        "description": "Nous créons un espace sûr où les femmes victimes peuvent partager leurs expériences, être entendues sans jugement, et avoir leurs voix vraiment valorisées."
+      },
+      "build": {
+        "title": "Construire des espaces sûrs",
+        "description": "Nous créons un espace sécurisé et confidentiel où les femmes peuvent accéder au soutien, aux ressources et à la guérison sans crainte ni jugement."
+      },
+      "empower": {
+        "title": "Autonomiser et connecter",
+        "description": "Nous mettons en relation les victimes avec des soins professionnels et des communautés de soutien."
+      }
+    },
+    "whyMatters": {
+      "title": "Pourquoi ce travail est important",
+      "stat1": "46%",
+      "stat1Description": "des femmes au Rwanda ont été victimes de violence de la part d'un partenaire",
+      "stat2": "5.6%",
+      "stat2Description": "de celles affectées accèdent aux soins de santé mentale",
+      "stat3Description": "Les plateformes numériques peuvent réduire la stigmatisation et améliorer l'accès"
+    },
+    "partners": {
+      "title": "Nos partenaires",
+      "subtitle": "Travailler ensemble pour créer des communautés plus sûres"
+    },
+    "joinUs": {
+      "title": "Rejoignez-nous pour faire la différence",
+      "description": "Si vous êtes un professionnel de la santé mentale, une ONG ou une personne souhaitant soutenir notre mission, nous serions ravis d'avoir de vos nouvelles.",
+      "partner": "Devenez partenaire",
+      "joinCounselor": "Rejoindre en tant que conseiller / conseillère"
+    }
+  },
+  "resources": {
+    "title": "Centre éducatif",
+    "subtitle": "Vous donner les moyens grâce aux connaissances sur la santé mentale, la récupération face au traumatisme et le soutien communautaire",
+    "searchPlaceholder": "Rechercher des articles...",
+    "categories": {
+      "all": "Tous",
+      "mentalHealth": "Comprendre la santé mentale",
+      "coping": "Faire face et guérir",
+      "gbv": "Sensibilisation aux VBG",
+      "rights": "Droits & protection",
+      "community": "Soutien communautaire"
+    },
+    "noArticles": "Aucun article trouvé correspondant à vos critères.",
+    "readMore": "Lire la suite",
+    "support": {
+      "title": "Besoin de soutien ?",
+      "description": "Si vous avez des difficultés ou avez besoin de parler à quelqu'un, nos services de soutien sont disponibles 24h/24. Vous n'êtes pas seul(e) dans ce parcours.",
+      "button": "Obtenir de l'aide maintenant"
+    }
+  },
+  "services": {
+    "title": "Nos services",
+    "subtitle": "Comment HerHaven aide",
+    "description": "HerHaven propose une approche complète du soutien en santé mentale, axée sur l'autonomisation des femmes avec les outils et ressources nécessaires pour guérir, grandir et s'épanouir.",
+    "getStarted": "Commencez aujourd'hui",
+    "readyToStart": "Prête à faire le premier pas vers la guérison ?",
+    "professionalSupport": {
+      "title": "Soutien professionnel",
+      "description": "Mettez-vous en relation avec des conseillers agréés spécialisés dans les traumatismes et les violences basées sur le genre. Notre plateforme garantit la confidentialité et un espace sûr pour votre parcours de guérison."
+    },
+    "peerCommunity": {
+      "title": "Communauté de pairs",
+      "description": "Rejoignez une communauté solidaire de femmes qui comprennent vos expériences. Partagez votre histoire, trouvez de l'encouragement et grandissez ensemble dans un environnement sûr et modéré."
+    },
+    "aiChat": {
+      "title": "Chat d'assistance IA",
+      "description": "Obtenez des conseils instantanés et confidentiels de notre chat d'assistance IA, conçu selon des principes informés par le traumatisme. Disponible 24h/24 et 7j/7 pour fournir une aide et des ressources immédiates."
+    },
+    "safeConfidential": {
+      "title": "Sûr & confidentiel",
+      "description": "Votre vie privée et votre sécurité sont nos priorités. Toutes les conversations sont chiffrées et sécurisées, assurant un environnement protégé pour votre parcours de guérison."
+    },
+    "crisisSupport": {
+      "title": "Soutien en cas de crise 24/7",
+      "description": "Aide immédiate quand vous en avez le plus besoin. Accédez aux ressources d'urgence et aux services d'intervention en cas de crise à tout moment, jour et nuit."
+    },
+    "educational": {
+      "title": "Ressources éducatives",
+      "description": "Explorez notre bibliothèque d'articles, guides et outils conçus pour vous donner des connaissances sur la santé mentale, la récupération après un traumatisme et les pratiques d'auto-soin."
+    }
+  },
+  "contact": {
+    "title": "Entrer en contact",
+    "subtitle": "Des questions ou besoin de soutien ? Nous sommes là pour aider. Remplissez le formulaire ci-dessous et nous vous répondrons dès que possible.",
+    "form": {
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Adresse e-mail",
+      "phone": "Numéro de téléphone",
+      "message": "Message",
+      "send": "Envoyer le message",
+      "firstNamePlaceholder": "Prénom",
+      "lastNamePlaceholder": "Nom",
+      "emailPlaceholder": "E-mail",
+      "phonePlaceholder": "07xx xxx xxx",
+      "messagePlaceholder": "Veuillez décrire comment nous pouvons vous aider...",
+      "required": "*"
+    },
+    "info": {
+      "title": "Informations de contact",
+      "email": "E-mail",
+      "emailAddress": "herhaven@counseling.com",
+      "phone": "Téléphone",
+      "phoneNumber": "+250785512714",
+      "address": "Adresse",
+      "addressLine1": "Kigali, Rwanda",
+      "addressLine2": "Gasabo"
+    },
+    "success": {
+      "title": "Message envoyé avec succès !",
+      "message": "Merci de nous avoir contactés. Nous vous répondrons dans les 24 heures."
+    }
+  },
+  "therapy": {
+    "title": "Nos thérapeutes experts",
+    "subtitle": "Soutien professionnel",
+    "description": "Mettez-vous en relation avec des thérapeutes vérifiés et agréés spécialisés dans la récupération après un traumatisme, le soutien en santé mentale et l'accompagnement des femmes sur leur parcours de guérison.",
+    "searchPlaceholder": "Rechercher par nom, spécialisation ou biographie...",
+    "allSpecializations": "Toutes les spécialités",
+    "available": "Disponible",
+    "yearsExperience": "années d'expérience",
+    "sessionsCompleted": "séances réalisées",
+    "reviews": "avis",
+    "verified": "Professionnel vérifié",
+    "verifiedLicensed": "Professionnel vérifié et agréé",
+    "clickToView": "Cliquer pour voir les détails",
+    "bookSession": "Réserver une séance",
+    "close": "Fermer",
+    "noResults": "Aucun conseiller trouvé",
+    "noResultsMessage": "Essayez d'ajuster vos critères de recherche ou vos filtres",
+    "modal": {
+      "about": "À propos",
+      "experience": "Expérience",
+      "specialization": "Spécialisation",
+      "verification": "Vérification",
+      "yearsOfExperience": "Années d'expérience",
+      "sessionsCompleted": "Séances terminées",
+      "availableForSessions": "Disponible pour des séances"
+    }
+  },
+  "footer": {
+    "description": "Un espace gratuit soutenant les femmes et les victimes d'abus avec des ressources confidentielles en santé mentale, favorisant la reprise grâce à la sécurité, la compassion et l'espoir",
+    "quickLinks": "Liens rapides",
+    "ourServices": "Nos services",
+    "contactUs": "Contactez-nous",
+    "emailPlaceholder": "E-mail",
+    "subscribe": "S'abonner",
+    "copyright": "Copyright © {{year}} Her Haven. Tous droits réservés.",
+    "links": {
+      "aboutUs": "À propos de nous",
+      "ourServices": "Nos services",
+      "educationHub": "Centre éducatif",
+      "havenAI": "Chatbot haven AI",
+      "mentalHealth": "Santé mentale",
+      "counseling": "Conseil",
+      "peerCommunity": "Communauté de pairs",
+      "gbvAwareness": "Sensibilisation aux VBG"
+    },
+    "contactInfo": {
+      "phone": "Téléphone : +(250) 789 123 456",
+      "email": "E-mail : herhaven@example.com"
+    }
+  }
+}

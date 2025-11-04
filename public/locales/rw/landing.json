@@ -1,0 +1,260 @@
+{
+  "nav": {
+    "home": "Ahabanza",
+    "about": "Ibyerekeye twebwe",
+    "services": "Serivisi",
+    "allServices": "Serivisi zose",
+    "therapyServices": "Serivisi za terapi",
+    "havenchatbot": "Chatbot ya HerHaven",
+    "resources": "Ibyafasha",
+    "contact": "Twandikire",
+    "login": "Injira",
+    "signup": "Iyandikishe",
+    "getStarted": "Tangira",
+    "continueasguest": "Komeza nk'umushyitsi"
+  },
+  "hero": {
+    "tagline": "Shaka ubufasha no gukira",
+    "heading": "Tukuyobora mu nzira yo kugira ubuzima bwiza bwo mu mutwe",
+    "description": "Ahantu hafite ubumenyi ku bikomere kandi hatagira ivangura; dushyigikira abagore n'abahuye n'ihohoterwa tubaha serivisi z'ubuzima bwo mu mutwe zizewe, ubufasha mu bihe by'akaga n'inzira zo gukira — byose mu mutekano, impuhwe n'icyizere.",
+    "getStarted": "Tangira",
+    "learnMore": "Menya byinshi",
+    "watchVideo": "Reba video"
+  },
+  "servicesSection": {
+    "title": "Serivisi zacu",
+    "subtitle": "Ubufasha bwuzuye buhuye n'urugendo rwawe rwo gukira",
+    "professional": {
+      "title": "Ubufasha bw'umwuga",
+      "description": "Huza n'abajyanama bafite uruhushya babizobereye mu kuvura ibikomere no guhangana n'ihohoterwa rishingiye ku gitsina."
+    },
+    "community": {
+      "title": "Umuryango w'abagenzi",
+      "description": "Jya mu muryango ushyigikira abagore basangiye ubunararibonye."
+    },
+    "aiChat": {
+      "title": "Chat y'ubufasha bwa AI",
+      "description": "Bona inama zihuse kandi zibitse ziboneka amasaha yose kugira ngo ubone ubufasha bw'ako kanya."
+    },
+    "viewAll": "Reba serivisi zose"
+  },
+
+  "homeabout": {
+    "tagline": "Guteza imbere ubuzima bwiza bwo mu mutwe",
+    "heading": "HerHaven ni byinshi kurusha urubuga—ni ihuriro ritanga umutekano ku bagore barimo kongera kugarura ijwi ryabo nyuma yo guhura n'ibikomere.",
+    "features": {
+      "confidentialSupport": "Ubufasha bw'ibanga butangwa n'abajyanama bafite uruhushya basobanukiwe n'ibikomere",
+      "safeCommunity": "Aho ku muryango hizewe ho gukira no kugaruka ku buzima"
+    },
+    "learnMore": "Menya byinshi",
+    "imageAlt": "Itsinda ry'abagore basanzwe bafashanya"
+  },
+
+  "testimonials": {
+    "title": "Ibyo umuryango wacu uvuga",
+    "subtitle": "Inkuru nyazo z'abahuye n'ibyo bahuye na byo mu rugendo rwabo rwo gukira"
+  },
+
+  "about": {
+    "title": "Ibyerekeye HerHaven",
+    "subtitle": "Gushyigikira abagore bahuye n'ihohoterwa mu buryo bufite impuhwe",
+    "description": "HerHaven ni umushinga uhuriza hamwe inzobere mu buzima bwo mu mutwe, abatekinisiye n'abaharanira impinduka, ukaba wiyemeje guteza imbere imibereho myiza y'abahuye n'ihohoterwa rishingiye ku gitsina binyuze mu bikoresho by'ikoranabuhanga n'ubufasha bushingiye ku muryango.",
+    "vision": {
+      "title": "Ibyifuzo",
+      "description": "HerHaven yiyumvamo u Rwanda aho buri muntu wakorewe ihohoterwa ashobora kubona ubufasha bufite impuhwe, bwuzuye kandi butera ibyizere mu gukira."
+    },
+    "mission": {
+      "title": "Inshingano",
+      "description": "Gushyigikira abantu bahuye n'ihohoterwa rishingiye ku gitsina mu Rwanda binyuze mu kongera uburyo bwo kubona ubufasha mu buzima bwo mu mutwe, kugabanya isura mbi no kubaka imiyoboro y'umutekano n'ubufatanye."
+    },
+    "whyHerHaven": {
+      "title": "Kuki HerHaven?",
+      "description": "Mu Rwanda, hafi igice cy'abagore bahuye n'ihohoterwa. HerHaven ni urubuga rw'ikoranabuhanga rutanga ubufasha bwizewe n'impuhwe, rufasha abagore kubona ubuvuzi, gukira no kubaka ubuzima bwiza."
+    },
+    "values": {
+      "title": "Indangagaciro zacu",
+      "empathy": {
+        "title": "Kumva undi",
+        "description": "Inkuru ya buri muntu ihabwa agaciro."
+      },
+      "safety": {
+        "title": "Umutekano",
+        "description": "Ibanga n'uburinzi bw'amakuru ni iby'ingenzi cyane."
+      },
+      "healing": {
+        "title": "Gukira",
+        "description": "Gushyigikira gukura no kugaruka ku buzima bwiza."
+      },
+      "collaboration": {
+        "title": "Ubufatanye",
+        "description": "Gukorana n'imiryango n'inzobere mu rwego rwo gutanga serivisi nziza."
+      }
+    },
+    "howWeWork": {
+      "title": "Uko dukora",
+      "listen": {
+        "title": "Tumvira mu bwubahane",
+        "description": "Turema umwanya uteje ubwoba aho abagore bahuye n'ihohoterwa bashobora gusangira uburambe bwabo, bumvikane nta kubagereranya, kandi amajwi yabo akabahwa agaciro."
+      },
+      "build": {
+        "title": "Tubaka ahantu hizewe",
+        "description": "Turema umwanya uteje ubwoba kandi wizewe aho abagore bashobora kubona inkunga, ibyabafasha, no gukira nta kwiheba cyangwa gucibwa urubanza."
+      },
+      "empower": {
+        "title": "Duha imbaraga no guhuza",
+        "description": "Duhuza abahuye n'ihohoterwa n'abavuzi n'imiryango ishyigikira."
+      }
+    },
+    "whyMatters": {
+      "title": "Impamvu iki gikorwa gikenewe",
+      "stat1": "46%",
+      "stat1Description": "by'abagore mu Rwanda bahuye n'ihohoterwa rikorerwa n'umukunzi cyangwa umugabo",
+      "stat2": "5.6%",
+      "stat2Description": "by'abahuye n'ihohoterwa babona ubuvuzi bwo mu mutwe",
+      "stat3Description": "Imbuga z'ikoranabuhanga zishobora kugabanya isura mbi no korohereza kubona ubufasha"
+    },
+    "partners": {
+      "title": "Abafatanyabikorwa bacu",
+      "subtitle": "Dukorana kugira ngo dutere intambwe mu kubaka imiryango yizewe"
+    },
+    "joinUs": {
+      "title": "Duhuze kugira ngo tugire impinduka",
+      "description": "Niba uri umunyamwuga mu buzima bwo mu mutwe, umuryango udaharanira inyungu, cyangwa umuntu ushaka gushyigikira umurongo wacu, twakwishimira kumva ibyifuzo byawe.",
+      "partner": "Ushobora kuba umufatanyabikorwa",
+      "joinCounselor": "Iyandikishe nk'umujyanama"
+    }
+  },
+  "resources": {
+    "title": "Icyicaro cy'ubumenyi",
+    "subtitle": "Tuguha ubumenyi n'ubusobanuro ku buzima bwo mu mutwe, gukira ibikomere no kubona ubufasha mu muryango",
+    "searchPlaceholder": "Shakisha inyandiko...",
+    "categories": {
+      "all": "Zose",
+      "mentalHealth": "Kumenya ubuzima bwo mu mutwe",
+      "coping": "Uko wahangana no gukira",
+      "gbv": "Kumenya iby'ihohoterwa rishingiye ku gitsina",
+      "rights": "Uburenganzira & uburinzi",
+      "community": "Ubufasha bw'umuryango"
+    },
+    "noArticles": "Nta nyandiko yabonetse ihuye n'ibyo wasabye.",
+    "readMore": "Soma byinshi",
+    "support": {
+      "title": "Ukeneye ubufasha?",
+      "description": "Niba uri mu bibazo cyangwa ushaka kuvugana n'umuntu, serivisi zacu z'inkunga zirahari 24/7. Ntabwo uri wenyine muri uru rugendo.",
+      "button": "Saba ubufasha ubu"
+    }
+  },
+  "services": {
+    "title": "Serivisi zacu",
+    "subtitle": "Uko HerHaven igufasha",
+    "description": "HerHaven itanga uburyo bwuzuye bwo gushyigikira ubuzima bwo mu mutwe, igamije guha abagore ibikoresho n'ubumenyi byo gukira, gukura no kugira ubuzima bwiza.",
+    "getStarted": "Tangira uyu munsi",
+    "readyToStart": "Witeguye gutera intambwe yo gukira?",
+    "professionalSupport": {
+      "title": "Ubufasha bw'umwuga",
+      "description": "Huza n'abajyanama bafite uruhushya basobanukiwe n'ibikomere n'ihohoterwa rishingiye ku gitsina. Urubuga rwacu ruba rwizewe kandi rutanga ahantu hizewe ho gukira."
+    },
+    "peerCommunity": {
+      "title": "Umuryango w'abagenzi",
+      "description": "Jya mu muryango w'abandi bagore basangiye ubunararibonye. Sangira inkuru yawe, ubone inkunga, kandi mukure hamwe mu mutekano kandi byubahiriza amategeko."
+    },
+    "aiChat": {
+      "title": "Chat y'ubufasha bwa AI",
+      "description": "Bona inama zihuse kandi zibitse zituruka ku kiganiro cyacu cya AI, cyubakiye ku mahame yo kumenya ibikomere. Kiraboneka 24/7 kugira ngo kiguhe ubufasha n'inkuru z'uburyo bwo kwiyitaho."
+    },
+    "safeConfidential": {
+      "title": "Byizewe & Ibanga",
+      "description": "Ibanga ryawe n'umutekano wawe ni iby'ingenzi kuri twe. Ibiganiro byose birakingirwa kandi birinzwe kugira ngo wumve ufite umutekano."
+    },
+    "crisisSupport": {
+      "title": "Ubufasha mu bihe by'amage 24/7",
+      "description": "Ubufasha bwihuse igihe ubikeneye. Shakisha umutaro n'ubufasha bwo guhagarika ibyago mu masaha yose."
+    },
+    "educational": {
+      "title": "Ibyo kwiga",
+      "description": "Sobanukirwa n'amasomo yacu y'inyandiko, imfashanyigisho n'ibikoresho bigufasha kumenya byinshi ku buzima bwo mu mutwe, gukira no kwiyitaho."
+    }
+  },
+  "contact": {
+    "title": "Twandikire",
+    "subtitle": "Ufite ikibazo cyangwa ukeneye ubufasha? Turahari kugira ngo tugufashe. Zuza ifishi hasi maze tuzagusubize vuba.",
+    "form": {
+      "firstName": "Izina",
+      "lastName": "Amazina",
+      "email": "Imeli",
+      "phone": "Telefone",
+      "message": "Ubutumwa",
+      "send": "Ohereza ubutumwa",
+      "firstNamePlaceholder": "Izina",
+      "lastNamePlaceholder": "Amazina",
+      "emailPlaceholder": "Imeli",
+      "phonePlaceholder": "07xx xxx xxx",
+      "messagePlaceholder": "Sobanura uko twagufasha...",
+      "required": "*"
+    },
+    "info": {
+      "title": "Amakuru yo kuvugana",
+      "email": "Imeli",
+      "emailAddress": "herhaven@counseling.com",
+      "phone": "Telefone",
+      "phoneNumber": "+250785512714",
+      "address": "Aderesi",
+      "addressLine1": "Kigali, Rwanda",
+      "addressLine2": "Gasabo"
+    },
+    "success": {
+      "title": "Ubutumwa bwoherejwe neza!",
+      "message": "Murakoze kutwandikira. Tuzagusubiza mu masaha 24."
+    }
+  },
+  "therapy": {
+    "title": "Abaganga bacu b'inzobere",
+    "subtitle": "Ubufasha bw'umwuga",
+    "description": "Huza n'abaganga bemewe kandi bafite ubumenyi mu gukira ibikomere, gutanga ubufasha mu buzima bwo mu mutwe no gufasha abagore mu rugendo rwabo rwo gukira.",
+    "searchPlaceholder": "Shakisha ku izina, umwuga cyangwa ibisobanuro...",
+    "allSpecializations": "Impuguke zose",
+    "available": "Biboneka",
+    "yearsExperience": "imyaka y'uburambe",
+    "sessionsCompleted": "amasomo yarangijwe",
+    "reviews": "ibitekerezo",
+    "verified": "Umunyamwuga wemewe",
+    "verifiedLicensed": "Umunyamwuga wemewe kandi afite uruhushya",
+    "clickToView": "Kanda urebe ibisobanuro",
+    "bookSession": "Tegura ikiganiro",
+    "close": "Funga",
+    "noResults": "Nta bajyanama babonetse",
+    "noResultsMessage": "Gerageza guhindura ibyo ushaka cyangwa filtre zawe",
+    "modal": {
+      "about": "Ibyerekeye",
+      "experience": "Uburambe",
+      "specialization": "Impuguke",
+      "verification": "Kugezwaho",
+      "yearsOfExperience": "Imyaka y'uburambe",
+      "sessionsCompleted": "Amasomo yarangiye",
+      "availableForSessions": "Aboneka ku masomo"
+    }
+  },
+  "footer": {
+    "description": "Ahantu hatishyurwa hafasha abagore n'abahuye n'ihohoterwa hatanga serivisi z'ubuzima bwo mu mutwe zihariye kandi zibitse, bigatuma gukira bishoboka biciye mu mutekano, impuhwe n'icyizere",
+    "quickLinks": "Amalinki yihuse",
+    "ourServices": "Serivisi zacu",
+    "contactUs": "Twandikire",
+    "emailPlaceholder": "Imeli",
+    "subscribe": "Iyandikishe",
+    "copyright": "Copyright © {{year}} Her Haven. Uburenganzira bwose burabitswe.",
+    "links": {
+      "aboutUs": "Ibyerekeye twe",
+      "ourServices": "Serivisi zacu",
+      "educationHub": "Icyicaro cy'ubumenyi",
+      "havenAI": "Chatbot ya haven AI",
+      "mentalHealth": "Ubuzima bwo mu mutwe",
+      "counseling": "Inama",
+      "peerCommunity": "Umuryango w'abagenzi",
+      "gbvAwareness": "Kumenya iby'ihohoterwa rishingiye ku gitsina"
+    },
+    "contactInfo": {
+      "phone": "Telefone : +(250) 789 123 456",
+      "email": "Imeli : herhaven@example.com"
+    }
+  }
+}
