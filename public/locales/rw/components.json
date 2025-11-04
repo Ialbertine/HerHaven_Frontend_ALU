@@ -4,59 +4,16 @@
     "about": "Ibyerekeye twebwe",
     "services": "Serivisi",
     "resources": "Ibikoresho",
-    "contact": "Duhamagare",
-    "login": "Kwinjira",
-    "signup": "Kwiyandikisha"
+    "contact": "Duhamagare"
   },
-  "sidebar": {
-    "dashboard": "Ikibaho",
-    "appointments": "Gahunda",
-    "therapy": "Shakisha Umuvuzi",
-    "community": "Umuryango",
-    "resources": "Ibikoresho",
-    "profile": "Umwirondoro",
-    "schedule": "Gahunda",
-    "sessions": "Ibiganiro",
-    "management": "Ubuyobozi",
-    "feedback": "Ibitekerezo"
-  },
-  "modal": {
-    "title": "Emeza Igikorwa",
-    "areYouSure": "Uremereye?",
-    "cannotUndo": "Iki gikorwa ntishobora kugarurwa.",
-    "cancel": "Kureka",
-    "confirm": "Kwemeza",
-    "close": "Gufunga"
-  },
-  "notification": {
-    "title": "Ubutumwa",
-    "markAllRead": "Andika byose nk'Byasomwe",
-    "noNotifications": "Nta butumwa",
-    "newAppointment": "Gahunda nshya yateganijwe",
-    "appointmentCancelled": "Gahunda yahagaritswe",
-    "appointmentConfirmed": "Gahunda yemejwe",
-    "newMessage": "Ubutumwa bushya"
-  },
-  "feedback": {
-    "title": "Twifuza Ibitekerezo Byawe",
-    "subtitle": "Dufashe kunoza HerHaven",
-    "name": "Izina",
-    "email": "Imeli",
-    "message": "Ibitekerezo Byawe",
-    "rating": "Wateganya ute uburambe bwawe?",
-    "submit": "Ohereza Ibitekerezo",
-    "submitting": "Urohereza...",
-    "thankYou": "Urakoze kubitekerezo byawe!"
-  },
-  "quickExit": {
-    "title": "Gusohoka Vuba",
-    "description": "Sohoka vuba kuri iyi rubuga hanyuma usibe amateka",
-    "button": "Gusohoka Vuba"
-  },
-  "sosButton": {
-    "title": "SOS y'Ihutirwa",
-    "description": "Bona ubufasha bwihuse",
-    "activate": "Koresha SOS"
+  "footer": {
+    "aboutUs": "Ibyerekeye twebwe",
+    "quickLinks": "Ihuza ryihuse",
+    "contactUs": "Duhamagare",
+    "followUs": "Dukurikire",
+    "copyright": "© 2024 HerHaven. Uburenganzira bwose burahagaritswe.",
+    "privacyPolicy": "Politiki y'Ibanga",
+    "termsOfService": "Amabwiriza y'Ubukoresha"
   },
   "testimonial": {
     "heading": "Ibyo Abantu Bavuga",
@@ -65,11 +22,6 @@
     "previous": "Ibiri Imbere",
     "next": "Ibikurikira",
     "anonymous": "Uwifitiye Ibanga",
-    "verifiedUser": "Umukoresha Wemejwe",
-    "noTestimonials": "Nta byiyumviro biraboneka ubu.",
-    "unableToLoad": "Bidashoboka gufungura ubuhamya muri iki gihe.",
-    "pageOf": "kuri",
-    "pages": "amapaji",
-    "testimonials": "ubuhamya"
+    "verifiedUser": "Umukoresha Wemejwe"
   }
 }

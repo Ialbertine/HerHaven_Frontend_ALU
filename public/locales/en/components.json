@@ -4,62 +4,24 @@
     "about": "About us",
     "services": "Services",
     "resources": "Resources",
-    "contact": "Contact Us",
-    "login": "Login",
-    "signup": "Sign Up"
+    "contact": "Contact Us"
   },
-  "sidebar": {
-    "dashboard": "Dashboard",
-    "appointments": "Appointments",
-    "therapy": "Find Therapist",
-    "community": "Community",
-    "resources": "Resources",
-    "profile": "Profile",
-    "schedule": "Schedule",
-    "sessions": "Sessions",
-    "management": "Management",
-    "feedback": "Feedback"
-  },
-  "modal": {
-    "title": "Confirm Action",
-    "areYouSure": "Are you sure?",
-    "cannotUndo": "This action cannot be undone.",
-    "cancel": "Cancel",
-    "confirm": "Confirm",
-    "close": "Close"
-  },
-  "notification": {
-    "title": "Notifications",
-    "markAllRead": "Mark all as read",
-    "noNotifications": "No notifications",
-    "newAppointment": "New appointment scheduled",
-    "appointmentCancelled": "Appointment cancelled",
-    "appointmentConfirmed": "Appointment confirmed",
-    "newMessage": "New message"
-  },
-  "feedback": {
-    "title": "We'd Love Your Feedback",
-    "subtitle": "Help us improve HerHaven",
-    "name": "Name",
-    "email": "Email",
-    "message": "Your Feedback",
-    "rating": "How would you rate your experience?",
-    "submit": "Submit Feedback",
-    "submitting": "Submitting...",
-    "thankYou": "Thank you for your feedback!"
-  },
-  "quickExit": {
-    "title": "Quick Exit",
-    "description": "Quickly leave this site and clear history",
-    "button": "Quick Exit"
-  },
-  "sosButton": {
-    "title": "Emergency SOS",
-    "description": "Get immediate help",
-    "activate": "Activate SOS"
+  "footer": {
+    "aboutUs": "About Us",
+    "quickLinks": "Quick Links",
+    "contactUs": "Contact Us",
+    "followUs": "Follow Us",
+    "copyright": "© 2024 HerHaven. All rights reserved.",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service"
   },
   "testimonial": {
+    "heading": "What People Say",
+    "title": "Stories of Hope and Healing",
+    "description": "Real stories from women who found strength and support through HerHaven",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "anonymous": "Anonymous",
+    "verifiedUser": "Verified User"
   }
 }
