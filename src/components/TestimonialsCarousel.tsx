@@ -291,9 +291,8 @@ const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({
         {/* Testimonial Counter */}
         {slidesCount > 1 && (
           <div className="text-center mt-6 text-sm text-gray-500">
-            {currentIndex + 1} {t("testimonial.pageOf")} {slidesCount}{" "}
-            {t("testimonial.pages")} ({testimonials.length}{" "}
-            {t("testimonial.testimonials")})
+            {currentIndex + 1} of {slidesCount} pages ({testimonials.length}{" "}
+            testimonials)
           </div>
         )}
       </div>
