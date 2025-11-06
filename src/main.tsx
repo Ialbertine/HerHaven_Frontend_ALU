@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import "@/index.css";
 import App from "@/App.tsx";
 import { processSOSQueue } from "@/utils/offlineSOSQueue";
+import "@/i18n/config";
 
 // Register service worker for PWA functionality
 if ("serviceWorker" in navigator) {

@@ -12,50 +12,49 @@ import {
   Smartphone,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const About: React.FC = () => {
+  const { t } = useTranslation("landing");
 
   const coreValues = [
     {
       icon: Handshake,
-      title: "Empathy",
-      description: "Every survivor's story matters.",
+      title: t("about.values.empathy.title"),
+      description: t("about.values.empathy.description"),
     },
     {
       icon: Shield,
-      title: "Safety",
-      description: "Confidentiality and data protection come first.",
+      title: t("about.values.safety.title"),
+      description: t("about.values.safety.description"),
     },
     {
       icon: Sprout,
-      title: "Healing",
-      description: "Encouraging personal growth and recovery.",
+      title: t("about.values.healing.title"),
+      description: t("about.values.healing.description"),
     },
     {
       icon: Lightbulb,
-      title: "Collaboration",
-      description: "Working with communities and experts.",
+      title: t("about.values.collaboration.title"),
+      description: t("about.values.collaboration.description"),
     },
   ];
 
   const workflowSteps = [
     {
       icon: Ear,
-      title: "Listen with Compassion",
-      description:
-        "We create a safe space where women survivors can share their experiences, be heard without judgment, and have their voices truly valued.",
+      title: t("about.howWeWork.listen.title"),
+      description: t("about.howWeWork.listen.description"),
     },
     {
       icon: Shield,
-      title: "Build Safe Spaces",
-      description:
-        "We create a secure, confidential space where women can access support, resources, and healing without fear or judgment.",
+      title: t("about.howWeWork.build.title"),
+      description: t("about.howWeWork.build.description"),
     },
     {
       icon: Link2,
-      title: "Empower & Connect",
-      description:
-        "We link survivors to professional care and supportive communities.",
+      title: t("about.howWeWork.empower.title"),
+      description: t("about.howWeWork.empower.description"),
     },
   ];
 
@@ -66,21 +65,16 @@ const About: React.FC = () => {
     "UN Women Rwanda",
   ];
 
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-lavender-50 to-white">
       {/* Section 1: About herhaven */}
-      <section className="pt-40 pb-6 px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
+      <section className="pt-36 pb-6 px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
         <div className="text-center mb-2 animate-[fade-in-up_1s_ease-out_forwards]">
           <h1 className="text-2xl md:text-4xl font-bold text-purple-900 mb-6">
-            About HerHaven
+            {t("about.title")}
           </h1>
           <p className="text-lg md:text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed">
-            HerHaven is a multidisciplinary initiative bringing together mental
-            health professionals, technologists, and advocates, dedicated to
-            promoting psychological well-being among survivors of gender-based
-            violence through innovative digital tools and community-centered
-            care.
+            {t("about.description")}
           </p>
         </div>
       </section>
@@ -94,13 +88,11 @@ const About: React.FC = () => {
               <div className="flex items-center mb-4">
                 <Globe className="w-6 h-6 text-purple-600 mr-4" />
                 <h2 className="text-2xl font-semibold text-purple-900">
-                  Vision
+                  {t("about.vision.title")}
                 </h2>
               </div>
               <p className="text-gray-600 text-base leading">
-                HerHaven envisions a Rwanda where every person impacted by
-                gender-based violence has access to compassionate, holistic care
-                that fosters healing, dignity, and hope.
+                {t("about.vision.description")}
               </p>
             </div>
 
@@ -109,14 +101,11 @@ const About: React.FC = () => {
               <div className="flex items-center mb-4">
                 <Sparkles className="w-6 h-6 text-purple-600 mr-4" />
                 <h2 className="text-2xl font-semibold text-purple-900">
-                  Mission
+                  {t("about.mission.title")}
                 </h2>
               </div>
               <p className="text-gray-600 text-base leading">
-                To support people who have experienced gender-based violence in
-                Rwanda by expanding access to mental health care, reducing
-                stigma, and building safe, inclusive networks for recovery and
-                empowerment.
+                {t("about.mission.description")}
               </p>
             </div>
 
@@ -125,14 +114,11 @@ const About: React.FC = () => {
               <div className="flex items-center mb-4">
                 <Sparkles className="w-6 h-6 text-purple-600 mr-4" />
                 <h2 className="text-2xl font-semibold text-purple-900">
-                  Why HerHaven?
+                  {t("about.whyHerHaven.title")}
                 </h2>
               </div>
               <p className="text-gray-600 text-base leading">
-                In Rwanda, nearly half of women experience abuse or violence.
-                HerHaven is a digital platform that provides safe, compassionate
-                support, helping women access care, heal, and build fulfilling
-                lives.
+                {t("about.whyHerHaven.description")}
               </p>
             </div>
           </div>
@@ -142,7 +128,7 @@ const About: React.FC = () => {
       {/* Section 3: Core Values */}
       <section className="py-16 px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
         <h2 className="text-4xl font-bold text-purple-900 text-center mb-12">
-          Our Core Values
+          {t("about.values.title")}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {coreValues.map((value, index) => {
@@ -171,7 +157,7 @@ const About: React.FC = () => {
       <section className="py-16 px-4 md:px-8 lg:px-16 bg-gradient-to-b from-white to-lavender-50">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl font-bold text-purple-900 text-center mb-12">
-            Our Partners
+            {t("about.partners.title")}
           </h2>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
@@ -192,7 +178,7 @@ const About: React.FC = () => {
       {/* What We Do */}
       <section className="py-16 px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
         <h2 className="text-4xl font-bold text-purple-900 text-center mb-12">
-          How We Work
+          {t("about.howWeWork.title")}
         </h2>
         <div className="grid md:grid-cols-3 gap-8">
           {workflowSteps.map((step, index) => {
@@ -229,20 +215,24 @@ const About: React.FC = () => {
       <section className="py-16 px-4 md:px-8 lg:px-16 bg-gradient-to-r from-purple-900 to-purple-700 text-white">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">
-            Why This Work Matters
+            {t("about.whyMatters.title")}
           </h2>
 
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             <div className="text-center bg-white/10 backdrop-blur-lg rounded-xl p-8 hover:bg-white/20 transition-all duration-300">
-              <div className="text-3xl font-bold mb-2">46%</div>
+              <div className="text-3xl font-bold mb-2">
+                {t("about.whyMatters.stat1")}
+              </div>
               <p className="text-lg">
-                of women in Rwanda have experienced partner violence
+                {t("about.whyMatters.stat1Description")}
               </p>
             </div>
             <div className="text-center bg-white/10 backdrop-blur-lg rounded-xl p-8 hover:bg-white/20 transition-all duration-300">
-              <div className="text-3xl font-bold mb-2">5.6%</div>
+              <div className="text-3xl font-bold mb-2">
+                {t("about.whyMatters.stat2")}
+              </div>
               <p className="text-lg">
-                of those affected access mental health care
+                {t("about.whyMatters.stat2Description")}
               </p>
             </div>
             <div className="text-center bg-white/10 backdrop-blur-lg rounded-xl p-8 hover:bg-white/20 transition-all duration-300">
@@ -250,11 +240,10 @@ const About: React.FC = () => {
                 <Smartphone className="w-14 h-14" />
               </div>
               <p className="text-lg">
-                Digital platforms can reduce stigma and improve access
+                {t("about.whyMatters.stat3Description")}
               </p>
             </div>
           </div>
-
         </div>
       </section>
 
@@ -262,21 +251,20 @@ const About: React.FC = () => {
       <section className="py-16 px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-purple-900 mb-6">
-            Join Us in Making a Difference
+            {t("about.joinUs.title")}
           </h2>
           <p className="text-lg text-gray-700 max-w-3xl mx-auto mb-10 leading-relaxed">
-            If you are a mental health professional, NGO, or individual
-            interested in supporting our mission, we'd love to hear from you.
+            {t("about.joinUs.description")}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/contact">
               <button className="px-8 py-4 bg-lavender-500 hover:bg-lavender-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                Partner With Us
+                {t("about.joinUs.partner")}
               </button>
             </Link>
             <Link to="/counselorform">
               <button className="px-8 py-4 bg-purple-100 hover:bg-purple-200 text-purple-900 font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                Join as a Counselor
+                {t("about.joinUs.joinCounselor")}
               </button>
             </Link>
           </div>

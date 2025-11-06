@@ -1,0 +1,27 @@
+{
+  "navbar": {
+    "home": "Ahabanza",
+    "about": "Ibyerekeye twebwe",
+    "services": "Serivisi",
+    "resources": "Ibikoresho",
+    "contact": "Duhamagare"
+  },
+  "footer": {
+    "aboutUs": "Ibyerekeye twebwe",
+    "quickLinks": "Ihuza ryihuse",
+    "contactUs": "Duhamagare",
+    "followUs": "Dukurikire",
+    "copyright": "© 2024 HerHaven. Uburenganzira bwose burahagaritswe.",
+    "privacyPolicy": "Politiki y'Ibanga",
+    "termsOfService": "Amabwiriza y'Ubukoresha"
+  },
+  "testimonial": {
+    "heading": "Ibyo Abantu Bavuga",
+    "title": "Inkuru z'Ibyiringiro no Gukira",
+    "description": "Inkuru nyazo z'abagore basanze imbaraga n'ubufasha binyuze kuri HerHaven",
+    "previous": "Ibiri Imbere",
+    "next": "Ibikurikira",
+    "anonymous": "Uwifitiye Ibanga",
+    "verifiedUser": "Umukoresha Wemejwe"
+  }
+}

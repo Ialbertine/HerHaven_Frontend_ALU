@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Bell, Menu } from "lucide-react";
 import NotificationPanel from "./NotificationPanel";
+import LanguageSwitcher from "./LanguageSwitcher";
 import { getUnreadNotificationCount } from "@/apis/notification";
 
 interface DashboardHeaderProps {
@@ -49,10 +50,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     userType === "super_admin"
       ? "Administrator"
       : userType === "counselor"
-        ? "Counselor"
-        : userType === "guest"
-          ? "Guest"
-          : "User";
+      ? "Counselor"
+      : userType === "guest"
+      ? "Guest"
+      : "User";
 
   return (
     <>
@@ -74,18 +75,23 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         </div>
 
         <div className="flex items-center gap-4">
+          {/* Language Switcher */}
+          <LanguageSwitcher />
+
           {/* Hide notifications for guests */}
           {userType !== "guest" && (
             <div className="relative">
               <button
-                onClick={() => setIsNotificationPanelOpen(!isNotificationPanelOpen)}
+                onClick={() =>
+                  setIsNotificationPanelOpen(!isNotificationPanelOpen)
+                }
                 className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-all relative"
                 aria-label="Notifications"
               >
                 <Bell className="w-6 h-6" />
                 {notificationCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                    {notificationCount > 9 ? '9+' : notificationCount}
+                    {notificationCount > 9 ? "9+" : notificationCount}
                   </span>
                 )}
               </button>

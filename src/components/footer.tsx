@@ -6,6 +6,7 @@ import {
   FaTwitter,
   FaInstagram,
 } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 // import { Link } from "react-router-dom";
 // import { Logo } from "./navbar";
 
@@ -28,6 +29,7 @@ interface Particle {
 }
 
 const Footer: React.FC = () => {
+  const { t } = useTranslation("landing");
   const [particles, setParticles] = useState<Particle[]>([]);
 
   useEffect(() => {
@@ -42,23 +44,24 @@ const Footer: React.FC = () => {
   }, []);
 
   const quickLinks: LinkItem[] = [
-    { label: "About Us", path: "/about-us" },
-    { label: "Our Services", path: "/our-services" },
-    { label: "Education Hub", path: "/education-hub" },
-    { label: "haven AI Chatbot", path: "/haven-ai" },
+    { label: t("footer.links.aboutUs"), path: "/about-us" },
+    { label: t("footer.links.ourServices"), path: "/our-services" },
+    { label: t("footer.links.educationHub"), path: "/education-hub" },
+    { label: t("footer.links.havenAI"), path: "/haven-ai" },
   ];
 
   const services: LinkItem[] = [
-    { label: "Mental health", path: "/mental-health" },
-    { label: "counseling", path: "/counseling" },
-    { label: "peer community", path: "/peer-community" },
-    { label: "GBV awareness", path: "/awareness " },
+    { label: t("footer.links.mentalHealth"), path: "/mental-health" },
+    { label: t("footer.links.counseling"), path: "/counseling" },
+    { label: t("footer.links.peerCommunity"), path: "/peer-community" },
+    { label: t("footer.links.gbvAwareness"), path: "/awareness " },
   ];
 
   const infoSections: InfoSection[] = [
     {
-      title: "Contact Us",
-      content: "Phone: +(250) 789 123 456\n Email: herhaven@example.com",
+      title: t("footer.contactUs"),
+      content:
+        t("footer.contactInfo.phone") + "\n " + t("footer.contactInfo.email"),
     },
   ];
 
@@ -122,20 +125,20 @@ const Footer: React.FC = () => {
                   </span>
                 </div>
                 <p className="text-[14px] mt-4 text-white">
-                  A free space supporting women and survivors of abuse with confidential mental health resources, empowering recovery through safety, compassion, and hope
+                  {t("footer.description")}
                 </p>
               </div>
               <form className="flex items-center gap-2">
                 <input
                   type="email"
-                  placeholder="Email"
+                  placeholder={t("footer.emailPlaceholder")}
                   className="py-3 px-6 rounded-full bg-white/90 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#9c27b0] transition-all duration-300"
                 />
                 <button
                   type="submit"
                   className="px-6 py-3 rounded-full border border-transparent  bg-[#9c27b0] text-white font-bold hover:bg-[#7b1fa2] hover:shadow-lg transform hover:scale-105 transition-all duration-300 ease-in-out"
                 >
-                  Subscribe
+                  {t("footer.subscribe")}
                 </button>
               </form>
             </div>
@@ -143,12 +146,16 @@ const Footer: React.FC = () => {
             {/* Right Side: Quick Links, Services, and Address */}
             <div className="flex flex-col lg:flex-row gap-16 lg:w-2/3 mt-5">
               <div className="flex flex-col">
-                <h2 className="font-bold text-xl text-white">Quick Links</h2>
+                <h2 className="font-bold text-xl text-white">
+                  {t("footer.quickLinks")}
+                </h2>
                 {renderLinkList(quickLinks)}
               </div>
 
               <div className="flex flex-col">
-                <h2 className="font-bold text-xl text-white">Our Services</h2>
+                <h2 className="font-bold text-xl text-white">
+                  {t("footer.ourServices")}
+                </h2>
                 {renderLinkList(services)}
               </div>
 
@@ -182,8 +189,7 @@ const Footer: React.FC = () => {
           <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
             <div className="text-center md:text-left mb-4 md:mb-0">
               <p className="text-gray-200">
-                Copyright © {new Date().getFullYear()} Her Haven. All Rights
-                Reserved.
+                {t("footer.copyright", { year: new Date().getFullYear() })}
               </p>
             </div>
 

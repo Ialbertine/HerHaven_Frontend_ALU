@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Menu, X, Globe, ALargeSmall, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface DropdownItem {
   href: string;
@@ -16,20 +17,20 @@ interface NavLink {
 }
 
 const navLinks: NavLink[] = [
-  { href: "/", label: "Home" },
-  { href: "/aboutus", label: "About us" },
+  { href: "/", label: "nav.home" },
+  { href: "/aboutus", label: "nav.about" },
   {
     href: "/services",
-    label: "Services",
+    label: "nav.services",
     hasDropdown: true,
     dropdownItems: [
-      { href: "/services", label: "All Services" },
-      { href: "/therapy", label: "Therapy Services" },
-      { href: "/havenchatbot", label: "Herhaven Chatbot" },
+      { href: "/services", label: "nav.allServices" },
+      { href: "/therapy", label: "nav.therapyServices" },
+      { href: "/havenchatbot", label: "nav.havenchatbot" },
     ],
   },
-  { href: "/resources", label: "Resources" },
-  { href: "/contact", label: "Contact Us" },
+  { href: "/resources", label: "nav.resources" },
+  { href: "/contact", label: "nav.contact" },
 ];
 
 export const Logo: React.FC = () => (
@@ -52,20 +53,57 @@ const ResizeText: React.FC = () => (
   </button>
 );
 
-const LanguageToggle: React.FC = () => (
-  <button
-    aria-label="Toggle languages"
-    className="hover:scale-110 transition-transform"
-  >
-    <Globe className="w-5 h-5 md:w-6 md:h-6 text-black" />
-  </button>
-);
+const LanguageToggle: React.FC = () => {
+  const { i18n } = useTranslation();
+  const [showLanguageMenu, setShowLanguageMenu] = useState(false);
+
+  const toggleLanguage = (lang: string) => {
+    i18n.changeLanguage(lang);
+    setShowLanguageMenu(false);
+  };
+
+  const languages = [
+    { code: "en", name: "English", flag: "🇺🇸" },
+    { code: "fr", name: "Français", flag: "🇫🇷" },
+    { code: "rw", name: "Kinyarwanda", flag: "🇷🇼" },
+  ];
+
+  return (
+    <div className="relative">
+      <button
+        aria-label="Toggle languages"
+        className="hover:scale-110 transition-transform flex items-center gap-1"
+        onClick={() => setShowLanguageMenu(!showLanguageMenu)}
+      >
+        <Globe className="w-5 h-5 md:w-6 md:h-6 text-black" />
+      </button>
+      {showLanguageMenu && (
+        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+          {languages.map((lang) => (
+            <button
+              key={lang.code}
+              onClick={() => toggleLanguage(lang.code)}
+              className={`flex items-center gap-3 w-full text-left px-4 py-2.5 hover:bg-purple-50 transition-colors ${
+                i18n.language === lang.code
+                  ? "bg-purple-100 text-purple-700 font-semibold"
+                  : "text-gray-700"
+              }`}
+            >
+              <span className="text-2xl">{lang.flag}</span>
+              <span className="text-sm">{lang.name}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 // Function to determine if a navigation item should be active
 const isNavItemActive = (navItem: NavLink, currentPath: string): boolean => {
   // For dropdown items, check if any dropdown item is active
   if (navItem.hasDropdown && navItem.dropdownItems) {
-    return navItem.dropdownItems.some(item => {
+    return navItem.dropdownItems.some((item) => {
       if (item.href === "/") {
         return currentPath === "/";
       }
@@ -83,38 +121,46 @@ const isNavItemActive = (navItem: NavLink, currentPath: string): boolean => {
 
 const SignUpButton: React.FC<{ fullWidth?: boolean }> = ({
   fullWidth = false,
-}) => (
-  <Link to="/signup">
-    <button
-      className={`bg-[#9c27b0] hover:bg-[#7b1fa2] text-white 
-        px-4 py-2 sm:px-4 sm:py-2 md:px-4 md:py-2 
-        text-sm sm:text-base md:text-base
-        rounded-full font-medium transition-all duration-200 
-        hover:shadow-lg hover:scale-105
-        ${fullWidth ? "w-full" : ""}`}
-    >
-      Sign Up
-    </button>
-  </Link>
-);
+}) => {
+  const { t } = useTranslation("landing");
+
+  return (
+    <Link to="/signup">
+      <button
+        className={`bg-[#9c27b0] hover:bg-[#7b1fa2] text-white 
+          px-4 py-2 sm:px-4 sm:py-2 md:px-4 md:py-2 
+          text-sm sm:text-base md:text-base
+          rounded-full font-medium transition-all duration-200 
+          hover:shadow-lg hover:scale-105
+          ${fullWidth ? "w-full" : ""}`}
+      >
+        {t("nav.signup")}
+      </button>
+    </Link>
+  );
+};
 
 interface DropdownMenuProps {
   items: DropdownItem[];
 }
 
-const DropdownMenu: React.FC<DropdownMenuProps> = ({ items }) => (
-  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-    {items.map((item) => (
-      <Link
-        key={item.href}
-        to={item.href}
-        className="block px-4 py-3 hover:bg-purple-50 transition-colors"
-      >
-        <div className="font-medium text-black">{item.label}</div>
-      </Link>
-    ))}
-  </div>
-);
+const DropdownMenu: React.FC<DropdownMenuProps> = ({ items }) => {
+  const { t } = useTranslation("landing");
+
+  return (
+    <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+      {items.map((item) => (
+        <Link
+          key={item.href}
+          to={item.href}
+          className="block px-4 py-3 hover:bg-purple-50 transition-colors"
+        >
+          <div className="font-medium text-black">{t(item.label)}</div>
+        </Link>
+      ))}
+    </div>
+  );
+};
 
 interface NavItemProps {
   link: NavLink;
@@ -123,6 +169,7 @@ interface NavItemProps {
 
 const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
+  const { t } = useTranslation("landing");
   const location = useLocation();
   const isActive = isNavItemActive(link, location.pathname);
 
@@ -139,10 +186,11 @@ const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
             onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
             className={`${baseClasses} ${activeClasses} transition-colors w-full text-left flex items-center justify-between`}
           >
-            {link.label}
+            {t(link.label)}
             <ChevronDown
-              className={`w-4 h-4 transition-transform ${mobileDropdownOpen ? "rotate-180" : ""
-                }`}
+              className={`w-4 h-4 transition-transform ${
+                mobileDropdownOpen ? "rotate-180" : ""
+              }`}
             />
           </button>
           {mobileDropdownOpen && (
@@ -153,7 +201,7 @@ const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
                   to={item.href}
                   className="block py-2 text-gray-700 hover:text-[#9c27b0] transition-colors"
                 >
-                  <div className="font-medium">{item.label}</div>
+                  <div className="font-medium">{t(item.label)}</div>
                 </Link>
               ))}
             </div>
@@ -169,7 +217,7 @@ const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
           className={`${baseClasses} ${activeClasses} transition-colors flex items-center gap-1`}
           aria-current={isActive ? "page" : undefined}
         >
-          {link.label}
+          {t(link.label)}
           <ChevronDown className="w-4 h-4" />
         </a>
         <DropdownMenu items={link.dropdownItems} />
@@ -184,7 +232,7 @@ const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
         className={`${baseClasses} ${activeClasses} transition-colors`}
         aria-current={isActive ? "page" : undefined}
       >
-        {link.label}
+        {t(link.label)}
       </Link>
     </li>
   );

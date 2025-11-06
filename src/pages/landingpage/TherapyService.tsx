@@ -8,6 +8,7 @@ import {
 } from "@/apis/counselor";
 import { loadFromCache, saveToCache } from "@/utils/offlineCache";
 import useOfflineStatus from "@/hooks/useOfflineStatus";
+import { useTranslation } from "react-i18next";
 
 const COUNSELORS_CACHE_KEY = "therapy_service_counselors_v1";
 const SPECIALIZATIONS_CACHE_KEY = "therapy_service_specializations_v1";
@@ -18,6 +19,7 @@ const buildCounselorDetailCacheKey = (id: string) =>
   `${COUNSELOR_DETAIL_CACHE_PREFIX}${id}`;
 
 const TherapyService: React.FC = () => {
+  const { t } = useTranslation("landing");
   const [counselors, setCounselors] = useState<Counselor[]>([]);
   const [specializations, setSpecializations] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -238,15 +240,13 @@ const TherapyService: React.FC = () => {
         {/* Header Section */}
         <div className="text-center mb-12 animate-fade-in-up">
           <p className="text-[#9c27b0] text-lg mb-4 font-medium">
-            Professional Support
+            {t("therapy.subtitle")}
           </p>
           <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6 leading-tight">
-            Our Expert Therapists
+            {t("therapy.title")}
           </h1>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
-            Connect with licensed, verified Therapists who specialize in trauma
-            recovery, mental health support, and empowering women on their
-            healing journey.
+            {t("therapy.description")}
           </p>
         </div>
 
@@ -269,7 +269,7 @@ const TherapyService: React.FC = () => {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
                     type="text"
-                    placeholder="Search by name, specialization, or bio..."
+                    placeholder={t("therapy.searchPlaceholder")}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -282,7 +282,7 @@ const TherapyService: React.FC = () => {
                   onChange={(e) => setSelectedSpec(e.target.value)}
                   className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent min-w-[200px]"
                 >
-                  <option value="all">All Specializations</option>
+                  <option value="all">{t("therapy.allSpecializations")}</option>
                   {specializations.map((spec) => (
                     <option key={spec} value={spec}>
                       {spec}
@@ -322,7 +322,7 @@ const TherapyService: React.FC = () => {
                     </div>
                     {counselor.isAvailable && (
                       <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                        Available
+                        {t("therapy.available")}
                       </span>
                     )}
                   </div>
@@ -338,7 +338,9 @@ const TherapyService: React.FC = () => {
                   {/* Experience */}
                   <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
                     <Calendar className="w-4 h-4 text-purple-600" />
-                    <span>{counselor.experience} years of experience</span>
+                    <span>
+                      {counselor.experience} {t("therapy.yearsExperience")}
+                    </span>
                   </div>
 
                   {/* Bio Preview */}
@@ -350,13 +352,15 @@ const TherapyService: React.FC = () => {
                   {counselor.isVerified && (
                     <div className="flex items-center gap-2 text-xs text-green-600 mb-4">
                       <Shield className="w-4 h-4" />
-                      <span className="font-medium">Verified Professional</span>
+                      <span className="font-medium">
+                        {t("therapy.verified")}
+                      </span>
                     </div>
                   )}
 
                   <div className="flex items-center justify-between text-xs text-gray-500 pt-4 border-t border-gray-200">
                     <span className="text-purple-600 font-medium">
-                      Click to view details
+                      {t("therapy.clickToView")}
                     </span>
                   </div>
                 </div>
@@ -368,11 +372,9 @@ const TherapyService: React.FC = () => {
               <div className="text-center py-16 bg-white/80 backdrop-blur-sm rounded-2xl">
                 <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-600 mb-2">
-                  No counselors found
+                  {t("therapy.noResults")}
                 </h3>
-                <p className="text-gray-500">
-                  Try adjusting your search criteria or filters
-                </p>
+                <p className="text-gray-500">{t("therapy.noResultsMessage")}</p>
               </div>
             )}
 
@@ -429,11 +431,12 @@ const TherapyService: React.FC = () => {
                             </span>
                           </div>
                           <div className="text-sm text-gray-600">
-                            {selectedCounselor.totalSessions} sessions completed
+                            {selectedCounselor.totalSessions}{" "}
+                            {t("therapy.sessionsCompleted")}
                           </div>
                           {selectedCounselor.isAvailable && (
                             <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                              Available for sessions
+                              {t("therapy.modal.availableForSessions")}
                             </span>
                           )}
                         </div>
@@ -442,7 +445,7 @@ const TherapyService: React.FC = () => {
                         <div>
                           <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
                             <User className="w-5 h-5 text-purple-600" />
-                            About
+                            {t("therapy.modal.about")}
                           </h3>
                           <p className="text-gray-600 leading-relaxed">
                             {selectedCounselor.bio}
@@ -453,12 +456,12 @@ const TherapyService: React.FC = () => {
                         <div>
                           <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
                             <Calendar className="w-5 h-5 text-purple-600" />
-                            Experience
+                            {t("therapy.modal.experience")}
                           </h3>
                           <div className="grid grid-cols-2 gap-4">
                             <div className="p-4 bg-gray-50 rounded-lg">
                               <div className="text-sm text-gray-500">
-                                Years of Experience
+                                {t("therapy.modal.yearsOfExperience")}
                               </div>
                               <div className="text-xl font-bold text-purple-600">
                                 {selectedCounselor.experience}
@@ -466,7 +469,7 @@ const TherapyService: React.FC = () => {
                             </div>
                             <div className="p-4 bg-gray-50 rounded-lg">
                               <div className="text-sm text-gray-500">
-                                Sessions Completed
+                                {t("therapy.modal.sessionsCompleted")}
                               </div>
                               <div className="text-xl font-bold text-purple-600">
                                 {selectedCounselor.totalSessions}
@@ -479,7 +482,7 @@ const TherapyService: React.FC = () => {
                         <div>
                           <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
                             <Award className="w-5 h-5 text-purple-600" />
-                            Specialization
+                            {t("therapy.modal.specialization")}
                           </h3>
                           <div className="p-4 bg-purple-50 rounded-lg">
                             <span className="text-purple-700 font-medium">
@@ -493,12 +496,12 @@ const TherapyService: React.FC = () => {
                           <div>
                             <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
                               <Shield className="w-5 h-5 text-purple-600" />
-                              Verification
+                              {t("therapy.modal.verification")}
                             </h3>
                             <div className="flex items-center gap-2 p-4 bg-green-50 rounded-lg">
                               <Shield className="w-5 h-5 text-green-600" />
                               <span className="text-green-700 font-medium">
-                                Verified and Licensed Professional
+                                {t("therapy.verifiedLicensed")}
                               </span>
                             </div>
                           </div>
@@ -508,13 +511,13 @@ const TherapyService: React.FC = () => {
                         <div className="pt-6 border-t border-gray-200">
                           <div className="flex flex-col sm:flex-row gap-4">
                             <button className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-6 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all font-medium">
-                              Book a Session
+                              {t("therapy.bookSession")}
                             </button>
                             <button
                               onClick={() => setShowDetailsModal(false)}
                               className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
                             >
-                              Close
+                              {t("therapy.close")}
                             </button>
                           </div>
                         </div>

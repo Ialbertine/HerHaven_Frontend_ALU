@@ -1,0 +1,27 @@
+{
+  "navbar": {
+    "home": "Accueil",
+    "about": "À propos de nous",
+    "services": "Services",
+    "resources": "Ressources",
+    "contact": "Contactez-nous"
+  },
+  "footer": {
+    "aboutUs": "À propos de nous",
+    "quickLinks": "Liens rapides",
+    "contactUs": "Contactez-nous",
+    "followUs": "Suivez-nous",
+    "copyright": "© 2024 HerHaven. Tous droits réservés.",
+    "privacyPolicy": "Politique de confidentialité",
+    "termsOfService": "Conditions d'utilisation"
+  },
+  "testimonial": {
+    "heading": "Ce que disent les gens",
+    "title": "Histoires d'espoir et de guérison",
+    "description": "Histoires réelles de femmes qui ont trouvé force et soutien grâce à HerHaven",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "anonymous": "Anonyme",
+    "verifiedUser": "Utilisateur vérifié"
+  }
+}

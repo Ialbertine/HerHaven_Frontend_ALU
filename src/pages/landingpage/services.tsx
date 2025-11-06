@@ -7,49 +7,45 @@ import {
   Phone,
   BookOpen,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const Services: React.FC = () => {
+  const { t } = useTranslation("landing");
   const features = [
     {
       icon: Heart,
-      title: "Professional Support",
-      description:
-        "Connect with licensed counselors specializing in trauma and gender-based violence. Our platform ensures confidentiality and a safe space for your journey towards healing.",
+      title: t("services.professionalSupport.title"),
+      description: t("services.professionalSupport.description"),
       gradient: "from-purple-400 to-pink-400",
     },
     {
       icon: Users,
-      title: "Peer Community",
-      description:
-        "Join a supportive community of women who understand your experiences. Share your story, find encouragement, and grow together in a safe and moderated environment.",
+      title: t("services.peerCommunity.title"),
+      description: t("services.peerCommunity.description"),
       gradient: "from-pink-400 to-purple-400",
     },
     {
       icon: MessageCircle,
-      title: "AI Support Chat",
-      description:
-        "Get instant, confidential guidance from our AI support chat, designed with trauma-informed principles. Available 24/7 to provide immediate assistance and resources.",
+      title: t("services.aiChat.title"),
+      description: t("services.aiChat.description"),
       gradient: "from-purple-500 to-pink-500",
     },
     {
       icon: Shield,
-      title: "Safe & Confidential",
-      description:
-        "Your privacy and safety are our top priorities. All conversations are encrypted and secure, ensuring a protected environment for your healing journey.",
+      title: t("services.safeConfidential.title"),
+      description: t("services.safeConfidential.description"),
       gradient: "from-pink-500 to-purple-500",
     },
     {
       icon: Phone,
-      title: "24/7 Crisis Support",
-      description:
-        "Immediate help when you need it most. Access emergency resources and crisis intervention services at any time, day or night.",
+      title: t("services.crisisSupport.title"),
+      description: t("services.crisisSupport.description"),
       gradient: "from-purple-400 to-pink-500",
     },
     {
       icon: BookOpen,
-      title: "Educational Resources",
-      description:
-        "Explore our library of articles, guides, and tools designed to empower you with knowledge about mental health, trauma recovery, and self-care practices.",
+      title: t("services.educational.title"),
+      description: t("services.educational.description"),
       gradient: "from-pink-400 to-purple-500",
     },
   ];
@@ -66,15 +62,13 @@ const Services: React.FC = () => {
         {/* Header Section */}
         <div className="text-center mb-16 animate-fade-in-up">
           <p className="text-[#9c27b0] text-lg mb-4 font-medium">
-            Our Services
+            {t("services.title")}
           </p>
           <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6 leading-tight">
             How HerHaven Helps
           </h1>
           <p className="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed">
-            HerHaven offers a comprehensive approach to mental health support,
-            focusing on empowering women with the tools and resources needed to
-            heal, grow, and thrive.
+            {t("services.description")}
           </p>
         </div>
 
@@ -112,10 +106,10 @@ const Services: React.FC = () => {
         {/* Call to Action */}
         <div className="text-center mt-16 animate-fade-in-up animation-delay-600">
           <p className="text-gray-700 text-lg mb-6">
-            Ready to take the first step towards healing?
+            {t("services.readyToStart")}
           </p>
           <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-3 rounded-full font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
-            Get Started Today
+            {t("services.getStarted")}
           </button>
         </div>
       </div>
