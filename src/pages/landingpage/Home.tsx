@@ -153,7 +153,7 @@ export const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col justify-start items-center mb-16">
             {!isPlaying ? (
-              <div className="relative w-full max-w-5xl mx-auto h-[65vh] overflow-hidden rounded-xl">
+              <div className="relative w-full max-w-5xl mx-auto h-[65vh] xl:h-[60vh] overflow-hidden rounded-xl">
                 <img
                   src="/videoplay.jpg"
                   alt="HerHaven Empowerment"

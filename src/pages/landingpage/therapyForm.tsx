@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Eye, EyeOff, CheckCircle, AlertCircle } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import {
   registerCounselor,
   completeCounselorRegistration,
@@ -19,7 +18,6 @@ const CounselorApplicationForm = ({
   mode = "new",
   inviteToken,
 }: CounselorApplicationFormProps) => {
-  const { t } = useTranslation("auth");
   const isCompleteMode = mode === "complete";
   const { token: routeToken } = useParams<{ token?: string }>();
 
@@ -66,11 +64,11 @@ const CounselorApplicationForm = ({
       if (!token) {
         setSubmitStatus({
           type: "error",
-          message: t("counselorForm.error.invalidToken"),
+          message: "Invalid or missing invitation token",
         });
       }
     }
-  }, [isCompleteMode, inviteToken, routeToken, t]);
+  }, [isCompleteMode, inviteToken, routeToken]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -97,43 +95,43 @@ const CounselorApplicationForm = ({
     try {
       // Common validations
       if (!formData.username.trim()) {
-        throw new Error(t("validation.required"));
+        throw new Error("Username is required");
       }
       if (!formData.password.trim()) {
-        throw new Error(t("validation.required"));
+        throw new Error("Password is required");
       }
       if (formData.password.length < 6) {
-        throw new Error(t("validation.passwordLength"));
+        throw new Error("Password must be at least 6 characters long");
       }
       if (!formData.phoneNumber.trim()) {
-        throw new Error(t("validation.required"));
+        throw new Error("Phone number is required");
       }
       if (!formData.licenseNumber.trim()) {
-        throw new Error(t("validation.required"));
+        throw new Error("License number is required");
       }
       if (!formData.specialization) {
-        throw new Error(t("validation.required"));
+        throw new Error("Specialization is required");
       }
       if (formData.experience === "" || formData.experience === 0) {
-        throw new Error(t("validation.required"));
+        throw new Error("Experience is required");
       }
       if (typeof formData.experience === "string" || formData.experience < 0) {
-        throw new Error(t("validation.required"));
+        throw new Error("Experience must be a valid number");
       }
       if (!formData.bio.trim() || formData.bio.length < 10) {
-        throw new Error(t("validation.required"));
+        throw new Error("Bio must be at least 10 characters long");
       }
 
       // Additional validations for new application mode
       if (!isCompleteMode) {
         if (!formData.firstName.trim()) {
-          throw new Error(t("validation.required"));
+          throw new Error("First name is required");
         }
         if (!formData.lastName.trim()) {
-          throw new Error(t("validation.required"));
+          throw new Error("Last name is required");
         }
         if (!formData.email.trim()) {
-          throw new Error(t("validation.required"));
+          throw new Error("Email is required");
         }
       }
 
@@ -147,7 +145,7 @@ const CounselorApplicationForm = ({
           new URLSearchParams(window.location.search).get("token");
 
         if (!token) {
-          throw new Error(t("counselorForm.error.invalidInvitationToken"));
+          throw new Error("Invalid or missing invitation token");
         }
 
         const completeData: CompleteCounselorRegistrationData = {
@@ -176,8 +174,8 @@ const CounselorApplicationForm = ({
           message:
             response.message ||
             (isCompleteMode
-              ? t("counselorForm.success.completeRegistration")
-              : t("counselorForm.success.newApplication")),
+              ? "Registration completed successfully! Redirecting to login..."
+              : "Application submitted successfully! We will review your application and contact you soon."),
         });
 
         // Reset form
@@ -206,8 +204,8 @@ const CounselorApplicationForm = ({
           message:
             response.message ||
             (isCompleteMode
-              ? t("counselorForm.error.completeRegistration")
-              : t("counselorForm.error.newApplication")),
+              ? "Failed to complete registration. Please try again."
+              : "Failed to submit application. Please try again."),
         });
       }
     } catch (error) {
@@ -234,13 +232,13 @@ const CounselorApplicationForm = ({
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-3">
             {isCompleteMode
-              ? t("counselorForm.completeTitle")
-              : t("counselorForm.title")}
+              ? "Complete Your Registration"
+              : "Become a Counselor"}
           </h1>
           <p className="text-gray-600 text-lg">
             {isCompleteMode
-              ? t("counselorForm.completeSubtitle")
-              : t("counselorForm.subtitle")}
+              ? "Complete your profile to start helping others"
+              : "Join our team of professional counselors"}
           </p>
         </div>
 
@@ -283,16 +281,13 @@ const CounselorApplicationForm = ({
             {!isCompleteMode && (
               <div>
                 <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b-2 border-purple-200">
-                  {t("counselorForm.personalInfo")}
+                  Personal Information
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-gray-700 font-medium mb-2">
-                      {t("counselorForm.firstName")}{" "}
-                      <span className="text-red-500">
-                        {t("counselorForm.required")}
-                      </span>
+                      First Name <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -301,16 +296,13 @@ const CounselorApplicationForm = ({
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all outline-none"
-                      placeholder={t("counselorForm.placeholders.firstName")}
+                      placeholder="Enter your first name"
                     />
                   </div>
 
                   <div>
                     <label className="block text-gray-700 font-medium mb-2">
-                      {t("counselorForm.lastName")}{" "}
-                      <span className="text-red-500">
-                        {t("counselorForm.required")}
-                      </span>
+                      Last Name <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -319,17 +311,14 @@ const CounselorApplicationForm = ({
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all outline-none"
-                      placeholder={t("counselorForm.placeholders.lastName")}
+                      placeholder="Enter your last name"
                     />
                   </div>
                 </div>
 
                 <div className="mt-6">
                   <label className="block text-gray-700 font-medium mb-2">
-                    {t("counselorForm.phoneNumber")}{" "}
-                    <span className="text-red-500">
-                      {t("counselorForm.required")}
-                    </span>
+                    Phone Number <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="tel"
@@ -338,7 +327,7 @@ const CounselorApplicationForm = ({
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all outline-none"
-                    placeholder={t("counselorForm.placeholders.phoneNumber")}
+                    placeholder="Enter your phone number"
                   />
                 </div>
               </div>
@@ -347,16 +336,13 @@ const CounselorApplicationForm = ({
             {/* Account Information Section */}
             <div>
               <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b-2 border-purple-200">
-                {t("counselorForm.accountInfo")}
+                Account Information
               </h2>
 
               <div className="space-y-6">
                 <div>
                   <label className="block text-gray-700 font-medium mb-2">
-                    {t("counselorForm.username")}{" "}
-                    <span className="text-red-500">
-                      {t("counselorForm.required")}
-                    </span>
+                    Username <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -366,17 +352,14 @@ const CounselorApplicationForm = ({
                     required
                     minLength={3}
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all outline-none"
-                    placeholder={t("counselorForm.placeholders.username")}
+                    placeholder="Choose a username"
                   />
                 </div>
 
                 {!isCompleteMode && (
                   <div>
                     <label className="block text-gray-700 font-medium mb-2">
-                      {t("counselorForm.email")}{" "}
-                      <span className="text-red-500">
-                        {t("counselorForm.required")}
-                      </span>
+                      Email <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="email"
@@ -385,17 +368,14 @@ const CounselorApplicationForm = ({
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all outline-none"
-                      placeholder={t("counselorForm.placeholders.email")}
+                      placeholder="Enter your email"
                     />
                   </div>
                 )}
 
                 <div>
                   <label className="block text-gray-700 font-medium mb-2">
-                    {t("counselorForm.password")}{" "}
-                    <span className="text-red-500">
-                      {t("counselorForm.required")}
-                    </span>
+                    Password <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <input
@@ -406,7 +386,7 @@ const CounselorApplicationForm = ({
                       required
                       minLength={6}
                       className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all outline-none pr-12"
-                      placeholder={t("counselorForm.placeholders.password")}
+                      placeholder="Create a password"
                     />
                     <button
                       type="button"
@@ -417,17 +397,14 @@ const CounselorApplicationForm = ({
                     </button>
                   </div>
                   <p className="text-sm text-gray-500 mt-1">
-                    {t("counselorForm.hints.passwordMinLength")}
+                    Must be at least 6 characters
                   </p>
                 </div>
 
                 {isCompleteMode && (
                   <div>
                     <label className="block text-gray-700 font-medium mb-2">
-                      {t("counselorForm.phoneNumber")}{" "}
-                      <span className="text-red-500">
-                        {t("counselorForm.required")}
-                      </span>
+                      Phone Number <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="tel"
@@ -436,7 +413,7 @@ const CounselorApplicationForm = ({
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all outline-none"
-                      placeholder={t("counselorForm.placeholders.phoneNumber")}
+                      placeholder="Enter your phone number"
                     />
                   </div>
                 )}
@@ -446,16 +423,13 @@ const CounselorApplicationForm = ({
             {/* Professional Information Section */}
             <div>
               <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b-2 border-purple-200">
-                {t("counselorForm.professionalInfo")}
+                Professional Information
               </h2>
 
               <div className="space-y-6">
                 <div>
                   <label className="block text-gray-700 font-medium mb-2">
-                    {t("counselorForm.licenseNumber")}{" "}
-                    <span className="text-red-500">
-                      {t("counselorForm.required")}
-                    </span>
+                    License Number <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -464,16 +438,13 @@ const CounselorApplicationForm = ({
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all outline-none"
-                    placeholder={t("counselorForm.placeholders.licenseNumber")}
+                    placeholder="Enter your license number"
                   />
                 </div>
 
                 <div>
                   <label className="block text-gray-700 font-medium mb-2">
-                    {t("counselorForm.specialization")}{" "}
-                    <span className="text-red-500">
-                      {t("counselorForm.required")}
-                    </span>
+                    Specialization <span className="text-red-500">*</span>
                   </label>
                   <select
                     name="specialization"
@@ -483,7 +454,7 @@ const CounselorApplicationForm = ({
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all outline-none"
                   >
                     <option value="" disabled>
-                      {t("counselorForm.selectSpecialization")}
+                      Select your specialization
                     </option>
                     {COUNSELING_TYPES.map((type) => (
                       <option key={type} value={type}>
@@ -495,10 +466,7 @@ const CounselorApplicationForm = ({
 
                 <div>
                   <label className="block text-gray-700 font-medium mb-2">
-                    {t("counselorForm.experience")}{" "}
-                    <span className="text-red-500">
-                      {t("counselorForm.required")}
-                    </span>
+                    Years of Experience <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="number"
@@ -513,10 +481,7 @@ const CounselorApplicationForm = ({
 
                 <div>
                   <label className="block text-gray-700 font-medium mb-2">
-                    {t("counselorForm.bio")}{" "}
-                    <span className="text-red-500">
-                      {t("counselorForm.required")}
-                    </span>
+                    Professional Bio <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     name="bio"
@@ -526,12 +491,10 @@ const CounselorApplicationForm = ({
                     minLength={10}
                     rows={5}
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all outline-none resize-none"
-                    placeholder={t("counselorForm.placeholders.bio")}
+                    placeholder="Tell us about your experience and qualifications..."
                   ></textarea>
                   <p className="text-sm text-gray-500 mt-1">
-                    {t("counselorForm.hints.bioMinLength", {
-                      count: formData.bio.length,
-                    })}
+                    {formData.bio.length} characters (minimum 10)
                   </p>
                 </div>
               </div>
@@ -547,10 +510,10 @@ const CounselorApplicationForm = ({
                 }`}
               >
                 {isSubmitting
-                  ? t("counselorForm.submitting")
+                  ? "Submitting..."
                   : isCompleteMode
-                  ? t("counselorForm.completeRegistration")
-                  : t("counselorForm.submit")}
+                  ? "Complete Registration"
+                  : "Submit Application"}
               </button>
             </div>
           </form>
@@ -558,11 +521,9 @@ const CounselorApplicationForm = ({
 
         {/* Footer Text */}
         <p className="text-center text-gray-600 mt-6 text-sm">
-          {t("counselorForm.footer", {
-            mode: isCompleteMode
-              ? t("counselorForm.footerMode.registration")
-              : t("counselorForm.footerMode.application"),
-          })}
+          {isCompleteMode
+            ? "By completing your registration, you agree to our terms and conditions."
+            : "By submitting this application, you agree to our terms and conditions."}
         </p>
       </div>
     </div>
