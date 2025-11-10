@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "@/index.css";
 import App from "@/App.tsx";
-import { processSOSQueue } from "@/utils/offlineSOSQueue";
+// import { processSOSQueue } from "@/utils/offlineSOSQueue";
 import "@/i18n/config";
 
 // Register service worker for PWA functionality
@@ -25,19 +25,19 @@ if ("serviceWorker" in navigator) {
 }
 
 // Process offline SOS queue when app starts
-if (navigator.onLine) {
-  processSOSQueue().catch((err) =>
-    console.error("Error processing SOS queue:", err)
-  );
-}
+// if (navigator.onLine) {
+//   processSOSQueue().catch((err) =>
+//     console.error("Error processing SOS queue:", err)
+//   );
+// }
 
-// Listen for online events to process queue
-window.addEventListener("online", () => {
-  console.log("App is online, processing SOS queue...");
-  processSOSQueue().catch((err) =>
-    console.error("Error processing SOS queue:", err)
-  );
-});
+// // Listen for online events to process queue
+// window.addEventListener("online", () => {
+//   console.log("App is online, processing SOS queue...");
+//   processSOSQueue().catch((err) =>
+//     console.error("Error processing SOS queue:", err)
+//   );
+// });
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

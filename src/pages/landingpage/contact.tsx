@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Mail, Phone, MapPin, Send, User, CheckCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { createContactMessage } from "@/apis/contact";
+import toast from "react-hot-toast";
 
 const Contact: React.FC = () => {
   const { t } = useTranslation("landing");
@@ -8,11 +10,11 @@ const Contact: React.FC = () => {
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",
-    subject: "",
+    phoneNumber: "",
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -25,20 +27,48 @@ const Contact: React.FC = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        subject: "",
-        message: "",
+    setIsSubmitting(true);
+
+    try {
+      const response = await createContactMessage({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber,
+        message: formData.message,
       });
-    }, 3000);
+
+      if (response.success) {
+        setSubmitted(true);
+        toast.success(
+          response.message ||
+            "Your message has been received. Our team will reach out soon."
+        );
+
+        // Reset form after 3 seconds
+        setTimeout(() => {
+          setSubmitted(false);
+          setFormData({
+            firstName: "",
+            lastName: "",
+            email: "",
+            phoneNumber: "",
+            message: "",
+          });
+        }, 3000);
+      } else {
+        toast.error(
+          response.message ||
+            "Failed to submit contact message. Please try again."
+        );
+      }
+    } catch {
+      toast.error("An error occurred. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -204,8 +234,8 @@ const Contact: React.FC = () => {
                         <input
                           type="tel"
                           id="phone"
-                          name="phone"
-                          value={formData.phone}
+                          name="phoneNumber"
+                          value={formData.phoneNumber}
                           onChange={handleChange}
                           className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all outline-none"
                           placeholder={t("contact.form.phonePlaceholder")}
@@ -235,11 +265,17 @@ const Contact: React.FC = () => {
 
                   <div>
                     <button
+                      type="submit"
                       onClick={handleSubmit}
-                      className="w-full py-4 bg-gradient-to-r from-[#9c27b0] to-[#7b2cbf] text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2 group"
+                      disabled={isSubmitting}
+                      className="w-full py-4 bg-gradient-to-r from-[#9c27b0] to-[#7b2cbf] text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <span>{t("contact.form.send")}</span>
-                      <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      <span>
+                        {isSubmitting ? "Sending..." : t("contact.form.send")}
+                      </span>
+                      {!isSubmitting && (
+                        <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      )}
                     </button>
                   </div>
                 </div>
