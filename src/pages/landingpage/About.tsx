@@ -66,7 +66,7 @@ const About: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-lavender-50 to-white">
+    <div className="min-h-screen bg-lavender-50">
       {/* Section 1: About herhaven */}
       <section className="pt-36 pb-6 px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
         <div className="text-center mb-2 animate-[fade-in-up_1s_ease-out_forwards]">
@@ -160,17 +160,19 @@ const About: React.FC = () => {
             {t("about.partners.title")}
           </h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
-            {partners.map((partner, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-xl shadow-lg p-6 flex items-center justify-center hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
-              >
-                <p className="text-lg font-semibold text-purple-900 text-center">
-                  {partner}
-                </p>
-              </div>
-            ))}
+          <div className="flex justify-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl">
+              {partners.map((partner, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-xl shadow-lg p-6 flex items-center justify-center hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+                >
+                  <p className="text-lg font-semibold text-gray-600 text-center">
+                    {partner}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
