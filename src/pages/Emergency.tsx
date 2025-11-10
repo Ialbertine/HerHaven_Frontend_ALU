@@ -22,7 +22,6 @@ import {
 } from "@/apis/emergency";
 import DashboardLayout from "@/components/DashboardLayout";
 import { getCurrentUser } from "@/apis/auth";
-import EmergencyCallButton from "@/components/EmergencyCall";
 import QuickExitButton from "@/components/QuickExit";
 import { useModal } from "@/contexts/useModal";
 
@@ -114,13 +113,20 @@ const EmergencyContactsManager: React.FC = () => {
     setError("");
 
     // Validate phone number format
-    if (!/^\d{10}$/.test(formData.phoneNumber)) {
-      setError(
-        "Phone number must be 10 digits long"
-      );
+    const trimmedPhoneNumber = formData.phoneNumber.trim();
+    const isValidPhoneNumber = /^\+2507\d{8}$/.test(trimmedPhoneNumber);
+
+    if (!isValidPhoneNumber) {
+      setError("Phone number must be in the format +2507xxxxxxxx");
       setLoading(false);
       return;
     }
+
+    const submissionData = {
+      ...formData,
+      phoneNumber: trimmedPhoneNumber,
+      consentGiven: true,
+    };
 
     if (!formData.name.trim()) {
       setError("Name is required");
@@ -132,7 +138,7 @@ const EmergencyContactsManager: React.FC = () => {
       if (editingContact) {
         const response = await updateEmergencyContact(
           editingContact._id,
-          formData
+          submissionData
         );
         if (response.success && response.data) {
           setContacts(
@@ -149,7 +155,7 @@ const EmergencyContactsManager: React.FC = () => {
           return;
         }
       } else {
-        const response = await createEmergencyContact(formData);
+        const response = await createEmergencyContact(submissionData);
         if (response.success && response.data) {
           setContacts([...contacts, response.data]);
           setShowAddModal(false);
@@ -431,11 +437,10 @@ const EmergencyContactsManager: React.FC = () => {
                               relationship: rel.value,
                             })
                           }
-                          className={`p-4 rounded-xl border-2 transition-all ${
-                            formData.relationship === rel.value
-                              ? "border-purple-600 bg-purple-50"
-                              : "border-gray-200 hover:border-gray-300"
-                          }`}
+                          className={`p-4 rounded-xl border-2 transition-all ${formData.relationship === rel.value
+                            ? "border-purple-600 bg-purple-50"
+                            : "border-gray-200 hover:border-gray-300"
+                            }`}
                         >
                           <Icon
                             className={`w-6 h-6 mx-auto mb-2 ${rel.color}`}
@@ -461,7 +466,7 @@ const EmergencyContactsManager: React.FC = () => {
                       setFormData({ ...formData, phoneNumber: e.target.value })
                     }
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:outline-none transition-colors font-mono"
-                    placeholder="07xxxxxxxxx"
+                    placeholder="+2507xxxxxxxx"
                   />
                 </div>
 
@@ -514,8 +519,8 @@ const EmergencyContactsManager: React.FC = () => {
                     {loading
                       ? "Saving..."
                       : editingContact
-                      ? "Update Contact"
-                      : "Add Contact"}
+                        ? "Update Contact"
+                        : "Add Contact"}
                   </button>
                 </div>
               </div>
@@ -523,8 +528,7 @@ const EmergencyContactsManager: React.FC = () => {
           </div>
         )}
 
-        {/* Emergency Call and Quick Exit Buttons */}
-        <EmergencyCallButton />
+        {/* Quick Exit Button */}
         <QuickExitButton />
       </div>
     </DashboardLayout>

@@ -70,6 +70,7 @@ export const createEmergencyContact = async (data: {
   relationship: "family" | "friend" | "partner" | "colleague" | "other";
   phoneNumber: string;
   notes?: string;
+  consentGiven?: boolean;
 }): Promise<ApiResponse<EmergencyContact>> => {
   try {
     const response = await apiClient.post<ApiResponse<EmergencyContact>>(
@@ -98,6 +99,7 @@ export const updateEmergencyContact = async (
     relationship?: "family" | "friend" | "partner" | "colleague" | "other";
     phoneNumber?: string;
     notes?: string;
+    consentGiven?: boolean;
   }
 ): Promise<ApiResponse<EmergencyContact>> => {
   try {

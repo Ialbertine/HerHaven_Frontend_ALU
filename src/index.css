@@ -23,6 +23,7 @@
   --animate-float-medium: float-medium 4s ease-in-out infinite;
   --animate-float-fast: float-fast 3s ease-in-out infinite;
   --animate-fade-in-up: fade-in-up 1s ease-out forwards;
+  --animate-fade-in: fade-in 0.3s ease-out forwards;
   --animate-bubble-rise: bubble-rise 8s ease-in infinite;
 
   /* Animation delays */
@@ -70,6 +71,15 @@
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
 

@@ -28,6 +28,7 @@ import Community from "@/pages/community/community";
 import HavenChatbot from "@/pages/chatbot/HavenChatbot";
 import { ModalProvider } from "@/contexts/ModalContext";
 import EmergencyContactsManager from "@/pages/Emergency";
+import EmergencySOS from "@/pages/EmergencySOS";
 
 const App: React.FC = () => {
   return (
@@ -51,6 +52,7 @@ const App: React.FC = () => {
 
           <Route path="signup" element={<Signup />} />
           <Route path="login" element={<Login />} />
+          <Route path="emergency-sos" element={<EmergencySOS />} />
           <Route
             path="counselor/complete-registration/:token"
             element={<CounselorApplicationForm mode="complete" />}

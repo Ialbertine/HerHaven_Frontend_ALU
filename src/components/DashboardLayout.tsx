@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "./sidebar";
 import DashboardHeader from "./DashboardHeader";
+import EmergencyButton from "./EmergencyButton";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -40,6 +41,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
         <main className="flex-1 p-6">{children}</main>
       </div>
+
+      {/* Global Emergency Button */}
+      <EmergencyButton />
     </div>
   );
 };
