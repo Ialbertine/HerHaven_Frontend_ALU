@@ -16,47 +16,36 @@ const Services: React.FC = () => {
       icon: Heart,
       title: t("services.professionalSupport.title"),
       description: t("services.professionalSupport.description"),
-      gradient: "from-purple-400 to-pink-400",
     },
     {
       icon: Users,
       title: t("services.peerCommunity.title"),
       description: t("services.peerCommunity.description"),
-      gradient: "from-pink-400 to-purple-400",
     },
     {
       icon: MessageCircle,
       title: t("services.aiChat.title"),
       description: t("services.aiChat.description"),
-      gradient: "from-purple-500 to-pink-500",
     },
     {
       icon: Shield,
       title: t("services.safeConfidential.title"),
       description: t("services.safeConfidential.description"),
-      gradient: "from-pink-500 to-purple-500",
     },
     {
       icon: Phone,
       title: t("services.crisisSupport.title"),
       description: t("services.crisisSupport.description"),
-      gradient: "from-purple-400 to-pink-500",
     },
     {
       icon: BookOpen,
       title: t("services.educational.title"),
       description: t("services.educational.description"),
-      gradient: "from-pink-400 to-purple-500",
     },
   ];
 
   return (
     <section className="relative min-h-screen pt-24 pb-20 px-6 bg-lavender-50 overflow-hidden">
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl animate-float-slow"></div>
-        <div className="absolute bottom-20 right-10 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl animate-float-medium"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-lavender-200 rounded-full mix-blend-multiply filter blur-3xl animate-float-fast"></div>
-      </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header Section */}
@@ -84,9 +73,9 @@ const Services: React.FC = () => {
               >
                 {/* Icon with Gradient Background */}
                 <div
-                  className={`w-12 h-12 bg-gradient-to-br ${feature.gradient} rounded-full flex items-center justify-center mb-6 shadow-md`}
+                  className={`w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-6 shadow-md`}
                 >
-                  <Icon className="w-6 h-6 text-white" strokeWidth={2} />
+                  <Icon className="w-5 h-5 text-white" strokeWidth={2} />
                 </div>
 
                 {/* Title */}

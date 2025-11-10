@@ -127,7 +127,7 @@ const SignUpButton: React.FC<{ fullWidth?: boolean }> = ({
   return (
     <Link to="/signup">
       <button
-        className={`bg-[#9c27b0] hover:bg-[#7b1fa2] text-white 
+        className={`bg-[#7b1fa2] hover:bg-[#9c27b0] text-white 
           px-4 py-2 sm:px-4 sm:py-2 md:px-4 md:py-2 
           text-sm sm:text-base md:text-base
           rounded-full font-medium transition-all duration-200 

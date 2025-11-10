@@ -94,7 +94,7 @@ export default function EducationalHub() {
                   onClick={() => handleCategoryChange(category)}
                   className={`px-4 py-2 rounded-full font-semibold text-sm transition-all ${
                     activeCategory === category
-                      ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md"
+                      ? "bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-md"
                       : "bg-white text-gray-600 border border-gray-300 hover:border-purple-500 hover:text-purple-600"
                   }`}
                 >
@@ -176,8 +176,8 @@ export default function EducationalHub() {
                 onClick={() => handlePageChange(page)}
                 className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
                   currentPage === page
-                    ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
-                    : "border border-purple-200 text-purple-600 hover:bg-purple-50"
+                    ? "bg-gradient-to-r from-purple-600 to-pink-500 text-white"
+                    : "border border-purple-200 text-gray-600 hover:bg-purple-50"
                 }`}
               >
                 {page}

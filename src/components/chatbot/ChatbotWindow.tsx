@@ -1,9 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { X, Minimize2, MessageCircle, RotateCcw } from 'lucide-react';
-import { ChatMessage } from './ChatMessage';
-import { ChatInput } from './ChatInput';
-import type { ChatMessage as ChatMessageType, ChatbotConfig, ChatHistoryItem } from './types';
-import { sendChatMessage } from '@/apis/chatbot';
+import React, { useState, useEffect, useRef } from "react";
+import { X, Minimize2, MessageCircle, RotateCcw } from "lucide-react";
+import { ChatMessage } from "./ChatMessage";
+import { ChatInput } from "./ChatInput";
+import type {
+  ChatMessage as ChatMessageType,
+  ChatbotConfig,
+  ChatHistoryItem,
+} from "./types";
+import { sendChatMessage } from "@/apis/chatbot";
 
 interface ChatbotWindowProps {
   onClose: () => void;
@@ -14,9 +18,11 @@ interface ChatbotWindowProps {
 }
 
 const defaultConfig: ChatbotConfig = {
-  botName: 'Haven AI',
-  welcomeMessage: 'Hello! I\'m Haven AI, your mental health companion. I\'m here to listen, support, and help you find the resources you need. How can I help you today?',
-  placeholder: 'Ask me anything about mental health, resources, or just talk...',
+  botName: "Haven AI",
+  welcomeMessage:
+    "Hello! I'm Haven AI, your mental health companion. I'm here to listen, support, and help you find the resources you need. How can I help you today?",
+  placeholder:
+    "Ask me anything about mental health, resources, or just talk...",
   maxMessages: 100,
 };
 
@@ -25,7 +31,7 @@ export const ChatbotWindow: React.FC<ChatbotWindowProps> = ({
   onMinimize,
   isOpen,
   config = {},
-  className = '',
+  className = "",
 }) => {
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -33,7 +39,7 @@ export const ChatbotWindow: React.FC<ChatbotWindowProps> = ({
   const chatbotConfig = { ...defaultConfig, ...config };
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -44,7 +50,7 @@ export const ChatbotWindow: React.FC<ChatbotWindowProps> = ({
     if (isOpen && messages.length === 0) {
       const welcomeMessage: ChatMessageType = {
         id: Date.now().toString(),
-        role: 'assistant',
+        role: "assistant",
         content: chatbotConfig.welcomeMessage,
         timestamp: new Date(),
       };
@@ -58,29 +64,29 @@ export const ChatbotWindow: React.FC<ChatbotWindowProps> = ({
     // Add user message
     const userMessage: ChatMessageType = {
       id: Date.now().toString(),
-      role: 'user',
+      role: "user",
       content,
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
 
     const typingMessage: ChatMessageType = {
       id: `typing-${Date.now()}`,
-      role: 'assistant',
-      content: '',
+      role: "assistant",
+      content: "",
       timestamp: new Date(),
       isTyping: true,
     };
 
-    setMessages(prev => [...prev, typingMessage]);
+    setMessages((prev) => [...prev, typingMessage]);
 
     try {
       const history: ChatHistoryItem[] = messages
-        .filter(msg => !msg.isTyping)
+        .filter((msg) => !msg.isTyping)
         .slice(1)
-        .map(msg => ({
+        .map((msg) => ({
           role: msg.role,
           content: msg.content,
           timestamp: msg.timestamp.toISOString(),
@@ -88,37 +94,41 @@ export const ChatbotWindow: React.FC<ChatbotWindowProps> = ({
 
       // Send message to API with conversation
       const response = await sendChatMessage(content, history);
-      setMessages(prev => prev.filter(msg => msg.id !== typingMessage.id));
+      setMessages((prev) => prev.filter((msg) => msg.id !== typingMessage.id));
 
       if (response.success && response.response) {
         const botMessage: ChatMessageType = {
           id: `bot-${Date.now()}`,
-          role: 'assistant',
+          role: "assistant",
           content: response.response,
-          timestamp: response.timestamp ? new Date(response.timestamp) : new Date(),
+          timestamp: response.timestamp
+            ? new Date(response.timestamp)
+            : new Date(),
         };
 
-        setMessages(prev => [...prev, botMessage]);
+        setMessages((prev) => [...prev, botMessage]);
       } else {
         const errorMessage: ChatMessageType = {
           id: `error-${Date.now()}`,
-          role: 'assistant',
-          content: response.message || 'Sorry, I encountered an error. Please try again.',
+          role: "assistant",
+          content:
+            response.message ||
+            "Sorry, I encountered an error. Please try again.",
           timestamp: new Date(),
         };
-        setMessages(prev => [...prev, errorMessage]);
+        setMessages((prev) => [...prev, errorMessage]);
       }
     } catch {
-      setMessages(prev => {
-        const withoutTyping = prev.filter(msg => msg.id !== typingMessage.id);
+      setMessages((prev) => {
+        const withoutTyping = prev.filter((msg) => msg.id !== typingMessage.id);
         return [
           ...withoutTyping,
           {
             id: `error-${Date.now()}`,
-            role: 'assistant',
-            content: 'Sorry, I encountered an error. Please try again.',
+            role: "assistant",
+            content: "Sorry, I encountered an error. Please try again.",
             timestamp: new Date(),
-          }
+          },
         ];
       });
     } finally {
@@ -130,7 +140,7 @@ export const ChatbotWindow: React.FC<ChatbotWindowProps> = ({
     setMessages([]);
     const welcomeMessage: ChatMessageType = {
       id: Date.now().toString(),
-      role: 'assistant',
+      role: "assistant",
       content: chatbotConfig.welcomeMessage,
       timestamp: new Date(),
     };
@@ -140,25 +150,33 @@ export const ChatbotWindow: React.FC<ChatbotWindowProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className={`flex flex-col h-full bg-white border border-gray-200 rounded-lg shadow-lg ${className}`}>
+    <div
+      className={`flex flex-col h-full bg-white border border-gray-200 
+      rounded-none sm:rounded-lg shadow-lg ${className}`}
+    >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-[#9c27b0] to-[#7b1fa2] text-white rounded-t-lg">
+      <div
+        className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-200 bg-gradient-to-r from-[#9c27b0] to-[#7b1fa2] text-white 
+        rounded-none sm:rounded-t-lg"
+      >
         <div className="flex items-center gap-2">
-          <MessageCircle className="w-5 h-5" />
-          <h3 className="font-semibold">{chatbotConfig.botName}</h3>
+          <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+          <h3 className="font-semibold text-sm sm:text-base">
+            {chatbotConfig.botName}
+          </h3>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <button
             onClick={handleResetChat}
             className="p-1 hover:bg-white/20 rounded transition-colors"
             aria-label="Reset conversation"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
           {onMinimize && (
             <button
               onClick={onMinimize}
-              className="p-1 hover:bg-white/20 rounded transition-colors"
+              className="p-1 hover:bg-white/20 rounded transition-colors hidden sm:block"
               aria-label="Minimize"
             >
               <Minimize2 className="w-4 h-4" />
@@ -169,13 +187,13 @@ export const ChatbotWindow: React.FC<ChatbotWindowProps> = ({
             className="p-1 hover:bg-white/20 rounded transition-colors"
             aria-label="Close"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-2">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2">
         {messages.map((message) => (
           <ChatMessage key={message.id} message={message} />
         ))}

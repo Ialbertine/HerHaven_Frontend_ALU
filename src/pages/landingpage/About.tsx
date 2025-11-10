@@ -68,7 +68,7 @@ const About: React.FC = () => {
   return (
     <div className="min-h-screen bg-lavender-50">
       {/* Section 1: About herhaven */}
-      <section className="pt-36 pb-6 px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
+      <section className="pt-26 pb-6 px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
         <div className="text-center mb-2 animate-[fade-in-up_1s_ease-out_forwards]">
           <h1 className="text-2xl md:text-4xl font-bold text-purple-900 mb-6">
             {t("about.title")}
