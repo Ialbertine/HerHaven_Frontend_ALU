@@ -143,7 +143,7 @@ const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({
       {/* author */}
       <div className="border-t border-gray-100 pt-4">
         <div className="flex flex-col items-center">
-          <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white text-sm font-bold mb-2">
+          <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-sm font-bold mb-2">
             {testimonial.isAnonymous === true
               ? "A"
               : testimonial.fullName.charAt(0).toUpperCase()}
@@ -169,31 +169,9 @@ const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({
   if (loading) {
     return (
       <div className={`py-12 px-4 ${className}`}>
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-10">
-            <div className="animate-pulse">
-              <div className="h-6 bg-gray-200 rounded w-56 mx-auto mb-3"></div>
-              <div className="h-4 bg-gray-200 rounded w-80 mx-auto"></div>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {[1, 2].map((index) => (
-              <div key={index} className="bg-white rounded-2xl p-6 shadow-lg">
-                <div className="animate-pulse space-y-3">
-                  <div className="flex justify-center mb-3">
-                    <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-full"></div>
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
-                    <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
-                  </div>
-                  <div className="flex justify-center mt-4">
-                    <div className="w-24 h-4 bg-gray-200 rounded"></div>
-                  </div>
-                </div>
-              </div>
-            ))}
+        <div className="max-w-6xl mx-auto text-center">
+          <div className="text-gray-500">
+            <p>loading...</p>
           </div>
         </div>
       </div>
@@ -206,9 +184,9 @@ const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({
         <div className="max-w-6xl mx-auto text-center">
           <div className="text-gray-500">
             {error ? (
-              <p>{t("testimonial.unableToLoad")}</p>
+              <p>Something went wrong</p>
             ) : (
-              <p>{t("testimonial.noTestimonials")}</p>
+              <p>No testimonials found</p>
             )}
           </div>
         </div>
@@ -220,7 +198,7 @@ const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({
 
   return (
     <div
-      className={`py-12 px-4 bg-gradient-to-br from-purple-50 via-pink-50 to-white ${className}`}
+      className={`py-12 px-4 bg-lavender-50 ${className}`}
     >
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}

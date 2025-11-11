@@ -11,11 +11,14 @@ import About from "./pages/landingpage/About";
 import CounselorApplicationForm from "@/pages/landingpage/therapyForm";
 import Contact from "@/pages/landingpage/contact";
 import Resources from "@/pages/landingpage/resources";
+import ArticleDetails from "@/pages/landingpage/ArticleDetails";
 import Services from "@/pages/landingpage/services";
 import TherapyService from "@/pages/landingpage/TherapyService";
 import TherapistLanding from "@/Dashboard/therapist/therapyLanding";
 import TherapyManagement from "./Dashboard/admin/TherapyManagement";
 import FeedbackManagement from "./Dashboard/admin/FeedbackManagement";
+import ContactManagement from "./Dashboard/admin/ContactManagement";
+import UserManagement from "./Dashboard/admin/UserManagement";
 import Profile from "@/Dashboard/therapist/Profile";
 import Schedule from "@/Dashboard/therapist/Schedule";
 import Sessions from "@/Dashboard/therapist/Session";
@@ -23,8 +26,9 @@ import Therapits from "@/Dashboard/user/Therapits";
 import UserAppointment from "@/Dashboard/user/UserAppointment";
 import Community from "@/pages/community/community";
 import HavenChatbot from "@/pages/chatbot/HavenChatbot";
-import EmergencySOSPage from "@/pages/emergency/EmergencySOSPage";
 import { ModalProvider } from "@/contexts/ModalContext";
+import EmergencyContactsManager from "@/pages/Emergency";
+import EmergencySOS from "@/pages/EmergencySOS";
 
 const App: React.FC = () => {
   return (
@@ -39,6 +43,7 @@ const App: React.FC = () => {
               element={<CounselorApplicationForm mode="new" />}
             />
             <Route path="resources" element={<Resources />} />
+            <Route path="resources/:id" element={<ArticleDetails />} />
             <Route path="contact" element={<Contact />} />
             <Route path="services" element={<Services />} />
             <Route path="therapy" element={<TherapyService />} />
@@ -47,7 +52,7 @@ const App: React.FC = () => {
 
           <Route path="signup" element={<Signup />} />
           <Route path="login" element={<Login />} />
-          <Route path="emergency-sos" element={<EmergencySOSPage />} />
+          <Route path="emergency-sos" element={<EmergencySOS />} />
           <Route
             path="counselor/complete-registration/:token"
             element={<CounselorApplicationForm mode="complete" />}
@@ -60,8 +65,10 @@ const App: React.FC = () => {
           >
             <Route path="dashboard" element={<AdminLanding />} />
             <Route path="therapy-management" element={<TherapyManagement />} />
+            <Route path="user-management" element={<UserManagement />} />
             <Route path="community" element={<Community />} />
             <Route path="feedbacks" element={<FeedbackManagement />} />
+            <Route path="contacts" element={<ContactManagement />} />
           </Route>
 
           {/* User Routes */}
@@ -78,6 +85,10 @@ const App: React.FC = () => {
           <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
             <Route path="user/therapy" element={<Therapits />} />
             <Route path="user/appointment" element={<UserAppointment />} />
+            <Route
+              path="user/emergency-contacts"
+              element={<EmergencyContactsManager />}
+            />
           </Route>
 
           {/* Counselor Routes */}

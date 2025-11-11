@@ -3,7 +3,6 @@ import { Calendar, Heart, CheckCircle, BookOpen, Users } from "lucide-react";
 import { getUserAppointments } from "@/apis/appointment";
 import { getCurrentUser } from "@/apis/auth";
 import DashboardLayout from "@/components/DashboardLayout";
-import EmergencyCallButton from "@/components/EmergencyCall";
 import QuickExitButton from "@/components/QuickExit";
 import FeedbackForm from "@/components/FeedbackForm";
 
@@ -320,7 +319,6 @@ const UserLanding = () => {
             </div>
           </div>
 
-          <EmergencyCallButton />
           <QuickExitButton />
         </>
       )}

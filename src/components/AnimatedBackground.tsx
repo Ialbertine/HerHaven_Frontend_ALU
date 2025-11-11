@@ -100,16 +100,6 @@ const ANIMATION_CONFIGS = {
         animation: "animate-bubble-rise",
         delay: "1s",
       },
-      {
-        bottom: "bottom-0",
-        left: "left-[75%]",
-        width: "w-14",
-        height: "h-14",
-        bgColor: "bg-pink-300",
-        opacity: 35,
-        animation: "animate-bubble-rise",
-        delay: "3s",
-      },
     ] as AnimationElement[],
   },
   simple: {

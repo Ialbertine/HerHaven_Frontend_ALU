@@ -17,17 +17,14 @@ const CONFIG = {
     {
       icon: Heart,
       key: "professional",
-      gradient: "from-purple-400 to-pink-400",
     },
     {
       icon: Users,
       key: "community",
-      gradient: "from-pink-400 to-purple-400",
     },
     {
       icon: MessageCircle,
       key: "aiChat",
-      gradient: "from-purple-500 to-pink-500",
     },
   ],
 } as const;
@@ -206,9 +203,9 @@ export const Home: React.FC = () => {
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <div
-                    className={`w-14 h-14 bg-gradient-to-br ${service.gradient} rounded-full flex items-center justify-center mb-4 shadow-md`}
+                    className={`w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-4 shadow-md`}
                   >
-                    <Icon className="w-7 h-7 text-white" strokeWidth={2} />
+                    <Icon className="w-5 h-5 text-white" strokeWidth={2} />
                   </div>
                   <h3 className="text-xl font-bold text-gray-800 mb-3">
                     {t(`servicesSection.${service.key}.title`)}

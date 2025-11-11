@@ -7,17 +7,12 @@ import {
   FaInstagram,
 } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-// import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 // import { Logo } from "./navbar";
 
 interface LinkItem {
   label: string;
   path: string;
-}
-
-interface InfoSection {
-  title: string;
-  content: string;
 }
 
 interface Particle {
@@ -44,35 +39,42 @@ const Footer: React.FC = () => {
   }, []);
 
   const quickLinks: LinkItem[] = [
-    { label: t("footer.links.aboutUs"), path: "/about-us" },
-    { label: t("footer.links.ourServices"), path: "/our-services" },
-    { label: t("footer.links.educationHub"), path: "/education-hub" },
-    { label: t("footer.links.havenAI"), path: "/haven-ai" },
+    { label: t("footer.links.aboutUs"), path: "/aboutus" },
+    { label: t("footer.links.ourServices"), path: "/services" },
+    { label: t("footer.links.educationHub"), path: "/resources" },
+    { label: t("footer.links.havenAI"), path: "/havenchatbot" },
   ];
 
-  const services: LinkItem[] = [
-    { label: t("footer.links.mentalHealth"), path: "/mental-health" },
-    { label: t("footer.links.counseling"), path: "/counseling" },
-    { label: t("footer.links.peerCommunity"), path: "/peer-community" },
-    { label: t("footer.links.gbvAwareness"), path: "/awareness " },
-  ];
-
-  const infoSections: InfoSection[] = [
-    {
-      title: t("footer.contactUs"),
-      content:
-        t("footer.contactInfo.phone") + "\n " + t("footer.contactInfo.email"),
-    },
+  const services: string[] = [
+    t("footer.links.mentalHealth"),
+    t("footer.links.counseling"),
+    t("footer.links.peerCommunity"),
+    t("footer.links.gbvAwareness"),
   ];
 
   const renderLinkList = (items: LinkItem[]) => (
     <div className="flex flex-col gap-4 mt-4">
       {items.map((item, index) => (
-        <div className="flex items-center whitespace-nowrap" key={index}>
+        <Link
+          to={item.path}
+          key={index}
+          className="flex items-center whitespace-nowrap cursor-pointer"
+        >
           <IoMdArrowDropright className="text-xl text-white" />
           <span className="ml-2 hover:text-[#e1bee7] text-[15px] text-white transition-colors duration-300">
             {item.label}
           </span>
+        </Link>
+      ))}
+    </div>
+  );
+
+  const renderServiceList = (items: string[]) => (
+    <div className="flex flex-col gap-4 mt-4">
+      {items.map((item, index) => (
+        <div className="flex items-center whitespace-nowrap" key={index}>
+          <IoMdArrowDropright className="text-xl text-white" />
+          <span className="ml-2 text-[15px] text-white">{item}</span>
         </div>
       ))}
     </div>
@@ -111,10 +113,10 @@ const Footer: React.FC = () => {
 
       {/* Content */}
       <div className="relative z-10">
-        <div className="text-gray-300 sm:px-5 lg:px-10 lg:pt-10 sm:pt-6">
-          <div className="flex flex-col lg:flex-row justify-between gap-16 lg:gap-24 lg:py-10">
+        <div className="text-gray-300 px-4 sm:px-5 lg:px-10 pt-6 lg:pt-10">
+          <div className="flex flex-col lg:flex-row justify-between gap-8 sm:gap-12 lg:gap-24 pb-6 lg:py-10 w-full">
             {/* Left Side */}
-            <div className="lg:w-1/3">
+            <div className="w-full lg:w-[30%]">
               <div className="mb-6">
                 <div className="flex items-center gap-1">
                   <div className="w-10 h-10">
@@ -124,19 +126,19 @@ const Footer: React.FC = () => {
                     HerHaven
                   </span>
                 </div>
-                <p className="text-[14px] mt-4 text-white">
+                <p className="text-[14px] sm:text-[15px] mt-4 text-white">
                   {t("footer.description")}
                 </p>
               </div>
-              <form className="flex items-center gap-2">
+              <form className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-2 w-full">
                 <input
                   type="email"
                   placeholder={t("footer.emailPlaceholder")}
-                  className="py-3 px-6 rounded-full bg-white/90 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#9c27b0] transition-all duration-300"
+                  className="w-full sm:flex-1 py-3 px-4 sm:px-6 rounded-full bg-white/90 text-gray-700 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#9c27b0] transition-all duration-300"
                 />
                 <button
                   type="submit"
-                  className="px-6 py-3 rounded-full border border-transparent  bg-[#9c27b0] text-white font-bold hover:bg-[#7b1fa2] hover:shadow-lg transform hover:scale-105 transition-all duration-300 ease-in-out"
+                  className="w-full sm:w-auto px-6 py-3 rounded-full border border-transparent bg-[#9c27b0] text-white font-bold hover:bg-[#7b1fa2] hover:shadow-lg transform hover:scale-105 transition-all duration-300 ease-in-out whitespace-nowrap"
                 >
                   {t("footer.subscribe")}
                 </button>
@@ -144,57 +146,54 @@ const Footer: React.FC = () => {
             </div>
 
             {/* Right Side: Quick Links, Services, and Address */}
-            <div className="flex flex-col lg:flex-row gap-16 lg:w-2/3 mt-5">
+            <div className="flex flex-col sm:flex-row lg:flex-row gap-8 sm:gap-10 lg:gap-16 w-full lg:w-[70%]">
               <div className="flex flex-col">
-                <h2 className="font-bold text-xl text-white">
+                <h2 className="font-bold text-lg sm:text-xl text-white">
                   {t("footer.quickLinks")}
                 </h2>
                 {renderLinkList(quickLinks)}
               </div>
 
               <div className="flex flex-col">
-                <h2 className="font-bold text-xl text-white">
+                <h2 className="font-bold text-lg sm:text-xl text-white">
                   {t("footer.ourServices")}
                 </h2>
-                {renderLinkList(services)}
+                {renderServiceList(services)}
               </div>
 
-              <div className="flex flex-col gap-5 lg:ml-auto">
-                {infoSections.map((section, index) => (
-                  <div className="flex flex-col gap-3" key={index}>
-                    <h2 className="font-bold text-xl text-white">
-                      {section.title}
-                    </h2>
-                    <p
-                      className={`text-[15px] text-white ${
-                        index === 0 ? "lg:w-[85%]" : ""
-                      }`}
-                    >
-                      {section.content}
+              <div className="flex flex-col gap-5">
+                <div className="flex flex-col gap-3">
+                  <h2 className="font-bold text-lg sm:text-xl text-white">
+                    {t("footer.contactUs")}
+                  </h2>
+                  <div className="text-sm sm:text-[15px] text-white">
+                    <p>{t("footer.contactInfo.phone")}</p>
+                    <p className="break-words">
+                      {t("footer.contactInfo.email")}
                     </p>
                   </div>
-                ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Divider */}
-        <div className="px-[2rem]">
+        <div className="px-4 sm:px-5 lg:px-10">
           <hr className="my-4 border-t border-dashed border-white/30" />
         </div>
 
         {/* Footer Section */}
-        <footer className="text-white pb-4 lg:px-[1rem]">
-          <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
-            <div className="text-center md:text-left mb-4 md:mb-0">
-              <p className="text-gray-200">
-                {t("footer.copyright", { year: new Date().getFullYear() })}
+        <footer className="text-white pb-4 px-4 sm:px-5 lg:px-10">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0">
+            <div className="text-center sm:text-left">
+              <p className="text-gray-200 text-sm sm:text-base">
+                {new Date().getFullYear()} HerHaven, All rights reserved.
               </p>
             </div>
 
             {/* Social Media Icons */}
-            <div className="flex space-x-4">
+            <div className="flex space-x-3 sm:space-x-4">
               <a
                 href="#"
                 aria-label="LinkedIn"
