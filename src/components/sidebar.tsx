@@ -133,16 +133,16 @@ const menuConfig: Record<
       path: "/admin/dashboard",
     },
     {
-      id: "users",
-      icon: Users,
-      label: "Users",
-      path: "/admin/user-management",
-    },
-    {
       id: "counselors",
       icon: Heart,
       label: "Counselors",
       path: "/admin/therapy-management",
+    },
+    {
+      id: "users",
+      icon: Users,
+      label: "Users",
+      path: "/admin/user-management",
     },
     {
       id: "feedback",

@@ -23,7 +23,8 @@ export default defineConfig({
         short_name: "HerHaven",
         description:
           "A comprehensive mental health support platform providing therapy services, community support, and emergency SOS features",
-        theme_color: "#9c27b0",
+        theme_color: "#ffffff",
+        background_color: "#ffffff",
         display: "standalone",
         orientation: "portrait-primary",
         scope: "/",

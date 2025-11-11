@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   AlertTriangle,
   MapPin,
@@ -28,7 +28,13 @@ interface HardcodedEmergencyContact {
   type: "crisis";
 }
 
-const UnifiedEmergencyButton: React.FC = () => {
+interface UnifiedEmergencyButtonProps {
+  autoTrigger?: boolean;
+}
+
+const UnifiedEmergencyButton: React.FC<UnifiedEmergencyButtonProps> = ({
+  autoTrigger = false,
+}) => {
   const [isHolding, setIsHolding] = useState(false);
   const [holdProgress, setHoldProgress] = useState(0);
   const [showModal, setShowModal] = useState(false);
@@ -37,7 +43,6 @@ const UnifiedEmergencyButton: React.FC = () => {
   const [userType, setUserType] = useState<"authenticated" | "guest" | "none">(
     "none"
   );
-  const [hasContacts, setHasContacts] = useState(false);
 
   const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
@@ -45,6 +50,8 @@ const UnifiedEmergencyButton: React.FC = () => {
   );
   const startTimeRef = useRef<number>(0);
   const isEnsuringGuestRef = useRef(false);
+  const hasAutoTriggeredRef = useRef(false);
+  const handleEmergencyActionRef = useRef<(() => Promise<void>) | null>(null);
   const { showAlert } = useModal();
 
   const [guestContacts, setGuestContacts] = useState<GuestFormData[]>([
@@ -83,7 +90,7 @@ const UnifiedEmergencyButton: React.FC = () => {
     return hasPlusPrefix ? `+${limitedDigits}` : limitedDigits;
   };
 
-  const ensureGuestSession = async (): Promise<string | null> => {
+  const ensureGuestSession = useCallback(async (): Promise<string | null> => {
     const existingSessionId = localStorage.getItem("guestSessionId");
     if (existingSessionId) {
       return existingSessionId;
@@ -107,8 +114,7 @@ const UnifiedEmergencyButton: React.FC = () => {
         "danger"
       );
       return null;
-    } catch (error) {
-      console.error("Guest session initialization error:", error);
+    } catch {
       showAlert(
         "Unable to prepare guest mode. Please try again or contact support.",
         "Guest Access Failed",
@@ -118,42 +124,24 @@ const UnifiedEmergencyButton: React.FC = () => {
     } finally {
       isEnsuringGuestRef.current = false;
     }
-  };
+  }, [showAlert]);
 
-  const activateGuestMode = async (): Promise<boolean> => {
+  const activateGuestMode = useCallback(async (): Promise<boolean> => {
     const sessionId = await ensureGuestSession();
     if (!sessionId) {
       return false;
     }
 
     return true;
-  };
+  }, [ensureGuestSession]);
 
   // Function to check and refresh emergency contacts
-  const checkEmergencyContacts = async (): Promise<boolean> => {
+  const checkEmergencyContacts = useCallback(async (): Promise<boolean> => {
     try {
-      const token = localStorage.getItem("token");
-      const user = localStorage.getItem("user");
-      console.log("=== Checking Emergency Contacts ===");
-      console.log("Has token:", !!token);
-      console.log(
-        "Token (first 20 chars):",
-        token ? token.substring(0, 20) + "..." : "null"
-      );
-      console.log("User in localStorage:", user ? JSON.parse(user) : "null");
-
       const response = await getEmergencyContacts();
-      console.log("Emergency contacts response:", response);
 
       if (response.success && response.data) {
         const hasAnyContacts = response.data.length > 0;
-        setHasContacts(hasAnyContacts);
-        console.log(
-          "Has contacts:",
-          hasAnyContacts,
-          "Count:",
-          response.data.length
-        );
 
         if (hasAnyContacts) {
           return true;
@@ -162,34 +150,41 @@ const UnifiedEmergencyButton: React.FC = () => {
           return false;
         }
       } else {
-        console.error("Failed to fetch contacts:", response.message);
         await ensureGuestSession();
         return false;
       }
-    } catch (error) {
-      console.error("Error checking emergency contacts:", error);
+    } catch {
       await ensureGuestSession();
       return false;
     }
-  };
+  }, [ensureGuestSession]);
 
   // Check user type and emergency contacts on mount
   useEffect(() => {
     const checkUserStatus = async () => {
       const type = getCurrentUserType();
       setUserType(type);
-      console.log("User type:", type);
 
       if (type === "authenticated") {
         await checkEmergencyContacts();
       } else {
         await ensureGuestSession();
       }
+
+      // Auto-trigger emergency action if autoTrigger prop is true
+      if (autoTrigger && !hasAutoTriggeredRef.current) {
+        hasAutoTriggeredRef.current = true;
+
+        // Wait a bit for state to settle, then trigger
+        setTimeout(() => {
+          handleEmergencyActionRef.current?.();
+        }, 1000);
+      }
     };
 
     checkUserStatus();
     requestLocation();
-  }, []);
+  }, [autoTrigger, checkEmergencyContacts, ensureGuestSession]);
 
   const requestLocation = () => {
     if ("geolocation" in navigator) {
@@ -220,14 +215,14 @@ const UnifiedEmergencyButton: React.FC = () => {
 
     progressIntervalRef.current = setInterval(() => {
       const elapsed = Date.now() - startTimeRef.current;
-      const progress = Math.min((elapsed / 3000) * 100, 100);
+      const progress = Math.min((elapsed / 2000) * 100, 100);
       setHoldProgress(progress);
     }, 16);
 
-    // Trigger SOS after 3 seconds
+    // Trigger SOS after 2 seconds
     holdTimerRef.current = setTimeout(() => {
       handleEmergencyAction();
-    }, 3000);
+    }, 2000);
   };
 
   const handleHoldEnd = () => {
@@ -245,45 +240,11 @@ const UnifiedEmergencyButton: React.FC = () => {
     }
   };
 
-  const handleEmergencyAction = async () => {
-    handleHoldEnd();
-
-    // For authenticated users with contacts, trigger SOS immediately
-    if (userType === "authenticated") {
-      console.log(
-        "Authenticated user - refreshing contacts before emergency action..."
-      );
-      const hasContactsNow = await checkEmergencyContacts();
-
-      if (hasContactsNow) {
-        console.log("Contacts found! Triggering SOS with saved contacts...");
-        await triggerSOSAlertForAuthenticatedUser();
-        return;
-      }
-    }
-
-    // For guests or authenticated users without contacts, show modal
-    const guestReady = await activateGuestMode();
-    if (!guestReady) {
-      return;
-    }
-
-    setShowModal(true);
-  };
-
   // Trigger SOS for authenticated users with registered contacts
-  const triggerSOSAlertForAuthenticatedUser = async () => {
+  const triggerSOSAlertForAuthenticatedUser = useCallback(async () => {
     setIsTriggering(true);
 
     try {
-      console.log("=== Triggering SOS Alert for Authenticated User ===");
-      console.log("User Type:", userType);
-      console.log("Has Contacts:", hasContacts);
-      console.log(
-        "Token:",
-        localStorage.getItem("token") ? "Present" : "Missing"
-      );
-
       const payload = {
         location: location ? { address: location } : undefined,
         customNote: "Emergency SOS Alert triggered via HerHaven",
@@ -296,11 +257,7 @@ const UnifiedEmergencyButton: React.FC = () => {
         },
       };
 
-      console.log("SOS Payload:", JSON.stringify(payload, null, 2));
-      console.log("Sending authenticated SOS request to /api/sos/trigger...");
-
       const response = await triggerSOS(payload);
-      console.log("SOS Response:", response);
 
       if (response.success) {
         showAlert(
@@ -315,8 +272,7 @@ const UnifiedEmergencyButton: React.FC = () => {
           "danger"
         );
       }
-    } catch (error) {
-      console.error("SOS Trigger Error:", error);
+    } catch {
       showAlert(
         "An error occurred while sending the SOS alert. Please try again or call emergency services.",
         "Error",
@@ -325,24 +281,50 @@ const UnifiedEmergencyButton: React.FC = () => {
     } finally {
       setIsTriggering(false);
     }
-  };
+  }, [location, showAlert]);
+
+  const handleEmergencyAction = useCallback(async () => {
+    handleHoldEnd();
+
+    // For authenticated users with contacts, trigger SOS immediately
+    if (userType === "authenticated") {
+      const hasContactsNow = await checkEmergencyContacts();
+
+      if (hasContactsNow) {
+        await triggerSOSAlertForAuthenticatedUser();
+        return;
+      }
+    }
+
+    // For guests or authenticated users without contacts, show modal
+    const guestReady = await activateGuestMode();
+    if (!guestReady) {
+      return;
+    }
+
+    setShowModal(true);
+  }, [
+    userType,
+    checkEmergencyContacts,
+    triggerSOSAlertForAuthenticatedUser,
+    activateGuestMode,
+  ]);
+
+  // Keep ref updated
+  useEffect(() => {
+    handleEmergencyActionRef.current = handleEmergencyAction;
+  }, [handleEmergencyAction]);
 
   // Trigger SOS for guest users with custom contacts
   const triggerSOSAlert = async (guestContactsData?: GuestContact[]) => {
     setIsTriggering(true);
 
     try {
-      console.log("=== Triggering SOS Alert for Guest User ===");
-      console.log("Guest Contacts Data:", guestContactsData);
-
-      console.log("Using guest session...");
       const sessionId = await ensureGuestSession();
       if (!sessionId) {
-        console.error("Failed to get guest session");
         return;
       }
       const guestSessionId = sessionId;
-      console.log("Guest Session ID:", guestSessionId);
 
       const payload = {
         location: location ? { address: location } : undefined,
@@ -358,11 +340,7 @@ const UnifiedEmergencyButton: React.FC = () => {
         guestContacts: guestContactsData,
       };
 
-      console.log("SOS Payload:", JSON.stringify(payload, null, 2));
-      console.log("Sending SOS request...");
-
       const response = await triggerQuickSOS(payload);
-      console.log("SOS Response:", response);
 
       if (response.success) {
         showAlert(
@@ -379,8 +357,7 @@ const UnifiedEmergencyButton: React.FC = () => {
           "danger"
         );
       }
-    } catch (error) {
-      console.error("SOS Trigger Error:", error);
+    } catch {
       showAlert(
         "An error occurred while sending the SOS alert. Please try again or call emergency services.",
         "Error",
@@ -470,8 +447,8 @@ const UnifiedEmergencyButton: React.FC = () => {
             : "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
           transform: isHolding ? "scale(1.1)" : "scale(1)",
         }}
-        aria-label="Emergency - Hold for 3 seconds"
-        title="Hold for 3 seconds to trigger emergency"
+        aria-label="Emergency - Hold for 2 seconds"
+        title="Hold for 2 seconds to trigger emergency"
       >
         <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
 
@@ -497,7 +474,7 @@ const UnifiedEmergencyButton: React.FC = () => {
       {isHolding && (
         <div className="fixed bottom-24 left-8 bg-black/80 text-white px-4 py-2 rounded-lg text-sm font-semibold z-50 animate-fade-in">
           Hold to trigger emergency...{" "}
-          {Math.ceil((3000 - (holdProgress / 100) * 3000) / 1000)}s
+          {Math.ceil((2000 - (holdProgress / 100) * 2000) / 1000)}s
         </div>
       )}
 

@@ -90,12 +90,7 @@
         let generated = 0;
 
         for (const size of sizes) {
-          await generateIcon(
-            size,
-            `icon-${size}x${size}.png`,
-            "#FFFFFF",
-            previewDiv
-          );
+          await generateIcon(size, `icon-${size}x${size}.png`, previewDiv);
           generated++;
         }
 
@@ -116,15 +111,14 @@
         statusDiv.textContent = `✓ Successfully generated ${generated} icons! Check your downloads folder.`;
       }
 
-      async function generateIcon(size, filename, bgColor, previewDiv) {
+      async function generateIcon(size, filename, previewDiv) {
         const canvas = document.getElementById("canvas");
         canvas.width = size;
         canvas.height = size;
         const ctx = canvas.getContext("2d");
 
-        // Background
-        ctx.fillStyle = bgColor;
-        ctx.fillRect(0, 0, size, size);
+        // Clear with transparent background
+        ctx.clearRect(0, 0, size, size);
 
         // Load and draw SVG
         const img = new Image();
@@ -133,16 +127,16 @@
 
         return new Promise((resolve) => {
           img.onload = () => {
-            // Calculate scaling to fit icon with padding
             const padding = size * 0.1;
             const availableSize = size - padding * 2;
-            const scale = availableSize / 50; // 50 is the SVG viewBox size
+            const scale = availableSize / 50;
 
             const scaledWidth = 50 * scale;
             const scaledHeight = 50 * scale;
             const x = (size - scaledWidth) / 2;
             const y = (size - scaledHeight) / 2;
 
+            // Draw logo on transparent background
             ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
             URL.revokeObjectURL(url);
 
@@ -181,6 +175,7 @@
         canvas.height = size;
         const ctx = canvas.getContext("2d");
 
+        // Clear with transparent background (no purple background!)
         ctx.clearRect(0, 0, size, size);
 
         const img = new Image();
@@ -199,7 +194,7 @@
             const x = (size - scaledWidth) / 2;
             const y = (size - scaledHeight) / 2;
 
-            // Draw logo with transparent background
+            // Draw logo on transparent background (no color fill)
             ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
             URL.revokeObjectURL(url);
 
