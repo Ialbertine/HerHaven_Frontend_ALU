@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Search, Filter, TrendingUp, MessageSquare } from 'lucide-react';
+import { Search, Filter, TrendingUp, MessageSquare, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getAllPosts, type Post } from '@/apis/community';
-import PostCard from '@/components/community/PostCard';
-import CreatePostModal from '@/components/community/CreatePostModel';
+import PostListItem from '@/components/community/PostListItem';
+import CreatePostForm from '@/components/community/CreatePostForm';
 import PostDetailModal from '@/components/community/PostDetailsModel';
 import { getCurrentUser } from '@/apis/auth';
 import DashboardLayout from '@/components/DashboardLayout';
@@ -14,7 +14,6 @@ const Community: React.FC = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
 
@@ -69,7 +68,6 @@ const Community: React.FC = () => {
   };
 
   const handlePostCreated = () => {
-    setShowCreateModal(false);
     setPage(1);
     fetchPosts();
   };
@@ -95,22 +93,13 @@ const Community: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 py-8">
           {/* Header */}
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Community
-                </h1>
-                <p className="text-gray-600 mt-2">
-                  Share experiences, find support, and connect with others
-                </p>
-              </div>
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:shadow-lg transition-all"
-              >
-                <Plus className="w-5 h-5" />
-                <span className="font-medium">New Post</span>
-              </button>
+            <div className="mb-6">
+              <h1 className="text-4xl font-bold text-gray-800">
+                Community
+              </h1>
+              <p className="text-gray-600 mt-2 text-lg">
+                Share experiences, find support, and connect with others
+              </p>
             </div>
 
             {/* Search and Filter Bar */}
@@ -150,7 +139,7 @@ const Community: React.FC = () => {
                       key={tag}
                       onClick={() => handleTagToggle(tag)}
                       className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedTags.includes(tag)
-                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md'
+                        ? 'bg-purple-600 text-white shadow-md'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                     >
@@ -162,25 +151,42 @@ const Community: React.FC = () => {
             )}
           </div>
 
-          {/* Posts Grid */}
+          {/* Create Post Section */}
+          <div className="mb-8">
+            <CreatePostForm onSuccess={handlePostCreated} />
+          </div>
+
+          {/* Community Posts Section Header */}
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-800">Community Posts</h2>
+            <p className="text-gray-600 mt-1">Browse and engage with posts from the community</p>
+          </div>
+
+          {/* Posts List */}
           {loading ? (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div className="space-y-4">
+              {[1, 2, 3, 4, 5].map((i) => (
                 <div
                   key={i}
                   className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-pulse"
                 >
-                  <div className="h-6 bg-gray-200 rounded mb-4"></div>
-                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                  <div className="flex items-start gap-4">
+                    <div className="w-14 h-14 bg-gray-200 rounded-full"></div>
+                    <div className="flex-1">
+                      <div className="h-5 bg-gray-200 rounded w-1/4 mb-3"></div>
+                      <div className="h-6 bg-gray-200 rounded w-3/4 mb-3"></div>
+                      <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                      <div className="h-4 bg-gray-200 rounded w-full"></div>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
           ) : filteredPosts.length > 0 ? (
             <>
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="space-y-4">
                 {filteredPosts.map((post) => (
-                  <PostCard
+                  <PostListItem
                     key={post._id}
                     post={post}
                     onClick={() => handlePostClick(post)}
@@ -189,25 +195,69 @@ const Community: React.FC = () => {
                 ))}
               </div>
 
-              {/* Pagination */}
+              {/* Enhanced Pagination */}
               {totalPages > 1 && (
-                <div className="flex justify-center gap-2 mt-8">
+                <div className="mt-8 flex items-center justify-center gap-2">
+                  {/* Previous Button */}
                   <button
                     onClick={() => setPage(p => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    className="flex items-center gap-1 px-4 py-2 rounded-lg border-2 border-gray-200 text-gray-700 font-medium hover:bg-purple-50 hover:border-purple-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-200 transition-all"
                   >
+                    <ChevronLeft className="w-4 h-4" />
                     Previous
                   </button>
-                  <span className="px-4 py-2 text-gray-600">
-                    Page {page} of {totalPages}
-                  </span>
+
+                  {/* Page Numbers */}
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
+                      // Show first page, last page, current page, and pages around current
+                      const showPage =
+                        pageNum === 1 ||
+                        pageNum === totalPages ||
+                        (pageNum >= page - 1 && pageNum <= page + 1);
+
+                      const showEllipsis =
+                        (pageNum === 2 && page > 3) ||
+                        (pageNum === totalPages - 1 && page < totalPages - 2);
+
+                      if (!showPage && !showEllipsis) return null;
+
+                      if (showEllipsis) {
+                        return (
+                          <span
+                            key={pageNum}
+                            className="px-3 py-2 text-gray-500"
+                          >
+                            ...
+                          </span>
+                        );
+                      }
+
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setPage(pageNum)}
+                          className={`min-w-[40px] h-10 rounded-lg font-medium transition-all ${
+                            page === pageNum
+                              ? 'bg-purple-600 text-white shadow-md'
+                              : 'text-gray-700 hover:bg-gray-100'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Next Button */}
                   <button
                     onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    className="flex items-center gap-1 px-4 py-2 rounded-lg border-2 border-gray-200 text-gray-700 font-medium hover:bg-purple-50 hover:border-purple-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-200 transition-all"
                   >
                     Next
+                    <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
               )}
@@ -223,24 +273,11 @@ const Community: React.FC = () => {
                   ? 'Try adjusting your filters'
                   : 'Be the first to share your story'}
               </p>
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:shadow-lg transition-all"
-              >
-                Create Post
-              </button>
             </div>
           )}
         </div>
 
-        {/* Modals */}
-        {showCreateModal && (
-          <CreatePostModal
-            onClose={() => setShowCreateModal(false)}
-            onSuccess={handlePostCreated}
-          />
-        )}
-
+        {/* Post Detail Modal */}
         {selectedPost && (
           <PostDetailModal
             post={selectedPost}

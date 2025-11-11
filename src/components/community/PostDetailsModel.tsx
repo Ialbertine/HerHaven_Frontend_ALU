@@ -20,16 +20,21 @@ interface PostDetailModalProps {
 
 const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
   const { showDeleteConfirm } = useModal();
+  const currentUser = getCurrentUser();
+  
+  // Check if current user has already liked this post
+  const [liked, setLiked] = useState(() => {
+    if (!currentUser?.id) return false;
+    return post.likes.includes(currentUser.id);
+  });
+  
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentText, setCommentText] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likeCount);
   const [commentCount, setCommentCount] = useState(post.commentCount);
   const [showCommentMenu, setShowCommentMenu] = useState<string | null>(null);
-
-  const currentUser = getCurrentUser();
 
   const fetchComments = useCallback(async () => {
     try {
@@ -101,16 +106,12 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
     }
   };
 
-  const handleLikeComment = async (commentId: string, index: number) => {
+  const handleLikeComment = async (commentId: string) => {
     try {
       const response = await likeComment(commentId);
       if (response.success) {
-        const newComments = [...comments];
-        newComments[index] = {
-          ...newComments[index],
-          likeCount: response.data.likeCount,
-        };
-        setComments(newComments);
+        // Refresh comments to get updated like state
+        fetchComments();
       }
     } catch (error) {
       console.error('Error liking comment:', error);
@@ -154,7 +155,7 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
           {/* Post Content */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center text-white font-semibold text-lg">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center text-white font-semibold text-base shadow-md">
                 {post.authorName.charAt(0).toUpperCase()}
               </div>
               <div>
@@ -206,7 +207,7 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
             {/* Add Comment */}
             <div className="mb-6">
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center text-white font-semibold flex-shrink-0">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center text-white font-semibold text-sm shadow-md flex-shrink-0">
                   {currentUser ? currentUser.username?.charAt(0).toUpperCase() || 'U' : 'G'}
                 </div>
                 <div className="flex-1">
@@ -232,7 +233,7 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
                     <button
                       onClick={handleSubmitComment}
                       disabled={!commentText.trim() || isSubmitting}
-                      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Send className="w-4 h-4" />
                       <span>{isSubmitting ? 'Posting...' : 'Comment'}</span>
@@ -244,14 +245,17 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
 
             {/* Comments List */}
             <div className="space-y-4">
-              {comments.map((comment, index) => {
+              {comments.map((comment) => {
                 const isCommentOwner = currentUser && comment.author && comment.author._id === currentUser.id;
                 const isCommentAdmin = currentUser && ['admin', 'super_admin'].includes(currentUser.role || '');
                 const canDeleteComment = isCommentOwner || isCommentAdmin;
+                
+                // Check if current user has liked this comment
+                const hasLikedComment = currentUser?.id ? comment.likes.includes(currentUser.id) : false;
 
                 return (
                   <div key={comment._id} className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-300 to-pink-300 flex items-center justify-center text-white font-semibold flex-shrink-0">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center text-white font-semibold text-sm shadow-md flex-shrink-0">
                       {comment.authorName.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1">
@@ -284,10 +288,12 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
                       </div>
                       <p className="text-gray-700 mb-2">{comment.content}</p>
                       <button
-                        onClick={() => handleLikeComment(comment._id, index)}
-                        className="flex items-center gap-1 text-sm text-gray-600 hover:text-pink-600 transition-all"
+                        onClick={() => handleLikeComment(comment._id)}
+                        className={`flex items-center gap-1 text-sm transition-all ${
+                          hasLikedComment ? 'text-pink-600' : 'text-gray-600 hover:text-pink-600'
+                        }`}
                       >
-                        <Heart className="w-4 h-4" />
+                        <Heart className={`w-4 h-4 ${hasLikedComment ? 'fill-current' : ''}`} />
                         <span>{comment.likeCount}</span>
                       </button>
                     </div>

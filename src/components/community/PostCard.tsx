@@ -12,12 +12,18 @@ interface PostCardProps {
 
 const PostCard: React.FC<PostCardProps> = ({ post, onClick, onUpdate }) => {
   const { showDeleteConfirm } = useModal();
+  const currentUser = getCurrentUser();
+  
+  // Check if current user has already liked this post
+  const [liked, setLiked] = useState(() => {
+    if (!currentUser?.id) return false;
+    return post.likes.includes(currentUser.id);
+  });
+  
   const [showMenu, setShowMenu] = useState(false);
-  const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likeCount);
   const [isLiking, setIsLiking] = useState(false);
 
-  const currentUser = getCurrentUser();
   const isOwner = currentUser && post.author && post.author._id === currentUser.id;
   const isAdmin = currentUser && ['admin', 'super_admin'].includes(currentUser.role || '');
   const canModify = isOwner || isAdmin;
@@ -91,7 +97,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onClick, onUpdate }) => {
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center text-white font-semibold">
+          <div className="w-9 h-9 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center text-white font-semibold text-sm shadow-md">
             {post.authorName.charAt(0).toUpperCase()}
           </div>
           <div>
