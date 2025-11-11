@@ -6,7 +6,13 @@ import {
   Phone,
   PhoneCall,
   AlertCircle,
+  Download,
 } from "lucide-react";
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
 import {
   triggerQuickSOS,
   triggerSOS,
@@ -26,6 +32,11 @@ interface HardcodedEmergencyContact {
   name: string;
   number: string;
   type: "crisis";
+}
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
 interface UnifiedEmergencyButtonProps {
@@ -57,6 +68,9 @@ const UnifiedEmergencyButton: React.FC<UnifiedEmergencyButtonProps> = ({
   const [guestContacts, setGuestContacts] = useState<GuestFormData[]>([
     { phoneNumber: "" },
   ]);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
+  const [showInstallButton, setShowInstallButton] = useState(false);
 
   // Hardcoded emergency call numbers
   const hardcodedEmergencyContacts: HardcodedEmergencyContact[] = [
@@ -315,6 +329,44 @@ const UnifiedEmergencyButton: React.FC<UnifiedEmergencyButtonProps> = ({
     handleEmergencyActionRef.current = handleEmergencyAction;
   }, [handleEmergencyAction]);
 
+  // PWA Install prompt handler
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+      setShowInstallButton(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+    // Check if already installed
+    if (window.matchMedia("(display-mode: standalone)").matches) {
+      setShowInstallButton(false);
+    }
+
+    return () => {
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt
+      );
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) {
+      return;
+    }
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+
+    if (outcome === "accepted") {
+      setShowInstallButton(false);
+    }
+
+    setDeferredPrompt(null);
+  };
+
   // Trigger SOS for guest users with custom contacts
   const triggerSOSAlert = async (guestContactsData?: GuestContact[]) => {
     setIsTriggering(true);
@@ -432,6 +484,19 @@ const UnifiedEmergencyButton: React.FC<UnifiedEmergencyButtonProps> = ({
 
   return (
     <>
+      {/* Install App Button */}
+      {showInstallButton && (
+        <button
+          onClick={handleInstallClick}
+          className="fixed bottom-28 left-8 px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-full shadow-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 z-50 flex items-center gap-2 text-sm font-semibold"
+          aria-label="Install HerHaven App"
+          title="Install HerHaven App"
+        >
+          <Download className="w-4 h-4" />
+          Install App
+        </button>
+      )}
+
       {/* Unified Emergency Button */}
       <button
         onMouseDown={handleHoldStart}
