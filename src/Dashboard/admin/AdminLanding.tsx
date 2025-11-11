@@ -542,7 +542,7 @@ const AdminLanding: React.FC = () => {
               ) >= 80,
           },
           {
-            label: "New Users (3M)",
+            label: "New Users",
             value: analyticsResponse.data?.users.new ?? 0,
             icon: Calendar,
             isPositive: true,
