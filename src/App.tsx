@@ -27,13 +27,15 @@ import UserAppointment from "@/Dashboard/user/UserAppointment";
 import Community from "@/pages/community/community";
 import HavenChatbot from "@/pages/chatbot/HavenChatbot";
 import { ModalProvider } from "@/contexts/ModalContext";
+import { TextSizeProvider } from "@/contexts/TextSizeContext";
 import EmergencyContactsManager from "@/pages/Emergency";
 import EmergencySOS from "@/pages/EmergencySOS";
 
 const App: React.FC = () => {
   return (
-    <ModalProvider>
-      <BrowserRouter>
+    <TextSizeProvider>
+      <ModalProvider>
+        <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
@@ -105,6 +107,7 @@ const App: React.FC = () => {
         </Routes>
       </BrowserRouter>
     </ModalProvider>
+    </TextSizeProvider>
   );
 };
 

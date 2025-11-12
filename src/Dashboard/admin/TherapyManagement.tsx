@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/DashboardLayout";
 import apiClient from "@/apis/axiosConfig";
 import { AxiosError } from "axios";
@@ -150,6 +151,7 @@ const InviteModal: React.FC<InviteModalProps> = ({
 };
 
 const TherapyManagement: React.FC = () => {
+  const navigate = useNavigate();
   const { showAlert, showConfirm, showDeleteConfirm } = useModal();
   const [counselors, setCounselors] = useState<Counselor[]>([]);
   const [filteredCounselors, setFilteredCounselors] = useState<Counselor[]>([]);
@@ -161,13 +163,33 @@ const TherapyManagement: React.FC = () => {
   const [inviteLoading, setInviteLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const filterCounselors = useCallback(() => {
+    let filtered = [...counselors];
+
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (c) =>
+          c.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          c.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          c.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          c.username?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((c) => c.verificationStatus === statusFilter);
+    }
+
+    setFilteredCounselors(filtered);
+  }, [counselors, searchTerm, statusFilter]);
+
   useEffect(() => {
     fetchCounselors();
   }, []);
 
   useEffect(() => {
     filterCounselors();
-  });
+  }, [filterCounselors]);
 
   const fetchCounselors = async () => {
     try {
@@ -192,26 +214,6 @@ const TherapyManagement: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const filterCounselors = () => {
-    let filtered = [...counselors];
-
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (c) =>
-          c.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          c.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          c.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          c.username?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (statusFilter !== "all") {
-      filtered = filtered.filter((c) => c.verificationStatus === statusFilter);
-    }
-
-    setFilteredCounselors(filtered);
   };
 
   const handleInvite = async (data: {
@@ -351,7 +353,7 @@ const TherapyManagement: React.FC = () => {
 
   const handleEdit = (counselorId: string) => {
     // Navigate to edit page (adjust route as needed)
-    window.location.href = `/admin/counselors/${counselorId}/edit`;
+    navigate(`/admin/counselors/${counselorId}/edit`);
   };
 
   const handleDelete = async (counselorId: string) => {

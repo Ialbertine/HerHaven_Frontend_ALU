@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import {
   Search,
-  Star,
   Calendar,
   MapPin,
   Award,
@@ -26,6 +25,46 @@ import {
 import { getCurrentUser } from "@/apis/auth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useModal } from "@/contexts/useModal";
+
+interface CounselorAvatarProps {
+  counselor: Counselor;
+  sizeClass?: string;
+  textClass?: string;
+}
+
+const CounselorAvatar = ({
+  counselor,
+  sizeClass = "w-16 h-16",
+  textClass = "text-xl",
+}: CounselorAvatarProps) => {
+  const [imageError, setImageError] = useState(false);
+  const initials =
+    `${counselor.firstName?.charAt(0) ?? ""}${counselor.lastName?.charAt(0) ?? ""
+      }`.toUpperCase() ||
+    counselor.username?.slice(0, 2)?.toUpperCase() ||
+    "HH";
+
+  const shouldShowImage = counselor.profilePicture && !imageError;
+
+  if (shouldShowImage) {
+    return (
+      <img
+        src={counselor.profilePicture}
+        alt={`${counselor.firstName} ${counselor.lastName}`}
+        className={`${sizeClass} rounded-full object-cover border-2 border-purple-100`}
+        onError={() => setImageError(true)}
+      />
+    );
+  }
+
+  return (
+    <div
+      className={`${sizeClass} bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white ${textClass} font-bold uppercase`}
+    >
+      {initials}
+    </div>
+  );
+};
 
 const Therapits = () => {
   const { showAlert } = useModal();
@@ -288,24 +327,18 @@ const Therapits = () => {
               {filteredCounselors.map((counselor) => (
                 <div
                   key={counselor._id}
-                  className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-all"
+                  className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-all flex flex-col h-full"
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-16 h-16 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white text-xl font-bold">
-                        {counselor.firstName.charAt(0)}
-                        {counselor.lastName.charAt(0)}
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-800">
-                          {counselor.firstName} {counselor.lastName}
-                        </h3>
-                        <div className="flex items-center gap-1 text-sm text-gray-600">
-                          <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                          <span>{counselor.averageRating}</span>
-                        </div>
-                      </div>
-                    </div>
+                  {/* Profile Image - Centered */}
+                  <div className="flex justify-center mb-4">
+                    <CounselorAvatar counselor={counselor} sizeClass="w-20 h-20" textClass="text-2xl" />
+                  </div>
+
+                  {/* Name - Centered */}
+                  <div className="flex flex-col items-center mb-3">
+                    <h3 className="font-semibold text-gray-800 text-center mb-1">
+                      {counselor.firstName} {counselor.lastName}
+                    </h3>
                     {counselor.isAvailable && (
                       <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
                         Available
@@ -313,6 +346,7 @@ const Therapits = () => {
                     )}
                   </div>
 
+                  {/* Details */}
                   <div className="space-y-3 mb-4">
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <Award className="w-4 h-4 text-purple-600" />
@@ -328,13 +362,15 @@ const Therapits = () => {
                     </div>
                   </div>
 
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+                  {/* Bio */}
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-3 flex-grow">
                     {counselor.bio}
                   </p>
 
+                  {/* Button */}
                   <button
                     onClick={() => openBookingModal(counselor)}
-                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all font-medium"
+                    className="w-full bg-gradient-to-r from-[#9027b0] to-[#9c27b0] text-white py-2 rounded-lg hover:from-[#7b1fa2] hover:to-[#8e24aa] transition-all font-medium mt-auto"
                   >
                     Book Appointment
                   </button>
@@ -378,10 +414,11 @@ const Therapits = () => {
 
                   <div className="mb-6">
                     <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg">
-                      <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold">
-                        {selectedCounselor.firstName.charAt(0)}
-                        {selectedCounselor.lastName.charAt(0)}
-                      </div>
+                      <CounselorAvatar
+                        counselor={selectedCounselor}
+                        sizeClass="w-12 h-12"
+                        textClass="text-lg"
+                      />
                       <div className="flex-1">
                         <p className="font-semibold text-gray-800">
                           {selectedCounselor.firstName}{" "}
@@ -702,10 +739,10 @@ const Therapits = () => {
                       </select>
                     </div>
 
-                    <div className="flex gap-3 pt-4">
+                    <div className="flex gap-3 pt-4 border-t border-gray-200">
                       <button
                         onClick={() => setShowBookingModal(false)}
-                        className="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                        className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
                       >
                         Cancel
                       </button>
@@ -719,9 +756,9 @@ const Therapits = () => {
                           !bookingData.time ||
                           bookingLoading
                         }
-                        className="flex-1 px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex-1 px-4 py-2 bg-gradient-to-r from-[#9027b0] to-[#9c27b0] text-white rounded-lg hover:from-[#7b1fa2] hover:to-[#8e24aa] transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {bookingLoading ? "Booking..." : "Confirm Booking"}
+                        {bookingLoading ? "Booking..." : "Book Appointment"}
                       </button>
                     </div>
                   </div>

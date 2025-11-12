@@ -90,7 +90,7 @@ const Community: React.FC = () => {
   return (
     <DashboardLayout userType={getUserType()} userName={currentUser?.username || "Guest"}>
       <div className="min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="max-w-7xl mx-auto px-4 py-2">
           {/* Header */}
           <div className="mb-8">
             <div className="mb-6">

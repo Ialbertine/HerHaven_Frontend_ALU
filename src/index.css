@@ -112,3 +112,20 @@
 .animation-delay-600 {
   animation-delay: 600ms;
 }
+
+/* Text Size Accessibility Classes */
+html.text-size-small {
+  font-size: 87.5%; /* 14px base 87.5% of 16px */
+}
+
+html.text-size-medium {
+  font-size: 100%; /* 16px default */
+}
+
+html.text-size-large {
+  font-size: 112.5%; /* 18px base 112.5% of 16px */
+}
+
+html.text-size-extra-large {
+  font-size: 125%; /* 20px base 125% of 16px */
+}

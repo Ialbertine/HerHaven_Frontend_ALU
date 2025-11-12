@@ -12,6 +12,8 @@ import {
   User,
   Calendar,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Archive,
   AlertCircle,
 } from "lucide-react";
@@ -44,6 +46,8 @@ const ContactManagement: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 20;
 
   const statusOptions = [
     { value: "all", label: "All Status" },
@@ -84,6 +88,7 @@ const ContactManagement: React.FC = () => {
       if (response.success && response.data) {
         setMessages(response.data.messages);
         setTotalPages(response.data.pagination.pages);
+        setTotalItems(response.data.pagination.total);
 
         // Calculate stats from all messages
         const allStats = response.data.messages.reduce(
@@ -113,6 +118,10 @@ const ContactManagement: React.FC = () => {
       setLoading(false);
     }
   }, [filters, searchTerm, currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [filters, searchTerm]);
 
   useEffect(() => {
     loadMessages();
@@ -158,18 +167,18 @@ const ContactManagement: React.FC = () => {
     <DashboardLayout userType="super_admin" userName="Admin">
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
               Contact Messages
             </h1>
-            <p className="text-gray-600">
+            <p className="text-sm sm:text-base text-gray-600">
               Manage and respond to user inquiries
             </p>
           </div>
           <button
             onClick={() => loadMessages()}
-            className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors w-full sm:w-auto"
           >
             <RefreshCw className="w-4 h-4" />
             Refresh
@@ -177,55 +186,55 @@ const ContactManagement: React.FC = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-purple-500">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">
+                <p className="text-xs sm:text-sm font-medium text-gray-600">
                   Total Messages
                 </p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">
                   {stats.total}
                 </p>
               </div>
-              <MessageSquare className="w-8 h-8 text-purple-600" />
+              <MessageSquare className="w-6 h-6 sm:w-8 sm:h-8 text-purple-600" />
             </div>
           </div>
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-purple-500">
+          <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">New</p>
-                <p className="text-2xl font-bold text-blue-600">{stats.new}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-600">New</p>
+                <p className="text-xl sm:text-2xl font-bold text-blue-600">{stats.new}</p>
               </div>
-              <AlertCircle className="w-8 h-8 text-blue-600" />
+              <AlertCircle className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
             </div>
           </div>
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-purple-500">
+          <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Resolved</p>
-                <p className="text-2xl font-bold text-green-600">
+                <p className="text-xs sm:text-sm font-medium text-gray-600">Resolved</p>
+                <p className="text-xl sm:text-2xl font-bold text-green-600">
                   {stats.resolved}
                 </p>
               </div>
-              <CheckCircle className="w-8 h-8 text-green-600" />
+              <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-green-600" />
             </div>
           </div>
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-purple-500">
+          <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Archived</p>
-                <p className="text-2xl font-bold text-gray-600">
+                <p className="text-xs sm:text-sm font-medium text-gray-600">Archived</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-600">
                   {stats.archived}
                 </p>
               </div>
-              <Archive className="w-8 h-8 text-gray-600" />
+              <Archive className="w-6 h-6 sm:w-8 sm:h-8 text-gray-600" />
             </div>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-purple-500">
+        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search */}
             <div className="flex-1">
@@ -249,9 +258,8 @@ const ContactManagement: React.FC = () => {
               <Filter className="w-4 h-4" />
               Filters
               <ChevronDown
-                className={`w-4 h-4 transition-transform ${
-                  showFilters ? "rotate-180" : ""
-                }`}
+                className={`w-4 h-4 transition-transform ${showFilters ? "rotate-180" : ""
+                  }`}
               />
             </button>
           </div>
@@ -302,7 +310,7 @@ const ContactManagement: React.FC = () => {
 
         {/* Loading State */}
         {loading ? (
-          <div className="bg-white rounded-lg shadow-sm border border-purple-500 p-8">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
             <div className="animate-pulse space-y-4">
               {[...Array(5)].map((_, i) => (
                 <div key={i} className="flex space-x-4">
@@ -316,28 +324,28 @@ const ContactManagement: React.FC = () => {
             </div>
           </div>
         ) : (
-          /* Messages List */
-          <div className="bg-white rounded-lg shadow-sm border border-purple-500">
-            {messages.length === 0 ? (
-              <div className="p-8 text-center text-gray-500">
-                <MessageSquare className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p>No contact messages found matching your criteria.</p>
-              </div>
-            ) : (
-              <>
+          <>
+            {/* Messages List */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+              {messages.length === 0 ? (
+                <div className="p-8 text-center text-gray-500">
+                  <MessageSquare className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                  <p>No contact messages found matching your criteria.</p>
+                </div>
+              ) : (
                 <div className="divide-y divide-gray-200">
                   {messages.map((message) => (
                     <div
                       key={message._id}
-                      className="p-6 hover:bg-gray-50 transition-colors"
+                      className="p-4 sm:p-6 hover:bg-gray-50 transition-colors"
                     >
-                      <div className="flex justify-between items-start">
+                      <div className="flex flex-col gap-4">
                         <div className="flex-1">
                           {/* Header with Name and Status */}
-                          <div className="flex items-center gap-3 mb-3">
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3">
                             <div className="flex items-center gap-2">
                               <User className="w-4 h-4 text-gray-400" />
-                              <span className="font-semibold text-gray-900">
+                              <span className="font-semibold text-sm sm:text-base text-gray-900">
                                 {message.firstName} {message.lastName}
                               </span>
                             </div>
@@ -359,7 +367,7 @@ const ContactManagement: React.FC = () => {
                               <Mail className="w-3 h-3 text-gray-400" />
                               <a
                                 href={`mailto:${message.email}`}
-                                className="text-sm text-blue-600 hover:underline"
+                                className="text-xs sm:text-sm text-blue-600 hover:underline"
                               >
                                 {message.email}
                               </a>
@@ -369,7 +377,7 @@ const ContactManagement: React.FC = () => {
                                 <Phone className="w-3 h-3 text-gray-400" />
                                 <a
                                   href={`tel:${message.phoneNumber}`}
-                                  className="text-sm text-gray-600 hover:text-gray-900"
+                                  className="text-xs sm:text-sm text-gray-600 hover:text-gray-900"
                                 >
                                   {message.phoneNumber}
                                 </a>
@@ -378,8 +386,8 @@ const ContactManagement: React.FC = () => {
                           </div>
 
                           {/* Message Content */}
-                          <div className="mb-3 p-4 bg-gray-50 rounded-lg">
-                            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                          <div className="mb-3 p-3 sm:p-4 bg-gray-50 rounded-lg">
+                            <p className="text-sm sm:text-base text-gray-700 leading-relaxed whitespace-pre-wrap">
                               {message.message}
                             </p>
                           </div>
@@ -396,40 +404,64 @@ const ContactManagement: React.FC = () => {
                     </div>
                   ))}
                 </div>
+              )}
+            </div>
 
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="px-6 py-4 border-t border-gray-200">
-                    <div className="flex items-center justify-between">
-                      <button
-                        onClick={() =>
-                          setCurrentPage((prev) => Math.max(1, prev - 1))
-                        }
-                        disabled={currentPage === 1}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Previous
-                      </button>
-                      <span className="text-sm text-gray-700">
-                        Page {currentPage} of {totalPages}
-                      </span>
-                      <button
-                        onClick={() =>
-                          setCurrentPage((prev) =>
-                            Math.min(totalPages, prev + 1)
-                          )
-                        }
-                        disabled={currentPage === totalPages}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Next
-                      </button>
-                    </div>
+            {/* Pagination */}
+            {messages.length > 0 && (
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="text-sm text-gray-600">
+                    Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} messages
                   </div>
-                )}
-              </>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      disabled={currentPage === 1}
+                      className="flex items-center gap-1 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                      <span className="hidden sm:inline">Previous</span>
+                    </button>
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        let pageNum;
+                        if (totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          pageNum = currentPage - 2 + i;
+                        }
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={`px-3 py-2 text-sm rounded-lg transition-colors ${currentPage === pageNum
+                              ? 'bg-purple-600 text-white'
+                              : 'border border-gray-300 hover:bg-gray-50'
+                              }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      disabled={currentPage === totalPages}
+                      className="flex items-center gap-1 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <span className="hidden sm:inline">Next</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </DashboardLayout>

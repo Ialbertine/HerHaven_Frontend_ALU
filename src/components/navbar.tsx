@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Menu, X, Globe, ALargeSmall, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useTextSize } from "@/hooks/useTextSize";
 
 interface DropdownItem {
   href: string;
@@ -44,14 +45,85 @@ export const Logo: React.FC = () => (
   </div>
 );
 
-const ResizeText: React.FC = () => (
-  <button
-    aria-label="Resize text"
-    className="hover:scale-110 transition-transform"
-  >
-    <ALargeSmall className="w-5 h-5 md:w-6 md:h-6 text-black" />
-  </button>
-);
+const ResizeText: React.FC = () => {
+  const { textSize, setTextSize } = useTextSize();
+  const [showSizeMenu, setShowSizeMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const textSizes = [
+    { value: "small" as const, label: "Small", multiplier: "87.5%" },
+    { value: "medium" as const, label: "Medium", multiplier: "100%" },
+    { value: "large" as const, label: "Large", multiplier: "112.5%" },
+    { value: "extra-large" as const, label: "Extra Large", multiplier: "125%" },
+  ];
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowSizeMenu(false);
+      }
+    };
+
+    if (showSizeMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showSizeMenu]);
+
+  const handleSizeChange = (size: typeof textSize) => {
+    setTextSize(size);
+    setShowSizeMenu(false);
+  };
+
+  return (
+    <div className="relative" ref={menuRef}>
+      <button
+        aria-label="Change text size"
+        aria-expanded={showSizeMenu}
+        aria-haspopup="true"
+        className="hover:scale-110 transition-transform flex items-center justify-center p-2"
+        onClick={() => setShowSizeMenu(!showSizeMenu)}
+        title="Text Size Options"
+      >
+        <ALargeSmall className="w-5 h-5 md:w-6 md:h-6 text-black" />
+      </button>
+      {showSizeMenu && (
+        <>
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setShowSizeMenu(false)}
+            aria-hidden="true"
+          />
+          <div
+            className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+            role="menu"
+            aria-label="Text size options"
+          >
+            {textSizes.map((size) => (
+              <button
+                key={size.value}
+                onClick={() => handleSizeChange(size.value)}
+                className={`flex items-center justify-between w-full text-left px-4 py-2.5 hover:bg-purple-50 transition-colors ${textSize === size.value
+                  ? "bg-purple-100 text-purple-700 font-semibold"
+                  : "text-gray-700"
+                  }`}
+                role="menuitem"
+                aria-checked={textSize === size.value}
+              >
+                <span className="text-sm">{size.label}</span>
+                <span className="text-xs text-gray-500">{size.multiplier}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
 
 const LanguageToggle: React.FC = () => {
   const { i18n } = useTranslation();
@@ -72,7 +144,7 @@ const LanguageToggle: React.FC = () => {
     <div className="relative">
       <button
         aria-label="Toggle languages"
-        className="hover:scale-110 transition-transform flex items-center gap-1"
+        className="hover:scale-110 transition-transform flex items-center justify-center p-2"
         onClick={() => setShowLanguageMenu(!showLanguageMenu)}
       >
         <Globe className="w-5 h-5 md:w-6 md:h-6 text-black" />
@@ -83,11 +155,10 @@ const LanguageToggle: React.FC = () => {
             <button
               key={lang.code}
               onClick={() => toggleLanguage(lang.code)}
-              className={`flex items-center gap-3 w-full text-left px-4 py-2.5 hover:bg-purple-50 transition-colors ${
-                i18n.language === lang.code
-                  ? "bg-purple-100 text-purple-700 font-semibold"
-                  : "text-gray-700"
-              }`}
+              className={`flex items-center gap-3 w-full text-left px-4 py-2.5 hover:bg-purple-50 transition-colors ${i18n.language === lang.code
+                ? "bg-purple-100 text-purple-700 font-semibold"
+                : "text-gray-700"
+                }`}
             >
               <span className="text-2xl">{lang.flag}</span>
               <span className="text-sm">{lang.name}</span>
@@ -188,9 +259,8 @@ const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
           >
             {t(link.label)}
             <ChevronDown
-              className={`w-4 h-4 transition-transform ${
-                mobileDropdownOpen ? "rotate-180" : ""
-              }`}
+              className={`w-4 h-4 transition-transform ${mobileDropdownOpen ? "rotate-180" : ""
+                }`}
             />
           </button>
           {mobileDropdownOpen && (
@@ -255,7 +325,7 @@ export const Navbar: React.FC = () => {
           </ul>
 
           {/* Actions */}
-          <div className="hidden md:flex items-right gap-2 lg:gap-3">
+          <div className="hidden md:flex items-center gap-2">
             <ResizeText />
             <LanguageToggle />
             <SignUpButton />
