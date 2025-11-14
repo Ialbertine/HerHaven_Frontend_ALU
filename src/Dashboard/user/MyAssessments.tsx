@@ -58,7 +58,7 @@ export const MyAssessments: React.FC = () => {
 
   useEffect(() => {
     filterAssessments();
-  }, [assessments, selectedCategory]);
+  }, [assessments, selectedCategory, filterAssessments]);
 
   const loadAssessments = async () => {
     try {

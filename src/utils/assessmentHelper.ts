@@ -43,8 +43,7 @@ export const smartSubmitAssessment = async (data: {
   }
 };
 
-// Save session ID to localStorage for anonymous users
-// So they can retrieve their results later
+// Save session ID to localStorage for anonymous users so they can retrieve their results later
 export const saveAnonymousSessionId = (sessionId: string): void => {
   const existingSessions = getAnonymousSessionIds();
   existingSessions.push({

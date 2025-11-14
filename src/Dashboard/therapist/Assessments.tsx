@@ -5,7 +5,7 @@ import {
   MessageSquare,
   Filter,
   Search,
-  User,
+  User as UserIcon,
   AlertCircle,
   CheckCircle,
   Loader2,
@@ -24,10 +24,98 @@ import {
 } from '@/utils/assessmentHelper';
 import DashboardLayout from '@/components/DashboardLayout';
 import { getCurrentUser } from '@/apis/auth';
-import { getUserById } from '@/apis/admin';
+import { getUserById, type User } from '@/apis/admin';
 
 type StatusFilter = 'all' | 'completed' | 'in-progress' | 'abandoned';
 type SortOption = 'recent' | 'oldest' | 'score-high' | 'score-low';
+
+// Trauma-informed language transformation helper
+const getTraumaInformedText = (questionText: string): string => {
+  const lowerText = questionText.toLowerCase();
+
+  // Transform clinical/direct language into compassionate, trauma-informed language
+  if (lowerText.includes('dead') || lowerText.includes('hurting yourself') || lowerText.includes('suicide')) {
+    return 'Experiencing thoughts about self-harm';
+  }
+  if (lowerText.includes('harm') && lowerText.includes('others')) {
+    return 'Experiencing thoughts about harming others';
+  }
+  if (lowerText.includes('hopeless') || lowerText.includes('worthless')) {
+    return 'Experiencing feelings of hopelessness or low self-worth';
+  }
+  if (lowerText.includes('panic') || lowerText.includes('heart racing')) {
+    return 'Experiencing intense anxiety or panic symptoms';
+  }
+  if (lowerText.includes('flashback') || lowerText.includes('trauma')) {
+    return 'Experiencing trauma-related symptoms';
+  }
+  if (lowerText.includes('safe') || lowerText.includes('danger')) {
+    return 'Concerns about personal safety';
+  }
+
+  return 'Expressing significant distress or difficulty';
+};
+
+// Convert numeric response to descriptive level
+const getResponseLevel = (answer: string | number | (string | number)[]): string => {
+  const numAnswer = typeof answer === 'number' ? answer : parseInt(String(answer));
+
+  if (isNaN(numAnswer)) {
+    return 'Concern noted';
+  }
+
+  // 
+  if (numAnswer >= 3) {
+    return 'Significant concern';
+  } else if (numAnswer >= 2) {
+    return 'Moderate concern';
+  } else if (numAnswer >= 1) {
+    return 'Some concern';
+  }
+
+  return 'Concern noted';
+};
+
+// Extended type for AssessmentResponse where user can be populated as User object
+type AssessmentResponseWithUser = Omit<AssessmentResponse, 'user'> & {
+  user?: string | User;
+};
+
+// Type guard to check if user is a User object
+const isUserObject = (user: unknown): user is User => {
+  return typeof user === 'object' && user !== null && 'email' in user;
+};
+
+// Helper function to get user display name
+const getUserDisplayName = (
+  user: string | User | undefined,
+  userNames: Record<string, string>
+): string => {
+  if (!user) return 'User';
+
+  if (typeof user === 'string') {
+    return userNames[user] || 'Loading...';
+  }
+
+  if (isUserObject(user)) {
+    if (user.username) {
+      return user.username;
+    }
+    if (user.email) {
+      return user.email.split('@')[0];
+    }
+  }
+
+  return 'User';
+};
+
+// Helper function to get user email
+const getUserEmail = (user: string | User | undefined): string | null => {
+  if (isUserObject(user) && user.email) {
+    return user.email;
+  }
+  return null;
+};
 
 export const CounselorAssessments: React.FC = () => {
   const [assessments, setAssessments] = useState<AssessmentResponse[]>([]);
@@ -55,7 +143,7 @@ export const CounselorAssessments: React.FC = () => {
 
   // View details modal state
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [detailsAssessment, setDetailsAssessment] = useState<AssessmentResponse | null>(null);
+  const [detailsAssessment, setDetailsAssessment] = useState<AssessmentResponseWithUser | null>(null);
   const [userNames, setUserNames] = useState<Record<string, string>>({});
 
   // Get user info for dashboard layout
@@ -95,7 +183,7 @@ export const CounselorAssessments: React.FC = () => {
                 nameMap[userId] = 'User';
               }
             } catch (err) {
-              // If we can't fetch user details (e.g., requires admin role), use fallback
+              // If we can't fetch user details
               console.error(`Failed to fetch username for user ${userId}:`, err);
               nameMap[userId] = 'User';
             }
@@ -154,7 +242,7 @@ export const CounselorAssessments: React.FC = () => {
     });
 
     setFilteredAssessments(filtered);
-    setCurrentPage(1); // Reset to first page when filters change
+    setCurrentPage(1);
   }, [assessments, searchQuery, sortBy]);
 
   useEffect(() => {
@@ -205,11 +293,12 @@ export const CounselorAssessments: React.FC = () => {
   };
 
   const handleViewDetails = (assessment: AssessmentResponse) => {
-    setDetailsAssessment(assessment);
+    // API may return user as string or populated User object
+    setDetailsAssessment(assessment as AssessmentResponseWithUser);
     setShowDetailsModal(true);
   };
 
-  const getTemplateInfo = (assessment: AssessmentResponse) => {
+  const getTemplateInfo = (assessment: AssessmentResponse | AssessmentResponseWithUser) => {
     if (typeof assessment.template === 'string') {
       return {
         name: assessment.templateSnapshot.name,
@@ -387,17 +476,24 @@ export const CounselorAssessments: React.FC = () => {
                         share => !share.viewedAt
                       );
 
-                      // Check if user is authenticated (has user ID) and retrieve username
-                      const isAuthenticated = assessment.user && typeof assessment.user === 'string' && !assessment.isAnonymous;
-                      const userName = isAuthenticated && assessment.user
-                        ? (userNames[assessment.user] || 'User')
-                        : 'Anonymous User';
+                      let userName = 'Anonymous User';
+                      if (assessment.user && !assessment.isAnonymous) {
+                        if (typeof assessment.user === 'string') {
+                          userName = userNames[assessment.user] || 'User';
+                        } else if (typeof assessment.user === 'object' && 'username' in assessment.user) {
+                          userName = (assessment.user as { username: string }).username;
+                        } else if (typeof assessment.user === 'object' && 'email' in assessment.user) {
+                          userName = ((assessment.user as { email: string }).email).split('@')[0];
+                        } else {
+                          userName = 'User';
+                        }
+                      }
 
                       return (
                         <tr key={assessment._id} className="hover:bg-gray-50 transition-colors">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center gap-2">
-                              <User className="w-4 h-4 text-gray-400" />
+                              <UserIcon className="w-4 h-4 text-gray-400" />
                               <span className="font-medium text-gray-800">{userName}</span>
                             </div>
                           </td>
@@ -666,16 +762,21 @@ export const CounselorAssessments: React.FC = () => {
             <div className="p-6 max-h-[70vh] overflow-y-auto">
               <div className="space-y-6">
                 {/* User Info */}
-                {detailsAssessment.user && typeof detailsAssessment.user === 'string' && (
+                {detailsAssessment.user && !detailsAssessment.isAnonymous && (
                   <div>
                     <h3 className="text-lg font-bold text-gray-800 mb-4">User Information</h3>
                     <div className="bg-gray-50 rounded-lg p-4">
                       <div className="flex items-center gap-2">
-                        <User className="w-5 h-5 text-gray-400" />
+                        <UserIcon className="w-5 h-5 text-gray-400" />
                         <span className="font-semibold text-gray-800">
-                          {userNames[detailsAssessment.user] || 'Loading...'}
+                          {getUserDisplayName(detailsAssessment.user, userNames)}
                         </span>
                       </div>
+                      {getUserEmail(detailsAssessment.user) && (
+                        <div className="mt-2 text-sm text-gray-600">
+                          <strong>Email:</strong> {getUserEmail(detailsAssessment.user)}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -738,10 +839,10 @@ export const CounselorAssessments: React.FC = () => {
                         <div
                           key={index}
                           className={`p-4 rounded-xl border-l-4 ${rec.priority === 'high'
-                            ? 'bg-red-50 border-red-500'
+                            ? 'bg-purple-100/50 border-purple-600'
                             : rec.priority === 'medium'
-                              ? 'bg-yellow-50 border-yellow-500'
-                              : 'bg-blue-50 border-blue-500'
+                              ? 'bg-purple-50/50 border-purple-500'
+                              : 'bg-purple-50/30 border-purple-400'
                             }`}
                         >
                           <h4 className="font-semibold text-gray-800 mb-1">{rec.title}</h4>
@@ -752,20 +853,31 @@ export const CounselorAssessments: React.FC = () => {
                   </div>
                 )}
 
-                {/* Crisis Indicators */}
+                {/* Immediate Support Needs */}
                 {detailsAssessment.isCrisis && detailsAssessment.crisisIndicators && (
                   <div>
-                    <h3 className="text-lg font-bold text-red-800 mb-4 flex items-center gap-2">
+                    <h3 className="text-lg font-bold text-purple-800 mb-4 flex items-center gap-2">
                       <AlertCircle className="w-5 h-5" />
-                      Crisis Indicators
+                      Immediate Support Recommended
                     </h3>
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div className="bg-purple-50 border-2 border-purple-300 rounded-lg p-4">
+                      <p className="text-purple-900 font-medium mb-3">
+                        This individual has indicated they may benefit from immediate professional support and care.
+                      </p>
                       {detailsAssessment.crisisIndicators.map((indicator, index) => (
-                        <div key={index} className="mb-2">
-                          <p className="font-semibold text-red-800">{indicator.questionText}</p>
-                          <p className="text-red-700">Answer: {String(indicator.answer)}</p>
+                        <div key={index} className="mb-3 last:mb-0 bg-white p-3 rounded-md">
+                          <p className="text-sm text-gray-600 mb-1">Concern Area:</p>
+                          <p className="text-gray-800">{getTraumaInformedText(indicator.questionText)}</p>
+                          <p className="text-sm text-purple-700 mt-2">
+                            Response level: {getResponseLevel(indicator.answer)}
+                          </p>
                         </div>
                       ))}
+                      <div className="mt-4 pt-4 border-t border-purple-200">
+                        <p className="text-sm text-purple-800 font-medium">
+                          💜 Recommended Action: Consider reaching out with compassion and resources for professional support.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 )}

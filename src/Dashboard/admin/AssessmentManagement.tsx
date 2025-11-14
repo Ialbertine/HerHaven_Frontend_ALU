@@ -13,7 +13,6 @@ import {
   Clock,
   Calendar,
   Eye,
-  Edit,
   Trash,
   BarChart3,
   Activity,
@@ -21,6 +20,7 @@ import {
 } from "lucide-react";
 import { useModal } from "@/contexts/useModal";
 import type { AssessmentTemplate } from "@/apis/assessment";
+import CreateAssessmentModal from "./CreateAssessmentModal";
 
 interface ApiResponse<T> {
   success: boolean;
@@ -30,7 +30,7 @@ interface ApiResponse<T> {
 
 const AssessmentManagement: React.FC = () => {
   const navigate = useNavigate();
-  const { showAlert, showConfirm, showDeleteConfirm } = useModal();
+  const { showAlert, showDeleteConfirm } = useModal();
   const [templates, setTemplates] = useState<AssessmentTemplate[]>([]);
   const [filteredTemplates, setFilteredTemplates] = useState<AssessmentTemplate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,6 +39,7 @@ const AssessmentManagement: React.FC = () => {
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [error, setError] = useState<string | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const filterTemplates = useCallback(() => {
     let filtered = [...templates];
@@ -101,104 +102,8 @@ const AssessmentManagement: React.FC = () => {
     }
   };
 
-  const handleToggleActive = async (templateId: string, currentStatus: boolean) => {
-    const action = currentStatus ? "deactivate" : "activate";
-    showConfirm(
-      `Are you sure you want to ${action} this assessment template?`,
-      async () => {
-        try {
-          setActionLoading(templateId);
-          setError(null);
-
-          const response = await apiClient.patch<
-            ApiResponse<{ template: AssessmentTemplate }>
-          >(`/api/assessments/templates/${templateId}`, {
-            isActive: !currentStatus,
-          });
-
-          if (response.data.success) {
-            showAlert(
-              response.data.message || `Assessment ${action}d successfully!`,
-              "Success",
-              "success"
-            );
-            fetchTemplates();
-          } else {
-            showAlert(
-              response.data.message || `Failed to ${action} assessment`,
-              "Error",
-              "danger"
-            );
-          }
-        } catch (err) {
-          const axiosError = err as AxiosError<ApiResponse<unknown>>;
-          showAlert(
-            axiosError.response?.data?.message || `Failed to ${action} assessment`,
-            "Error",
-            "danger"
-          );
-          console.error(`Failed to ${action} template:`, err);
-        } finally {
-          setActionLoading(null);
-        }
-      },
-      `${action.charAt(0).toUpperCase() + action.slice(1)} Assessment`,
-      currentStatus ? "warning" : "success"
-    );
-  };
-
-  const handleTogglePublish = async (templateId: string, currentStatus: boolean) => {
-    const action = currentStatus ? "unpublish" : "publish";
-    showConfirm(
-      `Are you sure you want to ${action} this assessment template?`,
-      async () => {
-        try {
-          setActionLoading(templateId);
-          setError(null);
-
-          const response = await apiClient.patch<
-            ApiResponse<{ template: AssessmentTemplate }>
-          >(`/api/assessments/templates/${templateId}`, {
-            isPublished: !currentStatus,
-          });
-
-          if (response.data.success) {
-            showAlert(
-              response.data.message || `Assessment ${action}ed successfully!`,
-              "Success",
-              "success"
-            );
-            fetchTemplates();
-          } else {
-            showAlert(
-              response.data.message || `Failed to ${action} assessment`,
-              "Error",
-              "danger"
-            );
-          }
-        } catch (err) {
-          const axiosError = err as AxiosError<ApiResponse<unknown>>;
-          showAlert(
-            axiosError.response?.data?.message || `Failed to ${action} assessment`,
-            "Error",
-            "danger"
-          );
-          console.error(`Failed to ${action} template:`, err);
-        } finally {
-          setActionLoading(null);
-        }
-      },
-      `${action.charAt(0).toUpperCase() + action.slice(1)} Assessment`,
-      "warning"
-    );
-  };
-
   const handleView = (templateId: string) => {
-    window.open(`/admin/assessments/${templateId}`, "_blank");
-  };
-
-  const handleEdit = (templateId: string) => {
-    navigate(`/admin/assessments/${templateId}/edit`);
+    navigate(`/admin/assessments/${templateId}`);
   };
 
   const handleDelete = async (templateId: string) => {
@@ -254,9 +159,8 @@ const AssessmentManagement: React.FC = () => {
 
     return (
       <span
-        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border ${
-          styles[category] || styles.general
-        }`}
+        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border ${styles[category] || styles.general
+          }`}
       >
         {category.charAt(0).toUpperCase() + category.slice(1)}
       </span>
@@ -309,8 +213,8 @@ const AssessmentManagement: React.FC = () => {
             </p>
           </div>
           <button
-            onClick={() => navigate("/admin/assessments/create")}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#9c27b0] to-[#7b2cbf] text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl"
+            onClick={() => setIsCreateModalOpen(true)}
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#9c27b0] to-[#7b2cbf] text-white rounded-xl hover:from-[#7b1fa2] hover:to-[#8e24aa] transition-all shadow-lg hover:shadow-xl"
           >
             <Plus className="w-5 h-5" />
             Create Assessment
@@ -480,12 +384,9 @@ const AssessmentManagement: React.FC = () => {
                       className="hover:bg-gray-50 transition-colors"
                     >
                       <td className="px-6 py-4">
-                        <div>
+                        <div className="min-w-[260px]">
                           <p className="font-semibold text-gray-800 text-base">
                             {template.name}
-                          </p>
-                          <p className="text-sm text-gray-500 mt-1 line-clamp-1">
-                            {template.description}
                           </p>
                           <p className="text-xs text-gray-400 mt-1">
                             v{template.version}
@@ -531,57 +432,12 @@ const AssessmentManagement: React.FC = () => {
                             <div className="w-5 h-5 border-2 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
                           ) : (
                             <>
-                              {template.isPublished && (
-                                <button
-                                  onClick={() =>
-                                    handleToggleActive(
-                                      template._id,
-                                      template.isActive
-                                    )
-                                  }
-                                  className={`p-2 rounded-lg transition-colors ${
-                                    template.isActive
-                                      ? "text-orange-600 hover:bg-orange-50"
-                                      : "text-green-600 hover:bg-green-50"
-                                  }`}
-                                  title={
-                                    template.isActive ? "Deactivate" : "Activate"
-                                  }
-                                >
-                                  {template.isActive ? (
-                                    <XCircle className="w-5 h-5" />
-                                  ) : (
-                                    <CheckCircle className="w-5 h-5" />
-                                  )}
-                                </button>
-                              )}
-                              <button
-                                onClick={() =>
-                                  handleTogglePublish(
-                                    template._id,
-                                    template.isPublished
-                                  )
-                                }
-                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                title={
-                                  template.isPublished ? "Unpublish" : "Publish"
-                                }
-                              >
-                                <Clock className="w-5 h-5" />
-                              </button>
                               <button
                                 onClick={() => handleView(template._id)}
                                 className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
                                 title="View"
                               >
                                 <Eye className="w-5 h-5" />
-                              </button>
-                              <button
-                                onClick={() => handleEdit(template._id)}
-                                className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                                title="Edit"
-                              >
-                                <Edit className="w-5 h-5" />
                               </button>
                               <button
                                 onClick={() => handleDelete(template._id)}
@@ -602,6 +458,16 @@ const AssessmentManagement: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Create Assessment Modal */}
+      <CreateAssessmentModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={() => {
+          fetchTemplates();
+          setIsCreateModalOpen(false);
+        }}
+      />
     </DashboardLayout>
   );
 };

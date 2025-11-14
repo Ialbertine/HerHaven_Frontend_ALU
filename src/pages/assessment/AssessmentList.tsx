@@ -100,7 +100,7 @@ export const AssessmentList: React.FC = () => {
           Your Mental Health Matters
         </h1>
         <p className="text-base md:text-lg text-gray-700 mb-6 leading-relaxed">
-          Take the first step toward understanding your mental well-being with our scientifically validated assessments.
+          Take the first step toward understanding your mental well-being with our assessments.
         </p>
         <div className="flex items-center justify-center">
           <button

@@ -158,11 +158,7 @@ export interface PaginationData {
   pages: number;
 }
 
-// ==================== PUBLIC ENDPOINTS (NO AUTH) ====================
-
-/**
- * Get all public assessment templates (No auth required)
- */
+// get all public assessment templates
 export const getPublicTemplates = async (params?: {
   category?: "depression" | "anxiety" | "ptsd" | "safety" | "wellness" | "general";
 }): Promise<ApiResponse<{ templates: AssessmentTemplate[]; count: number }>> => {
@@ -183,9 +179,7 @@ export const getPublicTemplates = async (params?: {
   }
 };
 
-/**
- * Get single public template to begin assessment (No auth required)
- */
+// get single public template to begin assessment
 export const getPublicTemplateToBegin = async (
   templateId: string
 ): Promise<ApiResponse<{ template: AssessmentTemplate }>> => {
@@ -203,9 +197,7 @@ export const getPublicTemplateToBegin = async (
   }
 };
 
-/**
- * Submit public assessment (Works for both guests and authenticated users)
- */
+// submit public assessment
 export const submitPublicAssessment = async (data: {
   templateId: string;
   responses: Array<{
@@ -253,11 +245,8 @@ export const submitPublicAssessment = async (data: {
   }
 };
 
-// ==================== TEMPLATE MANAGEMENT (ADMIN) ====================
 
-/**
- * Create a new assessment template (Admin only)
- */
+// create a new assessment template
 export const createAssessmentTemplate = async (
   templateData: Omit<AssessmentTemplate, "_id" | "createdAt" | "updatedAt" | "totalResponses" | "lastUsed">
 ): Promise<ApiResponse<{ template: AssessmentTemplate }>> => {
@@ -277,9 +266,7 @@ export const createAssessmentTemplate = async (
   }
 };
 
-/**
- * Get all assessment templates
- */
+// get all assessment templates
 export const getAssessmentTemplates = async (params?: {
   category?: "depression" | "anxiety" | "ptsd" | "safety" | "wellness" | "general";
   isActive?: boolean;
@@ -304,9 +291,7 @@ export const getAssessmentTemplates = async (params?: {
   }
 };
 
-/**
- * Get single assessment template by ID
- */
+// get single assessment template by ID
 export const getAssessmentTemplateById = async (
   templateId: string
 ): Promise<ApiResponse<{ template: AssessmentTemplate }>> => {
@@ -324,9 +309,7 @@ export const getAssessmentTemplateById = async (
   }
 };
 
-/**
- * Update assessment template (Admin only)
- */
+// update assessment template (admin only)
 export const updateAssessmentTemplate = async (
   templateId: string,
   updates: Partial<Omit<AssessmentTemplate, "_id" | "createdAt" | "updatedAt">>
@@ -347,9 +330,7 @@ export const updateAssessmentTemplate = async (
   }
 };
 
-/**
- * Delete assessment template (Admin only)
- */
+// delete assessment template (admin only)
 export const deleteAssessmentTemplate = async (
   templateId: string
 ): Promise<ApiResponse<void>> => {
@@ -367,11 +348,8 @@ export const deleteAssessmentTemplate = async (
   }
 };
 
-// ==================== ASSESSMENT SUBMISSION ====================
 
-/**
- * Submit assessment response (Authenticated users)
- */
+// submit assessment response (authenticated users)
 export const submitAssessment = async (data: {
   templateId: string;
   responses: Array<{
@@ -419,9 +397,7 @@ export const submitAssessment = async (data: {
   }
 };
 
-/**
- * Submit anonymous assessment (No auth required)
- */
+// submit anonymous assessment
 export const submitAnonymousAssessment = async (data: {
   templateId: string;
   responses: Array<{
@@ -466,11 +442,7 @@ export const submitAnonymousAssessment = async (data: {
   }
 };
 
-// ==================== ASSESSMENT RETRIEVAL ====================
-
-/**
- * Get user's assessment history
- */
+// get user's assessment history
 export const getMyAssessments = async (params?: {
   category?: "depression" | "anxiety" | "ptsd" | "safety" | "wellness" | "general";
   status?: "in-progress" | "completed" | "abandoned";

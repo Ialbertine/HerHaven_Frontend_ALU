@@ -88,6 +88,12 @@ const menuConfig: Record<
       path: "/user/dashboard",
     },
     {
+      id: "assessments",
+      icon: FileText,
+      label: "Self-Assessment",
+      path: "/assessments",
+    },
+    {
       id: "resources",
       icon: BookOpen,
       label: "Resources",
@@ -252,10 +258,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                 className={`
                   w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-2
                   transition-all duration-200
-                  ${
-                    isActive
-                      ? "bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700"
-                      : "text-gray-600 hover:bg-gray-50"
+                  ${isActive
+                    ? "bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700"
+                    : "text-gray-600 hover:bg-gray-50"
                   }
                 `}
               >
@@ -270,9 +275,8 @@ const Sidebar: React.FC<SidebarProps> = ({
         <div className="p-4 border-t border-gray-100 space-y-2">
           {userType !== "guest" && (
             <Link
-              to={`/${
-                userType === "super_admin" ? "admin" : userType
-              }/settings`}
+              to={`/${userType === "super_admin" ? "admin" : userType
+                }/settings`}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition-all"
             >
               <Settings className="w-5 h-5" />

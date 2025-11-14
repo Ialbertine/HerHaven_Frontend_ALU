@@ -20,6 +20,7 @@ import FeedbackManagement from "./Dashboard/admin/FeedbackManagement";
 import ContactManagement from "./Dashboard/admin/ContactManagement";
 import UserManagement from "./Dashboard/admin/UserManagement";
 import AssessmentManagement from "./Dashboard/admin/AssessmentManagement";
+import ViewAssessmentTemplate from "./Dashboard/admin/ViewAssessmentTemplate";
 import Profile from "@/Dashboard/therapist/Profile";
 import Schedule from "@/Dashboard/therapist/Schedule";
 import Sessions from "@/Dashboard/therapist/Session";
@@ -82,12 +83,13 @@ const App: React.FC = () => {
               <Route path="therapy-management" element={<TherapyManagement />} />
               <Route path="user-management" element={<UserManagement />} />
               <Route path="assessments" element={<AssessmentManagement />} />
+              <Route path="assessments/:templateId" element={<ViewAssessmentTemplate />} />
               <Route path="community" element={<Community />} />
               <Route path="feedbacks" element={<FeedbackManagement />} />
               <Route path="contacts" element={<ContactManagement />} />
             </Route>
 
-            {/* User Routes */}
+            {/* User Routes accessible to both user and guest */}
             <Route
               path="user"
               element={<ProtectedRoute allowedRoles={["user", "guest"]} />}
