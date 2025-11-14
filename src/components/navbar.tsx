@@ -27,6 +27,7 @@ const navLinks: NavLink[] = [
     dropdownItems: [
       { href: "/services", label: "nav.allServices" },
       { href: "/therapy", label: "nav.therapyServices" },
+      { href: "/assessments", label: "nav.selfAssessment" },
       { href: "/havenchatbot", label: "nav.havenchatbot" },
     ],
   },

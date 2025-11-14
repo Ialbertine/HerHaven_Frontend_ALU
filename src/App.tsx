@@ -19,6 +19,7 @@ import TherapyManagement from "./Dashboard/admin/TherapyManagement";
 import FeedbackManagement from "./Dashboard/admin/FeedbackManagement";
 import ContactManagement from "./Dashboard/admin/ContactManagement";
 import UserManagement from "./Dashboard/admin/UserManagement";
+import AssessmentManagement from "./Dashboard/admin/AssessmentManagement";
 import Profile from "@/Dashboard/therapist/Profile";
 import Schedule from "@/Dashboard/therapist/Schedule";
 import Sessions from "@/Dashboard/therapist/Session";
@@ -30,83 +31,102 @@ import { ModalProvider } from "@/contexts/ModalContext";
 import { TextSizeProvider } from "@/contexts/TextSizeContext";
 import EmergencyContactsManager from "@/pages/Emergency";
 import EmergencySOS from "@/pages/EmergencySOS";
+import AssessmentList from "@/pages/assessment/AssessmentList";
+import AssessmentDashboard from "@/pages/assessment/AssessmentDashboard";
+import TakeAssessment from "@/pages/assessment/TakeAssessment";
+import AssessmentResults from "@/pages/assessment/AssessmentResults";
+import AssessmentHistory from "@/Dashboard/user/AssessmentHistory";
+import CounselorAssessments from "@/Dashboard/therapist/Assessments";
+import AssessmentAnalytics from "@/Dashboard/user/AssessmentAnalytics";
 
 const App: React.FC = () => {
   return (
     <TextSizeProvider>
       <ModalProvider>
         <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="aboutus" element={<About />} />
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
+              <Route path="aboutus" element={<About />} />
+              <Route
+                path="counselorform"
+                element={<CounselorApplicationForm mode="new" />}
+              />
+              <Route path="resources" element={<Resources />} />
+              <Route path="resources/:id" element={<ArticleDetails />} />
+              <Route path="contact" element={<Contact />} />
+              <Route path="services" element={<Services />} />
+              <Route path="therapy" element={<TherapyService />} />
+              <Route path="assessments" element={<AssessmentList />} />
+              <Route path="assessments/:id" element={<TakeAssessment />} />
+              <Route path="assessments/:id/results" element={<AssessmentResults />} />
+              <Route path="assessment/take/:id" element={<TakeAssessment />} />
+              <Route path="assessment/results/:id" element={<AssessmentResults />} />
+              <Route path="havenchatbot" element={<HavenChatbot />} />
+            </Route>
+
+            <Route path="signup" element={<Signup />} />
+            <Route path="login" element={<Login />} />
+            <Route path="emergency-sos" element={<EmergencySOS />} />
             <Route
-              path="counselorform"
-              element={<CounselorApplicationForm mode="new" />}
+              path="counselor/complete-registration/:token"
+              element={<CounselorApplicationForm mode="complete" />}
             />
-            <Route path="resources" element={<Resources />} />
-            <Route path="resources/:id" element={<ArticleDetails />} />
-            <Route path="contact" element={<Contact />} />
-            <Route path="services" element={<Services />} />
-            <Route path="therapy" element={<TherapyService />} />
-            <Route path="havenchatbot" element={<HavenChatbot />} />
-          </Route>
 
-          <Route path="signup" element={<Signup />} />
-          <Route path="login" element={<Login />} />
-          <Route path="emergency-sos" element={<EmergencySOS />} />
-          <Route
-            path="counselor/complete-registration/:token"
-            element={<CounselorApplicationForm mode="complete" />}
-          />
-
-          {/* Admin Routes */}
-          <Route
-            path="admin"
-            element={<ProtectedRoute allowedRoles={["super_admin"]} />}
-          >
-            <Route path="dashboard" element={<AdminLanding />} />
-            <Route path="therapy-management" element={<TherapyManagement />} />
-            <Route path="user-management" element={<UserManagement />} />
-            <Route path="community" element={<Community />} />
-            <Route path="feedbacks" element={<FeedbackManagement />} />
-            <Route path="contacts" element={<ContactManagement />} />
-          </Route>
-
-          {/* User Routes */}
-          <Route
-            path="user"
-            element={<ProtectedRoute allowedRoles={["user", "guest"]} />}
-          >
-            <Route path="dashboard" element={<UserLanding />} />
-            <Route path="resources" element={<Resources />} />
-            <Route path="community" element={<Community />} />
-          </Route>
-
-          {/* User only Routes */}
-          <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
-            <Route path="user/therapy" element={<Therapits />} />
-            <Route path="user/appointment" element={<UserAppointment />} />
+            {/* Admin Routes */}
             <Route
-              path="user/emergency-contacts"
-              element={<EmergencyContactsManager />}
-            />
-          </Route>
+              path="admin"
+              element={<ProtectedRoute allowedRoles={["super_admin"]} />}
+            >
+              <Route path="dashboard" element={<AdminLanding />} />
+              <Route path="therapy-management" element={<TherapyManagement />} />
+              <Route path="user-management" element={<UserManagement />} />
+              <Route path="assessments" element={<AssessmentManagement />} />
+              <Route path="community" element={<Community />} />
+              <Route path="feedbacks" element={<FeedbackManagement />} />
+              <Route path="contacts" element={<ContactManagement />} />
+            </Route>
 
-          {/* Counselor Routes */}
-          <Route
-            path="counselor"
-            element={<ProtectedRoute allowedRoles={["counselor"]} />}
-          >
-            <Route path="dashboard" element={<TherapistLanding />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="schedule" element={<Schedule />} />
-            <Route path="appointments" element={<Sessions />} />
-            <Route path="community" element={<Community />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </ModalProvider>
+            {/* User Routes */}
+            <Route
+              path="user"
+              element={<ProtectedRoute allowedRoles={["user", "guest"]} />}
+            >
+              <Route path="dashboard" element={<UserLanding />} />
+              <Route path="resources" element={<Resources />} />
+              <Route path="community" element={<Community />} />
+            </Route>
+
+            {/* User only Routes */}
+            <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
+              <Route path="user/therapy" element={<Therapits />} />
+              <Route path="user/appointment" element={<UserAppointment />} />
+              <Route
+                path="user/emergency-contacts"
+                element={<EmergencyContactsManager />}
+              />
+              <Route path="user/assessments" element={<AssessmentDashboard />} />
+              <Route path="user/assessments/:id" element={<TakeAssessment />} />
+              <Route path="user/assessments/:id/results" element={<AssessmentResults />} />
+              <Route path="user/assessment-history" element={<AssessmentHistory />} />
+              <Route path="user/assessment-analytics" element={<AssessmentAnalytics />} />
+            </Route>
+
+            {/* Counselor Routes */}
+            <Route
+              path="counselor"
+              element={<ProtectedRoute allowedRoles={["counselor"]} />}
+            >
+              <Route path="dashboard" element={<TherapistLanding />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="schedule" element={<Schedule />} />
+              <Route path="appointments" element={<Sessions />} />
+              <Route path="assessments" element={<CounselorAssessments />} />
+              <Route path="community" element={<Community />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </ModalProvider>
     </TextSizeProvider>
   );
 };

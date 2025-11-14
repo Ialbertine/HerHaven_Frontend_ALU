@@ -13,7 +13,11 @@ import {
   UserCheck,
   UserX,
   CalendarX,
-  X
+  X,
+  FileText,
+  AlertTriangle,
+  Share2,
+  Heart
 } from "lucide-react";
 import {
   getUserNotifications,
@@ -92,6 +96,11 @@ const NotificationPanel = ({ isOpen, onClose, onNotificationCountChange }: Notif
         console.error("Error marking notification as read:", error);
       }
     }
+
+    // Navigate to assessment results if assessment notification
+    if (notification.assessment && notification.assessment._id) {
+      window.location.href = `/assessment/results/${notification.assessment._id}`;
+    }
   };
 
   const getIcon = (type: Notification['type']) => {
@@ -108,7 +117,11 @@ const NotificationPanel = ({ isOpen, onClose, onNotificationCountChange }: Notif
       payment_success: <CreditCard className={iconClass} />,
       payment_failed: <AlertCircle className={iconClass} />,
       counselor_approved: <UserCheck className={iconClass} />,
-      counselor_rejected: <UserX className={iconClass} />
+      counselor_rejected: <UserX className={iconClass} />,
+      assessment_completed: <FileText className={iconClass} />,
+      assessment_crisis: <AlertTriangle className={iconClass} />,
+      assessment_shared: <Share2 className={iconClass} />,
+      assessment_crisis_shared: <Heart className={iconClass} />
     };
     return icons[type] || <Bell className={iconClass} />;
   };
@@ -126,7 +139,11 @@ const NotificationPanel = ({ isOpen, onClose, onNotificationCountChange }: Notif
       payment_success: { bg: 'bg-green-50', text: 'text-green-600', border: 'border-green-200' },
       payment_failed: { bg: 'bg-red-50', text: 'text-red-600', border: 'border-red-200' },
       counselor_approved: { bg: 'bg-green-50', text: 'text-green-600', border: 'border-green-200' },
-      counselor_rejected: { bg: 'bg-red-50', text: 'text-red-600', border: 'border-red-200' }
+      counselor_rejected: { bg: 'bg-red-50', text: 'text-red-600', border: 'border-red-200' },
+      assessment_completed: { bg: 'bg-blue-50', text: 'text-blue-600', border: 'border-blue-200' },
+      assessment_crisis: { bg: 'bg-red-50', text: 'text-red-600', border: 'border-red-200' },
+      assessment_shared: { bg: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-200' },
+      assessment_crisis_shared: { bg: 'bg-red-50', text: 'text-red-600', border: 'border-red-200' }
     };
     return colorMap[type] || { bg: 'bg-gray-50', text: 'text-gray-600', border: 'border-gray-200' };
   };
@@ -186,11 +203,20 @@ const NotificationPanel = ({ isOpen, onClose, onNotificationCountChange }: Notif
                 const colors = getColorClasses(notification.type);
                 const isUnread = !notification.readAt;
 
+                // Highlight crisis notifications prominently
+                const isCrisis = notification.type === 'assessment_crisis' ||
+                  notification.type === 'assessment_crisis_shared' ||
+                  notification.assessment?.isCrisis;
+
                 return (
                   <div
                     key={notification._id}
                     onClick={() => handleNotificationClick(notification)}
-                    className={`p-4 cursor-pointer hover:bg-gray-50 transition-all ${isUnread ? 'bg-purple-50 border-l-4 border-purple-600' : ''
+                    className={`p-4 cursor-pointer hover:bg-gray-50 transition-all ${isCrisis
+                      ? 'bg-red-50 border-l-4 border-red-600'
+                      : isUnread
+                        ? 'bg-purple-50 border-l-4 border-purple-600'
+                        : ''
                       }`}
                   >
                     <div className="flex gap-3">
@@ -229,6 +255,15 @@ const NotificationPanel = ({ isOpen, onClose, onNotificationCountChange }: Notif
                             <span className="font-medium">{notification.counselor.firstName} {notification.counselor.lastName}</span>
                             {notification.counselor.specialization && (
                               <span> • {notification.counselor.specialization}</span>
+                            )}
+                          </div>
+                        )}
+
+                        {notification.assessment && (
+                          <div className="text-xs bg-gray-50 px-2 py-1 rounded mb-2">
+                            <span className="font-medium">{notification.assessment.templateName}</span>
+                            {notification.assessment.isCrisis && (
+                              <span className="ml-2 text-red-600 font-semibold">⚠️ Crisis Detected</span>
                             )}
                           </div>
                         )}

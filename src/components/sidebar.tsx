@@ -13,6 +13,7 @@ import {
   MessageSquare,
   ShieldAlert,
   Mail,
+  FileText,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { logout } from "@/apis/auth";
@@ -53,6 +54,12 @@ const menuConfig: Record<
       icon: Calendar,
       label: "Appointments",
       path: "/user/appointment",
+    },
+    {
+      id: "assessments",
+      icon: FileText,
+      label: "Assessments",
+      path: "/user/assessments",
     },
     {
       id: "emergency",
@@ -119,6 +126,12 @@ const menuConfig: Record<
       path: "/counselor/appointments",
     },
     {
+      id: "assessments",
+      icon: FileText,
+      label: "Assessments",
+      path: "/counselor/assessments",
+    },
+    {
       id: "community",
       icon: MessageSquare,
       label: "Community",
@@ -143,6 +156,12 @@ const menuConfig: Record<
       icon: Users,
       label: "Users",
       path: "/admin/user-management",
+    },
+    {
+      id: "assessments",
+      icon: FileText,
+      label: "Assessments",
+      path: "/admin/assessments",
     },
     {
       id: "feedback",
@@ -176,6 +195,10 @@ const Sidebar: React.FC<SidebarProps> = ({
   const menuItems = menuConfig[userType];
 
   const isActivePath = (path: string) => {
+    // Special handling for assessments - make it active for both /user/assessments and /user/assessment-history
+    if (path === '/user/assessments') {
+      return location.pathname === '/user/assessments' || location.pathname === '/user/assessment-history';
+    }
     return location.pathname === path;
   };
 
