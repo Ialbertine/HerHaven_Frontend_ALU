@@ -42,8 +42,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         <main className="flex-1 p-6">{children}</main>
       </div>
 
-      {/* Global Emergency Button */}
-      <EmergencyButton />
+      {/* Emergency Button */}
+      {userType !== "super_admin" && userType !== "counselor" && <EmergencyButton />}
     </div>
   );
 };

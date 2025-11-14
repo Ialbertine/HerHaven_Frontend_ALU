@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Search, Star, Calendar, Award, X, User, Shield } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Search, Calendar, Award, X, User, Shield, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   getAllCounselors,
   getCounselorById,
@@ -32,6 +33,8 @@ const TherapyService: React.FC = () => {
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
   const [dataError, setDataError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(3);
   const isOffline = useOfflineStatus();
 
   const loadData = useCallback(
@@ -100,7 +103,7 @@ const TherapyService: React.FC = () => {
     );
     const hasAnyCached = Boolean(
       (cachedCounselors && cachedCounselors.length) ||
-        (cachedSpecializations && cachedSpecializations.length)
+      (cachedSpecializations && cachedSpecializations.length)
     );
 
     if (cachedCounselors && cachedCounselors.length) {
@@ -124,6 +127,27 @@ const TherapyService: React.FC = () => {
       );
     }
   }, [isOffline, loadData]);
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (showDetailsModal) {
+      // prevent body scroll when modal is open
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+
+      return () => {
+        // allow to scroll when model is closed
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [showDetailsModal]);
 
   const handleCounselorClick = async (counselorId: string) => {
     const counselorFromList =
@@ -152,8 +176,7 @@ const TherapyService: React.FC = () => {
       } else {
         console.error("Failed to load counselor details:", response.message);
       }
-    } catch (error) {
-      console.error("Error loading counselor details:", error);
+    } catch {
       const cachedCounselor =
         loadFromCache<Counselor>(
           buildCounselorDetailCacheKey(counselorId),
@@ -184,13 +207,24 @@ const TherapyService: React.FC = () => {
     return matchesSearch && matchesSpec;
   });
 
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredCounselors.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedCounselors = filteredCounselors.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedSpec]);
+
   // Helper function to render profile picture or initials
   const renderProfilePicture = (
     counselor: Counselor,
     size: "sm" | "lg" = "sm"
   ) => {
-    const sizeClasses =
-      size === "lg" ? "w-16 h-16 text-xl" : "w-16 h-16 text-xl";
+    const widthHeightClasses = size === "lg" ? "w-20 h-20" : "w-16 h-16";
+    const textSizeClasses = size === "lg" ? "text-2xl" : "text-xl";
     const hasImageError = imageErrors.has(counselor._id);
     const profilePicture = counselor.profilePicture;
 
@@ -204,7 +238,7 @@ const TherapyService: React.FC = () => {
 
     const initialsDiv = (
       <div
-        className={`${sizeClasses} bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold shadow-md`}
+        className={`${widthHeightClasses} ${textSizeClasses} bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold shadow-md`}
       >
         {counselor.firstName.charAt(0)}
         {counselor.lastName.charAt(0)}
@@ -217,7 +251,7 @@ const TherapyService: React.FC = () => {
           <img
             src={profilePicture}
             alt={`${counselor.firstName} ${counselor.lastName}`}
-            className={`${sizeClasses} rounded-full object-cover shadow-md`}
+            className={`${widthHeightClasses} rounded-full object-cover shadow-md`}
             onError={() => {
               setImageErrors((prev) => new Set(prev).add(counselor._id));
             }}
@@ -263,16 +297,16 @@ const TherapyService: React.FC = () => {
         ) : (
           <>
             {/* Filters & Search */}
-            <div className="bg-white/80 backdrop-blur-sm w-[70%] mx-auto rounded-2xl shadow-lg p-6 mb-8 animate-fade-in-up animation-delay-200">
-              <div className="flex flex-col lg:flex-row gap-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <div className="bg-white/80 backdrop-blur-sm w-full max-w-4xl mx-auto rounded-2xl shadow-lg p-4 sm:p-6 mb-8 animate-fade-in-up animation-delay-200">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <div className="relative flex-1 w-full">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
                   <input
                     type="text"
                     placeholder={t("therapy.searchPlaceholder")}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full pl-9 sm:pl-10 pr-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
 
@@ -280,7 +314,7 @@ const TherapyService: React.FC = () => {
                 <select
                   value={selectedSpec}
                   onChange={(e) => setSelectedSpec(e.target.value)}
-                  className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent min-w-[200px]"
+                  className="w-full sm:w-auto px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:min-w-[200px]"
                 >
                   <option value="all">{t("therapy.allSpecializations")}</option>
                   {specializations.map((spec) => (
@@ -293,58 +327,47 @@ const TherapyService: React.FC = () => {
             </div>
 
             {/* Counselors Grid */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredCounselors.map((counselor, index) => (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              {paginatedCounselors.map((counselor, index) => (
                 <div
                   key={counselor._id}
-                  className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 hover:scale-105 animate-fade-in-up cursor-pointer"
+                  className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 hover:scale-105 animate-fade-in-up cursor-pointer flex flex-col h-full"
                   style={{ animationDelay: `${index * 100}ms` }}
                   onClick={() => handleCounselorClick(counselor._id)}
                 >
-                  {/* Counselor Header */}
-                  <div className="flex items-start justify-between mb-6">
-                    <div className="flex items-center gap-4">
-                      {renderProfilePicture(counselor, "sm")}
-                      <div>
-                        <h3 className="font-bold text-gray-800 text-lg">
-                          {counselor.firstName} {counselor.lastName}
-                        </h3>
-                        <div className="flex items-center gap-1 text-sm text-gray-600">
-                          <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                          <span className="font-medium">
-                            {counselor.averageRating}
-                          </span>
-                          <span className="text-gray-400">
-                            ({counselor.totalSessions} reviews)
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                  {/* Profile Image - Centered */}
+                  <div className="flex justify-center mb-4">
+                    {renderProfilePicture(counselor, "lg")}
+                  </div>
+
+                  {/* Name - Centered */}
+                  <div className="flex flex-col items-center mb-3">
+                    <h3 className="font-semibold text-gray-800 text-center mb-1">
+                      {counselor.firstName} {counselor.lastName}
+                    </h3>
                     {counselor.isAvailable && (
-                      <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                      <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
                         {t("therapy.available")}
                       </span>
                     )}
                   </div>
 
-                  {/* Specialization */}
-                  <div className="mb-4">
-                    <div className="flex items-center gap-2 text-sm text-purple-600 font-medium">
-                      <Award className="w-4 h-4" />
+                  {/* Details */}
+                  <div className="space-y-3 mb-4">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Award className="w-4 h-4 text-purple-600" />
                       <span>{counselor.specialization}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Calendar className="w-4 h-4 text-purple-600" />
+                      <span>
+                        {counselor.experience} {t("therapy.yearsExperience")}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Experience */}
-                  <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-                    <Calendar className="w-4 h-4 text-purple-600" />
-                    <span>
-                      {counselor.experience} {t("therapy.yearsExperience")}
-                    </span>
-                  </div>
-
                   {/* Bio Preview */}
-                  <p className="text-sm text-gray-600 mb-6 line-clamp-3 leading-relaxed">
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-3 flex-grow leading-relaxed">
                     {counselor.bio}
                   </p>
 
@@ -358,10 +381,16 @@ const TherapyService: React.FC = () => {
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between text-xs text-gray-500 pt-4 border-t border-gray-200">
-                    <span className="text-purple-600 font-medium">
+                  <div className="flex items-center justify-center pt-4 border-t border-gray-200 mt-auto">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCounselorClick(counselor._id);
+                      }}
+                      className="px-3 py-1.5 text-xs bg-gradient-to-r from-[#9027b0] to-[#9c27b0] text-white rounded-lg hover:from-[#7b1fa2] hover:to-[#8e24aa] transition-all font-medium"
+                    >
                       {t("therapy.clickToView")}
-                    </span>
+                    </button>
                   </div>
                 </div>
               ))}
@@ -378,14 +407,69 @@ const TherapyService: React.FC = () => {
               </div>
             )}
 
+            {/* Pagination */}
+            {filteredCounselors.length > itemsPerPage && !loading && !dataError && (
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-4 sm:p-6 mt-8">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="text-sm text-gray-600">
+                    Showing {startIndex + 1} to {Math.min(endIndex, filteredCounselors.length)} of {filteredCounselors.length} {filteredCounselors.length === 1 ? 'counselor' : 'counselors'}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      disabled={currentPage === 1}
+                      className="flex items-center gap-1 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                      <span className="hidden sm:inline">Previous</span>
+                    </button>
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        let pageNum;
+                        if (totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          pageNum = currentPage - 2 + i;
+                        }
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={`px-3 py-2 text-sm rounded-lg transition-colors ${currentPage === pageNum
+                              ? 'bg-purple-600 text-white'
+                              : 'border border-gray-300 hover:bg-gray-50'
+                              }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      disabled={currentPage === totalPages}
+                      className="flex items-center gap-1 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <span className="hidden sm:inline">Next</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Counselor Details Modal */}
             {showDetailsModal && selectedCounselor && (
               <div
-                className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4 pt-20"
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center pt-16 z-[60] p-4 overflow-hidden"
                 onClick={() => setShowDetailsModal(false)}
               >
                 <div
-                  className="bg-white rounded-2xl max-w-2xl w-full max-h-[calc(90vh-5rem)] overflow-y-auto shadow-2xl"
+                  className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {detailsLoading ? (
@@ -395,7 +479,7 @@ const TherapyService: React.FC = () => {
                   ) : (
                     <>
                       {/* Modal Header */}
-                      <div className="sticky top-0 bg-white border-b border-gray-200 p-6 rounded-t-2xl">
+                      <div className="flex-shrink-0 bg-white border-b border-gray-200 p-6 rounded-t-2xl">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4">
                             {selectedCounselor &&
@@ -420,16 +504,10 @@ const TherapyService: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Modal Content */}
-                      <div className="p-6 space-y-6">
-                        {/* Rating & Stats */}
+                      {/* Modal Content - Scrollable */}
+                      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                        {/* Stats */}
                         <div className="flex items-center gap-6 p-4 bg-purple-50 rounded-lg">
-                          <div className="flex items-center gap-1">
-                            <Star className="w-5 h-5 text-yellow-500 fill-current" />
-                            <span className="text-lg font-bold text-gray-800">
-                              {selectedCounselor.averageRating}
-                            </span>
-                          </div>
                           <div className="text-sm text-gray-600">
                             {selectedCounselor.totalSessions}{" "}
                             {t("therapy.sessionsCompleted")}
@@ -510,15 +588,12 @@ const TherapyService: React.FC = () => {
                         {/* Contact & Action */}
                         <div className="pt-6 border-t border-gray-200">
                           <div className="flex flex-col sm:flex-row gap-4">
-                            <button className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-6 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all font-medium">
-                              {t("therapy.bookSession")}
-                            </button>
-                            <button
-                              onClick={() => setShowDetailsModal(false)}
-                              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                            <Link
+                              to="/login"
+                              className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-6 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all font-medium text-center"
                             >
-                              {t("therapy.close")}
-                            </button>
+                              {t("therapy.bookSession")}
+                            </Link>
                           </div>
                         </div>
                       </div>

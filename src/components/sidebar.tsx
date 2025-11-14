@@ -13,6 +13,7 @@ import {
   MessageSquare,
   ShieldAlert,
   Mail,
+  FileText,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { logout } from "@/apis/auth";
@@ -55,6 +56,12 @@ const menuConfig: Record<
       path: "/user/appointment",
     },
     {
+      id: "assessments",
+      icon: FileText,
+      label: "Assessments",
+      path: "/user/assessments",
+    },
+    {
       id: "emergency",
       icon: ShieldAlert,
       label: "SOS Contacts",
@@ -79,6 +86,12 @@ const menuConfig: Record<
       icon: Home,
       label: "Dashboard",
       path: "/user/dashboard",
+    },
+    {
+      id: "assessments",
+      icon: FileText,
+      label: "Self-Assessment",
+      path: "/assessments",
     },
     {
       id: "resources",
@@ -119,6 +132,12 @@ const menuConfig: Record<
       path: "/counselor/appointments",
     },
     {
+      id: "assessments",
+      icon: FileText,
+      label: "Assessments",
+      path: "/counselor/assessments",
+    },
+    {
       id: "community",
       icon: MessageSquare,
       label: "Community",
@@ -143,6 +162,12 @@ const menuConfig: Record<
       icon: Users,
       label: "Users",
       path: "/admin/user-management",
+    },
+    {
+      id: "assessments",
+      icon: FileText,
+      label: "Assessments",
+      path: "/admin/assessments",
     },
     {
       id: "feedback",
@@ -176,6 +201,10 @@ const Sidebar: React.FC<SidebarProps> = ({
   const menuItems = menuConfig[userType];
 
   const isActivePath = (path: string) => {
+    // Special handling for assessments - make it active for both /user/assessments and /user/assessment-history
+    if (path === '/user/assessments') {
+      return location.pathname === '/user/assessments' || location.pathname === '/user/assessment-history';
+    }
     return location.pathname === path;
   };
 
@@ -229,10 +258,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                 className={`
                   w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-2
                   transition-all duration-200
-                  ${
-                    isActive
-                      ? "bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700"
-                      : "text-gray-600 hover:bg-gray-50"
+                  ${isActive
+                    ? "bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700"
+                    : "text-gray-600 hover:bg-gray-50"
                   }
                 `}
               >
@@ -247,9 +275,8 @@ const Sidebar: React.FC<SidebarProps> = ({
         <div className="p-4 border-t border-gray-100 space-y-2">
           {userType !== "guest" && (
             <Link
-              to={`/${
-                userType === "super_admin" ? "admin" : userType
-              }/settings`}
+              to={`/${userType === "super_admin" ? "admin" : userType
+                }/settings`}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition-all"
             >
               <Settings className="w-5 h-5" />

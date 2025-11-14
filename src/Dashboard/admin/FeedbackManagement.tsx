@@ -23,7 +23,9 @@ import {
   User,
   Mail,
   Calendar,
-  ChevronDown
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { useModal } from '@/contexts/useModal';
 
@@ -45,6 +47,10 @@ const FeedbackManagement: React.FC = () => {
   });
   const [showFilters, setShowFilters] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 10;
 
   const statusOptions = [
     { value: 'all', label: 'All Status' },
@@ -59,7 +65,7 @@ const FeedbackManagement: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      const filtersParams: { status?: string; isAnonymous?: boolean } = {};
+      const filtersParams: { status?: string; isAnonymous?: boolean; limit?: number; skip?: number } = {};
       if (filters.status !== 'all') {
         filtersParams.status = filters.status;
       }
@@ -67,10 +73,11 @@ const FeedbackManagement: React.FC = () => {
         filtersParams.isAnonymous = filters.isAnonymous;
       }
 
-      const response = await getAllFeedback({
-        ...filtersParams,
-        limit: 50
-      });
+      const skip = (currentPage - 1) * itemsPerPage;
+      filtersParams.limit = itemsPerPage;
+      filtersParams.skip = skip;
+
+      const response = await getAllFeedback(filtersParams);
 
       if (response.success && response.data) {
         let feedbackData = response.data.feedback;
@@ -85,6 +92,8 @@ const FeedbackManagement: React.FC = () => {
         }
 
         setFeedback(feedbackData);
+        setTotalItems(response.data.total || response.data.count || 0);
+        setTotalPages(Math.ceil((response.data.total || response.data.count || 0) / itemsPerPage));
       } else {
         setError(response.message || 'Failed to load feedback');
       }
@@ -94,7 +103,7 @@ const FeedbackManagement: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [filters, searchTerm]);
+  }, [filters, searchTerm, currentPage]);
 
   const loadStats = useCallback(async () => {
     try {
@@ -106,6 +115,10 @@ const FeedbackManagement: React.FC = () => {
       console.error('Error loading stats:', err);
     }
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [filters, searchTerm]);
 
   useEffect(() => {
     loadFeedback();
@@ -187,17 +200,17 @@ const FeedbackManagement: React.FC = () => {
     <DashboardLayout userType="super_admin" userName="Admin">
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Feedback Management</h1>
-            <p className="text-gray-600">Manage and moderate user feedback</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Feedback Management</h1>
+            <p className="text-sm sm:text-base text-gray-600">Manage and moderate user feedback</p>
           </div>
           <button
             onClick={() => {
               loadFeedback();
               loadStats();
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors w-full sm:w-auto"
           >
             <RefreshCw className="w-4 h-4" />
             Refresh
@@ -206,48 +219,48 @@ const FeedbackManagement: React.FC = () => {
 
         {/*Cards */}
         {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-purple-500">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Feedback</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+                  <p className="text-xs sm:text-sm font-medium text-gray-600">Total Feedback</p>
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900">{stats.total}</p>
                 </div>
-                <MessageSquare className="w-8 h-8 text-purple-600" />
+                <MessageSquare className="w-6 h-6 sm:w-8 sm:h-8 text-purple-600" />
               </div>
             </div>
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-purple-500">
+            <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Pending</p>
-                  <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
+                  <p className="text-xs sm:text-sm font-medium text-gray-600">Pending</p>
+                  <p className="text-xl sm:text-2xl font-bold text-yellow-600">{stats.pending}</p>
                 </div>
-                <Clock className="w-8 h-8 text-yellow-600" />
+                <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-600" />
               </div>
             </div>
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-purple-500">
+            <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Published</p>
-                  <p className="text-2xl font-bold text-green-600">{stats.published}</p>
+                  <p className="text-xs sm:text-sm font-medium text-gray-600">Published</p>
+                  <p className="text-xl sm:text-2xl font-bold text-green-600">{stats.published}</p>
                 </div>
-                <CheckCircle className="w-8 h-8 text-green-600" />
+                <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-green-600" />
               </div>
             </div>
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-purple-500">
+            <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Avg Rating</p>
-                  <p className="text-2xl font-bold text-blue-600">{stats.averageRating}</p>
+                  <p className="text-xs sm:text-sm font-medium text-gray-600">Avg Rating</p>
+                  <p className="text-xl sm:text-2xl font-bold text-blue-600">{stats.averageRating}</p>
                 </div>
-                <Star className="w-8 h-8 text-blue-600" />
+                <Star className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
               </div>
             </div>
           </div>
         )}
 
         {/* Filters */}
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-purple-500">
+        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search */}
             <div className="flex-1">
@@ -330,7 +343,7 @@ const FeedbackManagement: React.FC = () => {
 
         {/* Loading State */}
         {loading ? (
-          <div className="bg-white rounded-lg shadow-sm border border-purple-500 p-8">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
             <div className="animate-pulse space-y-4">
               {[...Array(5)].map((_, i) => (
                 <div key={i} className="flex space-x-4">
@@ -344,118 +357,175 @@ const FeedbackManagement: React.FC = () => {
             </div>
           </div>
         ) : (
-          /* Feedback List */
-          <div className="bg-white rounded-lg shadow-sm border border-purple-500">
-            {feedback.length === 0 ? (
-              <div className="p-8 text-center text-gray-500">
-                <MessageSquare className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p>No feedback found matching your criteria.</p>
-              </div>
-            ) : (
-              <div className="divide-y divide-gray-200">
-                {feedback.map((item) => (
-                  <div key={item._id} className="p-6 hover:bg-gray-50 transition-colors">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className="flex items-center gap-2">
-                            {item.isAnonymous ? (
-                              <User className="w-4 h-4 text-gray-400" />
-                            ) : (
-                              <Mail className="w-4 h-4 text-blue-500" />
-                            )}
-                            <span className="font-semibold text-gray-900">{item.fullName}</span>
-                            {item.isAnonymous && (
-                              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                                Anonymous
+          <>
+            {/* Feedback List */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+              {feedback.length === 0 ? (
+                <div className="p-8 text-center text-gray-500">
+                  <MessageSquare className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                  <p>No feedback found matching your criteria.</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-200">
+                  {feedback.map((item) => (
+                    <div key={item._id} className="p-4 sm:p-6 hover:bg-gray-50 transition-colors">
+                      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                        <div className="flex-1 w-full">
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                            <div className="flex items-center gap-2">
+                              {item.isAnonymous ? (
+                                <User className="w-4 h-4 text-gray-400" />
+                              ) : (
+                                <Mail className="w-4 h-4 text-blue-500" />
+                              )}
+                              <span className="font-semibold text-sm sm:text-base text-gray-900">{item.fullName}</span>
+                              {item.isAnonymous && (
+                                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                                  Anonymous
+                                </span>
+                              )}
+                            </div>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
+                              {item.status}
+                            </span>
+                            {item.isPublic && (
+                              <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">
+                                Public
                               </span>
                             )}
                           </div>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
-                            {item.status}
-                          </span>
-                          {item.isPublic && (
-                            <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">
-                              Public
-                            </span>
+
+                          {item.email && !item.isAnonymous && (
+                            <div className="flex items-center gap-2 mb-2">
+                              <Mail className="w-3 h-3 text-gray-400" />
+                              <span className="text-xs sm:text-sm text-gray-600">{item.email}</span>
+                            </div>
                           )}
-                        </div>
 
-                        {item.email && !item.isAnonymous && (
-                          <div className="flex items-center gap-2 mb-2">
-                            <Mail className="w-3 h-3 text-gray-400" />
-                            <span className="text-sm text-gray-600">{item.email}</span>
+                          <div className="mb-3">
+                            {renderStars(item.rating)}
                           </div>
-                        )}
 
-                        <div className="mb-3">
-                          {renderStars(item.rating)}
-                        </div>
+                          <p className="text-sm sm:text-base text-gray-700 mb-3 leading-relaxed">{item.message}</p>
 
-                        <p className="text-gray-700 mb-3 leading-relaxed">{item.message}</p>
-
-                        <div className="flex items-center gap-4 text-xs text-gray-500">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3" />
-                            {formatDate(item.createdAt)}
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs text-gray-500">
+                            <div className="flex items-center gap-1">
+                              <Calendar className="w-3 h-3" />
+                              {formatDate(item.createdAt)}
+                            </div>
+                            {item.reviewedBy && (
+                              <div className="text-xs">
+                                Reviewed by {item.reviewedBy.username}
+                                {item.reviewedAt && ` on ${formatDate(item.reviewedAt)}`}
+                              </div>
+                            )}
                           </div>
-                          {item.reviewedBy && (
-                            <div>
-                              Reviewed by {item.reviewedBy.username}
-                              {item.reviewedAt && ` on ${formatDate(item.reviewedAt)}`}
+
+                          {item.adminNotes && (
+                            <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                              <p className="text-xs sm:text-sm text-blue-800">
+                                <strong>Admin Notes:</strong> {item.adminNotes}
+                              </p>
                             </div>
                           )}
                         </div>
 
-                        {item.adminNotes && (
-                          <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-                            <p className="text-sm text-blue-800">
-                              <strong>Admin Notes:</strong> {item.adminNotes}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex gap-2 ml-4">
-                        {!item.isPublic ? (
+                        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                          {!item.isPublic ? (
+                            <button
+                              onClick={() => handleAction('publish', item._id)}
+                              disabled={actionLoading === item._id}
+                              className="flex items-center justify-center gap-1 px-3 py-1.5 text-xs sm:text-sm bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors disabled:opacity-50"
+                            >
+                              <Eye className="w-4 h-4" />
+                              <span className="hidden sm:inline">Publish</span>
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleAction('unpublish', item._id)}
+                              disabled={actionLoading === item._id}
+                              className="flex items-center justify-center gap-1 px-3 py-1.5 text-xs sm:text-sm bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-colors disabled:opacity-50"
+                            >
+                              <EyeOff className="w-4 h-4" />
+                              <span className="hidden sm:inline">Unpublish</span>
+                            </button>
+                          )}
                           <button
-                            onClick={() => handleAction('publish', item._id)}
+                            onClick={() => {
+                              showDeleteConfirm(
+                                'Are you sure you want to delete this feedback? This action cannot be undone.',
+                                () => handleAction('delete', item._id)
+                              );
+                            }}
                             disabled={actionLoading === item._id}
-                            className="flex items-center gap-1 px-3 py-1.5 text-sm bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors disabled:opacity-50"
+                            className="flex items-center justify-center gap-1 px-3 py-1.5 text-xs sm:text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors disabled:opacity-50"
                           >
-                            <Eye className="w-4 h-4" />
-                            Publish
+                            <Trash2 className="w-4 h-4" />
+                            <span className="hidden sm:inline">Delete</span>
                           </button>
-                        ) : (
-                          <button
-                            onClick={() => handleAction('unpublish', item._id)}
-                            disabled={actionLoading === item._id}
-                            className="flex items-center gap-1 px-3 py-1.5 text-sm bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-colors disabled:opacity-50"
-                          >
-                            <EyeOff className="w-4 h-4" />
-                            Unpublish
-                          </button>
-                        )}
-                        <button
-                          onClick={() => {
-                            showDeleteConfirm(
-                              'Are you sure you want to delete this feedback? This action cannot be undone.',
-                              () => handleAction('delete', item._id)
-                            );
-                          }}
-                          disabled={actionLoading === item._id}
-                          className="flex items-center gap-1 px-3 py-1.5 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors disabled:opacity-50"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                          Delete
-                        </button>
+                        </div>
                       </div>
                     </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Pagination */}
+            {feedback.length > 0 && (
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="text-sm text-gray-600">
+                    Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} feedback
                   </div>
-                ))}
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      disabled={currentPage === 1}
+                      className="flex items-center gap-1 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                      <span className="hidden sm:inline">Previous</span>
+                    </button>
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        let pageNum;
+                        if (totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          pageNum = currentPage - 2 + i;
+                        }
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={`px-3 py-2 text-sm rounded-lg transition-colors ${currentPage === pageNum
+                              ? 'bg-purple-600 text-white'
+                              : 'border border-gray-300 hover:bg-gray-50'
+                              }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      disabled={currentPage === totalPages}
+                      className="flex items-center gap-1 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <span className="hidden sm:inline">Next</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </DashboardLayout>

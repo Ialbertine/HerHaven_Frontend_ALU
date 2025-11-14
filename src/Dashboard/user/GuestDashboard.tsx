@@ -1,12 +1,19 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MessageSquare, BookOpen, UserPlus, LogIn, Shield, Heart, Calendar, Users } from 'lucide-react';
+import { MessageSquare, BookOpen, UserPlus, LogIn, Shield, Heart, Calendar, Users, ClipboardCheck } from 'lucide-react';
 import FeedbackForm from '@/components/FeedbackForm';
 
 const GuestDashboard: React.FC = () => {
   const navigate = useNavigate();
 
   const availableFeatures = [
+    {
+      icon: ClipboardCheck,
+      title: 'Self-Assessment',
+      description: 'Take free, anonymous mental health assessments and get instant insights',
+      path: '/assessments',
+      color: 'from-green-500 to-emerald-500'
+    },
     {
       icon: MessageSquare,
       title: 'Community Support',
@@ -71,7 +78,7 @@ const GuestDashboard: React.FC = () => {
         {/* Available Features */}
         <div className="mb-12">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">Available to You</h2>
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-3 gap-6">
             {availableFeatures.map((feature, index) => {
               const Icon = feature.icon;
               return (

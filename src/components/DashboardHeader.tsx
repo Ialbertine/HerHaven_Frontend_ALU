@@ -19,8 +19,8 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
 
   useEffect(() => {
-    // Skip notification loading for guests
-    if (userType !== "guest") {
+    // Skip notification loading for guests and admin
+    if (userType !== "guest" && userType !== "super_admin") {
       loadUnreadCount();
 
       const interval = setInterval(() => {
@@ -50,10 +50,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     userType === "super_admin"
       ? "Administrator"
       : userType === "counselor"
-      ? "Counselor"
-      : userType === "guest"
-      ? "Guest"
-      : "User";
+        ? "Counselor"
+        : userType === "guest"
+          ? "Guest"
+          : "User";
 
   return (
     <>
@@ -78,8 +78,8 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           {/* Language Switcher */}
           <LanguageSwitcher />
 
-          {/* Hide notifications for guests */}
-          {userType !== "guest" && (
+          {/* Hide notifications for guests and admin */}
+          {userType !== "guest" && userType !== "super_admin" && (
             <div className="relative">
               <button
                 onClick={() =>

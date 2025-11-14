@@ -7,10 +7,8 @@ interface CreatePostFormProps {
 }
 
 const CreatePostForm: React.FC<CreatePostFormProps> = ({ onSuccess }) => {
-  // Check if user is a guest - guests have accessType='guest' and no auth token
-  const token = localStorage.getItem('token');
-  const accessType = localStorage.getItem('accessType');
-  const isGuest = accessType === 'guest' || !token;
+  const userRole = localStorage.getItem('userRole');
+  const isGuest = userRole === 'guest';
 
   const [formData, setFormData] = useState<CreatePostData>({
     title: '',
@@ -90,8 +88,8 @@ const CreatePostForm: React.FC<CreatePostFormProps> = ({ onSuccess }) => {
       <div className="p-6">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
-          <MessageCircle className="w-6 h-6 text-purple-600" />
-          <h3 className="text-xl font-bold text-purple-600">
+          <MessageCircle className="w-6 h-6 text-[#9027b0]" />
+          <h3 className="text-xl font-bold text-[#9027b0]">
             Share Your Story
           </h3>
         </div>
@@ -119,7 +117,7 @@ const CreatePostForm: React.FC<CreatePostFormProps> = ({ onSuccess }) => {
               </div>
             </div>
           ) : (
-            // Authenticated users - Can toggle anonymous posting
+            // Authenticated users (user, admin, counselor) - Can toggle anonymous posting
             <div className="flex items-center justify-between p-4 rounded-lg border bg-purple-50 border-purple-200">
               <div className="flex items-center gap-3">
                 {formData.isAnonymous ? (
@@ -214,7 +212,7 @@ const CreatePostForm: React.FC<CreatePostFormProps> = ({ onSuccess }) => {
               <button
                 type="button"
                 onClick={() => handleAddTag(tagInput)}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all"
+                className="px-4 py-2 bg-gradient-to-r from-[#9027b0] to-[#9c27b0] text-white rounded-lg hover:from-[#7b1fa2] hover:to-[#8e24aa] transition-all"
               >
                 Add
               </button>
@@ -271,16 +269,9 @@ const CreatePostForm: React.FC<CreatePostFormProps> = ({ onSuccess }) => {
           <div className="flex gap-3 pt-4 border-t border-gray-200">
             <button
               type="button"
-              onClick={resetForm}
-              className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium"
-            >
-              Clear
-            </button>
-            <button
-              type="button"
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-gradient-to-r from-[#9027b0] to-[#9c27b0] text-white rounded-lg hover:from-[#7b1fa2] hover:to-[#8e24aa] transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Posting...' : 'Share Post'}
             </button>

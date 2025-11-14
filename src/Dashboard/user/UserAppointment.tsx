@@ -27,6 +27,7 @@ interface Appointment {
     firstName: string;
     lastName: string;
     specialization: string;
+    profilePicture?: string;
   };
   appointmentDate: string;
   appointmentTime: string;
@@ -341,10 +342,18 @@ const UserAppointments = () => {
                 >
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div className="flex items-start gap-4 flex-1">
-                      <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
-                        {appointment.counselor.firstName.charAt(0)}
-                        {appointment.counselor.lastName.charAt(0)}
-                      </div>
+                      {appointment.counselor.profilePicture ? (
+                        <img
+                          src={appointment.counselor.profilePicture}
+                          alt={`${appointment.counselor.firstName} ${appointment.counselor.lastName}`}
+                          className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                          {appointment.counselor.firstName.charAt(0)}
+                          {appointment.counselor.lastName.charAt(0)}
+                        </div>
+                      )}
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
                           <h3 className="font-semibold text-gray-800">

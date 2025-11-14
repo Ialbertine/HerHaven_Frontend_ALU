@@ -26,7 +26,11 @@ export interface Notification {
     | 'payment_success'
     | 'payment_failed'
     | 'counselor_approved'
-    | 'counselor_rejected';
+    | 'counselor_rejected'
+    | 'assessment_completed'
+    | 'assessment_crisis'
+    | 'assessment_shared'
+    | 'assessment_crisis_shared';
   title: string;
   message: string;
   appointment?: {
@@ -40,6 +44,12 @@ export interface Notification {
     firstName: string;
     lastName: string;
     specialization: string;
+  };
+  assessment?: {
+    _id: string;
+    templateName: string;
+    severityLevel: string;
+    isCrisis: boolean;
   };
   channels: ('email' | 'inApp')[];
   priority: 'low' | 'medium' | 'high' | 'urgent';
