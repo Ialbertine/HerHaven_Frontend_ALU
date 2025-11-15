@@ -57,14 +57,13 @@ const StatCard: React.FC<StatCardData> = ({
 }) => (
   <Card>
     <div className="flex items-start justify-between mb-4">
-      <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-400 rounded-xl flex items-center justify-center">
-        <Icon className="w-6 h-6 text-white" />
+      <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+        <Icon className="w-4 h-4 text-white" />
       </div>
       {isPositive !== undefined && (
         <span
-          className={`flex items-center gap-1 text-sm font-semibold ${
-            isPositive ? "text-green-600" : "text-red-600"
-          }`}
+          className={`flex items-center gap-1 text-sm font-semibold ${isPositive ? "text-green-600" : "text-red-600"
+            }`}
         >
           {isPositive ? (
             <ArrowUp className="w-4 h-4" />
@@ -199,10 +198,10 @@ const CounselorStatusChart: React.FC<{
   const data = [
     { name: "Verified", value: verified, color: "#10b981" },
     { name: "Pending", value: pending, color: "#f59e0b" },
-    { name: "Rejected", value: total - verified - pending, color: "#ef4444" },
+    { name: "Invited", value: total - verified - pending, color: "#6366f1" },
   ];
 
-  const COLORS = ["#10b981", "#f59e0b", "#ef4444"];
+  const COLORS = ["#10b981", "#f59e0b", "#6366f1"];
 
   return (
     <Card className="col-span-1 lg:col-span-1">
@@ -532,9 +531,8 @@ const AdminLanding: React.FC = () => {
           },
           {
             label: "Completion Rate",
-            value: `${
-              analyticsResponse.data?.appointments.completionRate ?? "0"
-            }%`,
+            value: `${analyticsResponse.data?.appointments.completionRate ?? "0"
+              }%`,
             icon: TrendingUp,
             isPositive:
               parseFloat(

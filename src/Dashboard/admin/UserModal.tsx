@@ -189,7 +189,7 @@ const UserModal: React.FC<UserModalProps> = ({
                 !formData.username ||
                 (mode === "create" && !formData.password)
               }
-              className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2 bg-gradient-to-r from-[#9c27b0] to-[#7b2cbf] text-white rounded-lg hover:from-[#7b1fa2] hover:to-[#8e24aa] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading
                 ? mode === "create"

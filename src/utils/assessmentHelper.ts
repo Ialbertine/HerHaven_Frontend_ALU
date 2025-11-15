@@ -12,14 +12,12 @@ export const isUserAuthenticated = (): boolean => {
   return !!token;
 };
 
-// Get assessment templates for public platform
 export const getPublicAssessmentTemplates = async (category?: string) => {
   return await getPublicTemplates({
     category: category as 'depression' | 'anxiety' | 'ptsd' | 'safety' | 'wellness' | 'general' | undefined,
   });
 };
 
-// submit assessment
 export const smartSubmitAssessment = async (data: {
   templateId: string;
   responses: Array<{
@@ -51,12 +49,10 @@ export const saveAnonymousSessionId = (sessionId: string): void => {
     timestamp: new Date().toISOString(),
   });
   
-  // Keep only last 5 sessions
   const recentSessions = existingSessions.slice(-5);
   localStorage.setItem('anonymousAssessments', JSON.stringify(recentSessions));
 };
 
-// get all anonymous session IDs from localStorage
 export const getAnonymousSessionIds = (): Array<{ sessionId: string; timestamp: string }> => {
   const stored = localStorage.getItem('anonymousAssessments');
   if (!stored) return [];
@@ -68,17 +64,14 @@ export const getAnonymousSessionIds = (): Array<{ sessionId: string; timestamp: 
   }
 };
 
-// retrieve anonymous assessment result
 export const retrieveAnonymousAssessment = async (sessionId: string) => {
   return await getAssessmentBySession(sessionId);
 };
 
-// clear anonymous session IDs
 export const clearAnonymousSessionIds = (): void => {
   localStorage.removeItem('anonymousAssessments');
 };
 
-// get category display information
 export const getCategoryInfo = (category: string): {
   name: string;
   icon: string;
@@ -127,17 +120,67 @@ export const getCategoryInfo = (category: string): {
   return categories[category] || categories.general;
 };
 
-// get severity level display information
-export const getSeverityInfo = (severityLevel: string): {
+export const getSeverityInfo = (
+  severityLevel: string | undefined | null,
+  template?: { scoringRules?: { severityLevels?: Array<{ name: string; color?: string; range: { min: number; max: number } }> } } | null
+): {
   color: string;
   bgColor: string;
   label: string;
   icon: string;
 } => {
+  const defaultSeverity = {
+    color: '#6B7280',
+    bgColor: '#F9FAFB',
+    label: 'Unknown',
+    icon: '?',
+  };
+
+  if (!severityLevel || typeof severityLevel !== 'string') {
+    return defaultSeverity;
+  }
+
+  if (template?.scoringRules?.severityLevels && template.scoringRules.severityLevels.length > 0) {
+    const templateSeverity = template.scoringRules.severityLevels.find(
+      level => level.name.toLowerCase().trim() === severityLevel.toLowerCase().trim()
+    );
+
+    if (templateSeverity) {
+      const templateColor = templateSeverity.color || '#6B7280';
+      const hexToRgba = (hex: string, alpha: number) => {
+        try {
+          let cleanHex = hex.replace('#', '').trim();
+          if (cleanHex.length === 3) {
+            cleanHex = cleanHex.split('').map(char => char + char).join('');
+          }
+          if (cleanHex.length !== 6) {
+            return `rgba(107, 114, 128, ${alpha})`;
+          }
+          const r = parseInt(cleanHex.slice(0, 2), 16);
+          const g = parseInt(cleanHex.slice(2, 4), 16);
+          const b = parseInt(cleanHex.slice(4, 6), 16);
+          if (isNaN(r) || isNaN(g) || isNaN(b)) {
+            return `rgba(107, 114, 128, ${alpha})`;
+          }
+          return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        } catch {
+          return `rgba(107, 114, 128, ${alpha})`;
+        }
+      };
+      const bgColor = hexToRgba(templateColor, 0.1);
+      
+      return {
+        color: templateColor,
+        bgColor: bgColor,
+        label: templateSeverity.name,
+        icon: '•',
+      };
+    }
+  }
+
   const normalizedLevel = severityLevel.toLowerCase().replace(/\s+/g, '-');
   
   const severityMap: Record<string, { color: string; bgColor: string; label: string; icon: string }> = {
-    // Depression (PHQ-9) levels
     'doing-well': {
       color: '#22C55E',
       bgColor: '#F0FDF4',
@@ -168,8 +211,6 @@ export const getSeverityInfo = (severityLevel: string): {
       label: 'Intense Struggle',
       icon: '!!!',
     },
-    
-    // Anxiety (GAD-7) levels
     'feeling-calm': {
       color: '#22C55E',
       bgColor: '#F0FDF4',
@@ -194,8 +235,6 @@ export const getSeverityInfo = (severityLevel: string): {
       label: 'Overwhelming Feelings',
       icon: '!!!',
     },
-    
-    // Wellness levels
     'need-extra-care': {
       color: '#EF4444',
       bgColor: '#FEF2F2',
@@ -208,8 +247,6 @@ export const getSeverityInfo = (severityLevel: string): {
       label: 'Getting By',
       icon: '~',
     },
-    
-    // PTSD (PCL-5) levels
     'managing-well': {
       color: '#22C55E',
       bgColor: '#F0FDF4',
@@ -230,10 +267,9 @@ export const getSeverityInfo = (severityLevel: string): {
     },
   };
 
-  return severityMap[normalizedLevel] || severityMap.moderate;
+  return severityMap[normalizedLevel] || defaultSeverity;
 };
 
-// format assessment duration
 export const formatDuration = (seconds: number): string => {
   if (seconds < 60) return `${seconds} seconds`;
   
@@ -245,7 +281,6 @@ export const formatDuration = (seconds: number): string => {
   return `${minutes}m ${remainingSeconds}s`;
 };
 
-// calculate completion percentage
 export const calculateCompletionPercentage = (
   answeredQuestions: number,
   totalQuestions: number
@@ -254,14 +289,11 @@ export const calculateCompletionPercentage = (
   return Math.round((answeredQuestions / totalQuestions) * 100);
 };
 
-// validate assessment responses
 export const validateResponses = (
   template: AssessmentTemplate,
   responses: Array<{ questionId: string; answer: string | number | (string | number)[] }>
 ): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
-  
-  // Check if all required questions are answered
   const requiredQuestions = template.questions.filter(q => q.isRequired);
   
   requiredQuestions.forEach(question => {
@@ -278,7 +310,6 @@ export const validateResponses = (
   };
 };
 
-// sort templates by category and name
 export const sortTemplates = (
   templates: AssessmentTemplate[],
   sortBy: 'category' | 'name' | 'recent' = 'category'
@@ -309,7 +340,6 @@ export const sortTemplates = (
   }
 };
 
-// group templates by category
 export const groupTemplatesByCategory = (
   templates: AssessmentTemplate[]
 ): Record<string, AssessmentTemplate[]> => {
@@ -323,12 +353,12 @@ export const groupTemplatesByCategory = (
   }, {} as Record<string, AssessmentTemplate[]>);
 };
 
-// check if assessment indicates crisis
-export const isCrisisResult = (severityLevel: string, isCrisis: boolean): boolean => {
-  return isCrisis || severityLevel.toLowerCase() === 'severe';
+export const isCrisisResult = (severityLevel: string | undefined | null, isCrisis: boolean): boolean => {
+  if (isCrisis) return true;
+  if (!severityLevel || typeof severityLevel !== 'string') return false;
+  return severityLevel.toLowerCase() === 'severe';
 };
 
-// Crisis resources type
 export interface CrisisResource {
   name: string;
   phone: string;
@@ -336,7 +366,6 @@ export interface CrisisResource {
   available: string;
 }
 
-// get crisis resources
 export const getCrisisResources = (): CrisisResource[] => {
   return [
     {
@@ -360,7 +389,6 @@ export const getCrisisResources = (): CrisisResource[] => {
   ];
 };
 
-// format date for display
 export const formatAssessmentDate = (dateString: string): string => {
   const date = new Date(dateString);
   const now = new Date();

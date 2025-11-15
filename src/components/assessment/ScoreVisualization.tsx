@@ -1,10 +1,12 @@
 import React from 'react';
 import { getSeverityInfo } from '@/utils/assessmentHelper';
+import type { AssessmentTemplate } from '@/apis/assessment';
 
 interface ScoreVisualizationProps {
   score: number;
   maxScore: number;
-  severityLevel: string;
+  severityLevel?: string | null;
+  template?: AssessmentTemplate | null;
   className?: string;
   size?: 'small' | 'medium' | 'large';
 }
@@ -13,10 +15,11 @@ export const ScoreVisualization: React.FC<ScoreVisualizationProps> = ({
   score,
   maxScore,
   severityLevel,
+  template,
   className = '',
   size = 'medium',
 }) => {
-  const severityInfo = getSeverityInfo(severityLevel);
+  const severityInfo = getSeverityInfo(severityLevel, template || undefined);
   const percentage = (score / maxScore) * 100;
 
   const sizeConfig = {

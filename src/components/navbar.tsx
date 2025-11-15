@@ -313,7 +313,7 @@ export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 color-lavender-50 backdrop-blur-md">
+    <header className="fixed top-0 left-0 right-0 z-50 color-lavender-50 backdrop-blur-md xl:px-14">
       <nav className="px-6 py-4" aria-label="Main navigation">
         <div className="flex items-center justify-between">
           <Logo />

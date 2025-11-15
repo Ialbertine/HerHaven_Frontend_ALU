@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/DashboardLayout";
 import UserModal from "./UserModal";
 import {
@@ -30,6 +31,7 @@ import {
 import { useModal } from "@/contexts/useModal";
 
 const UserManagement: React.FC = () => {
+  const navigate = useNavigate();
   const { showAlert, showDeleteConfirm } = useModal();
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
@@ -209,7 +211,7 @@ const UserManagement: React.FC = () => {
   };
 
   const handleView = (userId: string) => {
-    window.open(`/admin/users/${userId}`, "_blank");
+    navigate(`/admin/users/${userId}`);
   };
 
   const openCreateModal = () => {
@@ -281,7 +283,7 @@ const UserManagement: React.FC = () => {
           </div>
           <button
             onClick={openCreateModal}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#9c27b0] to-[#7b2cbf] text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl"
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#9c27b0] to-[#7b2cbf] text-white rounded-xl hover:from-[#7b1fa2] hover:to-[#8e24aa] transition-all shadow-lg hover:shadow-xl"
           >
             <UserPlus className="w-5 h-5" />
             Create User
@@ -466,7 +468,7 @@ const UserManagement: React.FC = () => {
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-r from-[#9c27b0] to-[#7b2cbf] rounded-full flex items-center justify-center text-white font-semibold text-base flex-shrink-0">
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-base flex-shrink-0" style={{ background: 'linear-gradient(to right, #9c27b0, #7b2cbf)' }}>
                             {user.username.charAt(0).toUpperCase()}
                           </div>
                           <div className="min-w-0">

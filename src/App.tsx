@@ -19,6 +19,7 @@ import TherapyManagement from "./Dashboard/admin/TherapyManagement";
 import FeedbackManagement from "./Dashboard/admin/FeedbackManagement";
 import ContactManagement from "./Dashboard/admin/ContactManagement";
 import UserManagement from "./Dashboard/admin/UserManagement";
+import ViewUser from "./Dashboard/admin/ViewUser";
 import AssessmentManagement from "./Dashboard/admin/AssessmentManagement";
 import ViewAssessmentTemplate from "./Dashboard/admin/ViewAssessmentTemplate";
 import Profile from "@/Dashboard/therapist/Profile";
@@ -82,6 +83,7 @@ const App: React.FC = () => {
               <Route path="dashboard" element={<AdminLanding />} />
               <Route path="therapy-management" element={<TherapyManagement />} />
               <Route path="user-management" element={<UserManagement />} />
+              <Route path="users/:userId" element={<ViewUser />} />
               <Route path="assessments" element={<AssessmentManagement />} />
               <Route path="assessments/:templateId" element={<ViewAssessmentTemplate />} />
               <Route path="community" element={<Community />} />
