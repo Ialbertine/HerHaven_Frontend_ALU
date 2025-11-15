@@ -29,7 +29,7 @@ type AssessmentData = {
   id: string;
   sessionId?: string;
   totalScore: number;
-  severityLevel: string;
+  severityLevel?: string;
   isCrisis: boolean;
   recommendations: Array<{
     type: 'resource' | 'action' | 'appointment';
@@ -281,9 +281,11 @@ export const AssessmentResults: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-lavender-50 py-12 px-6 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 text-purple-500 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading your results...</p>
+        <div className="w-full max-w-2xl mx-auto flex items-center justify-center min-h-[60vh]">
+          <div className="bg-white rounded-2xl shadow-xl p-12 text-center">
+            <Loader2 className="w-12 h-12 text-purple-500 animate-spin mx-auto mb-4" />
+            <p className="text-gray-600 text-lg">Loading your results...</p>
+          </div>
         </div>
       </div>
     );
@@ -307,18 +309,18 @@ export const AssessmentResults: React.FC = () => {
     );
   }
 
-  // Safe access to template category - prioritize templateSnapshot as it's from the actual assessment
+  // Safe access to template category and severity level
   const category = assessment.templateSnapshot?.category ||
     assessment.template?.category ||
     'general';
   const categoryInfo = getCategoryInfo(category);
-  const severityInfo = getSeverityInfo(assessment.severityLevel);
+  const severityInfo = getSeverityInfo(assessment.severityLevel, assessment.template || undefined);
 
-  // Get maxScore - try to get from template, or calculate from severity levels if available
+  // Get maxScore
   const maxScore = assessment.template?.scoringRules?.maxScore ||
     (assessment.template?.scoringRules?.severityLevels?.length
       ? Math.max(...assessment.template.scoringRules.severityLevels.map(level => level.range.max))
-      : assessment.totalScore * 2); // Fallback estimate
+      : assessment.totalScore * 2);
 
   return (
     <>
@@ -350,8 +352,8 @@ export const AssessmentResults: React.FC = () => {
           }
         }
       `}</style>
-      <div className="min-h-screen bg-lavender-50 py-20 px-6 print-content">
-        <div className="max-w-4xl mx-auto">
+      <div className="min-h-screen bg-lavender-50 py-20 px-6 print-content flex items-center justify-center">
+        <div className="w-full max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full font-semibold text-sm mb-4">
@@ -390,7 +392,8 @@ export const AssessmentResults: React.FC = () => {
               <ScoreVisualization
                 score={assessment.totalScore}
                 maxScore={maxScore}
-                severityLevel={assessment.severityLevel}
+                severityLevel={assessment.severityLevel || undefined}
+                template={assessment.template || undefined}
                 size="large"
               />
             </div>
@@ -710,7 +713,7 @@ export const AssessmentResults: React.FC = () => {
 };
 
 // Helper function to get severity description
-function getSeverityDescription(severity: string, category: string): string {
+function getSeverityDescription(severity: string | undefined | null, category: string): string {
   const descriptions: Record<string, Record<string, string>> = {
     depression: {
       'doing-well': 'Your responses suggest minimal depressive symptoms. You appear to be managing well emotionally.',
@@ -726,6 +729,11 @@ function getSeverityDescription(severity: string, category: string): string {
       'overwhelming-feelings': 'Your responses suggest severe anxiety symptoms. Professional support is strongly recommended.',
     },
   };
+
+  // Handle null/undefined severity
+  if (!severity || typeof severity !== 'string') {
+    return 'Your responses have been recorded. We recommend consulting with a mental health professional for personalized guidance.';
+  }
 
   const normalizedSeverity = severity.toLowerCase().replace(/\s+/g, '-');
   return descriptions[category]?.[normalizedSeverity] ||

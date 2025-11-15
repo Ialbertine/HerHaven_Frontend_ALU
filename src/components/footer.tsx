@@ -81,7 +81,7 @@ const Footer: React.FC = () => {
   );
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-br from-[#9c27b0] via-[#7b2cbf] to-[#4a148c]">
+    <div className="relative overflow-hidden bg-gradient-to-br from-[#9c27b0] via-[#7b2cbf] to-[#4a148c] xl:px-14">
       {/* Animated particles */}
       {particles.map((particle) => (
         <div

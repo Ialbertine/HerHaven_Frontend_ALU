@@ -37,7 +37,7 @@ export const TakeAssessment: React.FC = () => {
     if (currentQuestion && currentQuestion.type === 'scale' && !currentResponse) {
       // Set default value to middle of scale
       const options = currentQuestion.options || [];
-      let defaultValue = 5; // fallback
+      let defaultValue = 5; 
 
       if (options.length > 0) {
         const firstValue = options[0].value;
@@ -74,7 +74,6 @@ export const TakeAssessment: React.FC = () => {
         : await getPublicTemplateToBegin(templateId!);
 
       if (response.success && response.data) {
-        // Sort questions by order
         const sortedQuestions = [...response.data.template.questions].sort((a, b) => a.order - b.order);
         setTemplate({
           ...response.data.template,
@@ -182,7 +181,6 @@ export const TakeAssessment: React.FC = () => {
 
   const handleSaveAndExit = () => {
     if (isAuthenticated) {
-      // TODO: Implement save draft functionality
       showAlert(
         'Your progress has been saved. You can continue later from your dashboard.',
         'Progress Saved',
@@ -210,15 +208,9 @@ export const TakeAssessment: React.FC = () => {
 
     return (
       <div className="max-w-3xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 mt-8">
+        <div className="bg-white rounded-2xl shadow-xl p-8 md:pt-12 mt-8">
           {/* Header */}
           <div className="flex items-center gap-4 mb-6">
-            <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
-              style={{ backgroundColor: `${categoryInfo.color}20` }}
-            >
-              {categoryInfo.icon}
-            </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-800">
                 {template.name}
@@ -310,9 +302,9 @@ export const TakeAssessment: React.FC = () => {
       (currentQuestion.type === 'multiple-choice' ? Array.isArray(currentResponse.answer) && currentResponse.answer.length > 0 : true);
 
     return (
-      <div className="max-w-4xl mx-auto">
+      <div className="w-full max-w-4xl mx-auto xl:flex xl:flex-col xl:items-center xl:pt-20 md:pb-16 xl:pb-0">
         {/* Progress */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 animate-fade-in-up">
+        <div className="w-full bg-white rounded-2xl shadow-lg p-6 mb-6 animate-fade-in-up">
           <ProgressBar
             current={currentQuestionIndex + 1}
             total={template.questions.length}
@@ -320,7 +312,7 @@ export const TakeAssessment: React.FC = () => {
         </div>
 
         {/* Question Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 mb-6 animate-fade-in-up animation-delay-200">
+        <div className="w-full bg-white rounded-2xl shadow-xl p-8 md:p-12 mb-6 animate-fade-in-up animation-delay-200">
           <QuestionRenderer
             question={currentQuestion}
             answer={currentResponse?.answer}
@@ -329,7 +321,7 @@ export const TakeAssessment: React.FC = () => {
         </div>
 
         {/* Navigation */}
-        <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up animation-delay-400">
+        <div className="w-full flex flex-col sm:flex-row gap-4 animate-fade-in-up animation-delay-400">
           <button
             onClick={handlePrevious}
             disabled={currentQuestionIndex === 0}
@@ -358,7 +350,7 @@ export const TakeAssessment: React.FC = () => {
         </div>
 
         {/* Privacy Reminder */}
-        <div className="mt-6 text-center text-sm text-gray-500 flex items-center justify-center gap-2 animate-fade-in-up animation-delay-600">
+        <div className="w-full mt-6 text-center text-sm text-gray-500 flex items-center justify-center gap-2 animate-fade-in-up animation-delay-600">
           <Shield className="w-4 h-4" />
           Your responses are confidential and secure
         </div>
@@ -368,15 +360,17 @@ export const TakeAssessment: React.FC = () => {
 
   // Submitting Screen
   const renderSubmitting = () => (
-    <div className="max-w-2xl mx-auto">
-      <div className="bg-white rounded-2xl shadow-xl p-12 text-center animate-fade-in-up">
-        <Loader2 className="w-16 h-16 text-purple-500 animate-spin mx-auto mb-6" />
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">
-          Processing Your Responses
-        </h2>
-        <p className="text-gray-600">
-          Please wait while we analyze your assessment and prepare personalized recommendations...
-        </p>
+    <div className="w-full flex items-center justify-center min-h-[60vh]">
+      <div className="w-full max-w-2xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-xl p-12 text-center animate-fade-in-up">
+          <Loader2 className="w-16 h-16 text-purple-500 animate-spin mx-auto mb-6" />
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Processing Your Responses
+          </h2>
+          <p className="text-gray-600">
+            Please wait while we analyze your assessment and prepare personalized recommendations...
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -385,9 +379,11 @@ export const TakeAssessment: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-lavender-50 py-12 px-6 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 text-purple-500 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading assessment...</p>
+        <div className="w-full max-w-2xl mx-auto flex items-center justify-center min-h-[60vh]">
+          <div className="bg-white rounded-2xl shadow-xl p-12 text-center">
+            <Loader2 className="w-12 h-12 text-purple-500 animate-spin mx-auto mb-4" />
+            <p className="text-gray-600 text-lg">Loading assessment...</p>
+          </div>
         </div>
       </div>
     );
@@ -414,7 +410,7 @@ export const TakeAssessment: React.FC = () => {
 
   return (
     <>
-      <div className={`min-h-screen bg-lavender-50 px-6 relative ${viewMode === 'welcome' ? 'flex flex-col justify-center py-12' : 'py-12'}`}>
+      <div className={`min-h-screen bg-lavender-50 px-6 relative ${viewMode === 'welcome' ? 'flex flex-col justify-center py-12' : 'pt-24'}`}>
         {/* Back Link */}
         {viewMode === 'welcome' && (
           <div className="absolute top-24 left-6 right-6">
