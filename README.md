@@ -42,7 +42,7 @@ To create a safe, accessible, and empowering digital platform that breaks the si
   you will need to add Routes accordingly
 
 - Recorded video: https://youtu.be/v71nfkuDqYs
-
+- Final Recorded Video DEMO: https://www.loom.com/share/586aab84aba24d35997f81be486a0c83
 - Figma link: https://www.figma.com/design/MKR357S6f32m7JAjewQqf8/HerHaven_Design?node-id=0-1&t=lXnetUpHHEw4LFuX-1
 
 ## Features
