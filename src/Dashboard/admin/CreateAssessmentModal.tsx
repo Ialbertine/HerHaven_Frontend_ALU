@@ -499,7 +499,7 @@ const CreateAssessmentModal: React.FC<CreateAssessmentModalProps> = ({
                     Estimated Duration (minutes)
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     value={estimatedDuration}
                     onChange={(e) =>
                       setEstimatedDuration(parseInt(e.target.value) || 0)
@@ -671,7 +671,7 @@ const CreateAssessmentModal: React.FC<CreateAssessmentModalProps> = ({
                             Crisis Threshold
                           </label>
                           <input
-                            type="number"
+                            type="text"
                             value={question.crisisThreshold || 0}
                             onChange={(e) =>
                               handleQuestionChange(
@@ -861,7 +861,7 @@ const CreateAssessmentModal: React.FC<CreateAssessmentModalProps> = ({
                           Min Score
                         </label>
                         <input
-                          type="number"
+                          type="text"
                           value={level.range.min}
                           onChange={(e) =>
                             handleSeverityLevelChange(lIndex, "range", {
@@ -878,7 +878,7 @@ const CreateAssessmentModal: React.FC<CreateAssessmentModalProps> = ({
                           Max Score
                         </label>
                         <input
-                          type="number"
+                          type="text"
                           value={level.range.max}
                           onChange={(e) =>
                             handleSeverityLevelChange(lIndex, "range", {
