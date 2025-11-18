@@ -19,9 +19,9 @@ export default defineConfig({
     video: false,
     screenshotOnRunFailure: true,
     defaultCommandTimeout: 30000,
-    requestTimeout: 30000,
-    responseTimeout: 30000,
-    pageLoadTimeout: 90000,
+    requestTimeout: 90000,
+    responseTimeout: 90000,
+    pageLoadTimeout: 120000,
   },
 
   component: {

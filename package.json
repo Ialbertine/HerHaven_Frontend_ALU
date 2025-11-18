@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "cypress run",
+    "test": "start-server-and-test \"npm run dev -- --host=127.0.0.1\" http://127.0.0.1:5173 \"npm run cypress:run --\"",
+    "cypress:run": "cypress run",
     "test:open": "cypress open",
     "test:local": "cypress open --config baseUrl=http://localhost:5173",
     "test:local:run": "cypress run --config baseUrl=http://localhost:5173",
@@ -18,7 +19,6 @@
     "test:edge": "cypress run --browser edge",
     "test:headed": "cypress run --headed",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run",
     "cypress:ci": "cypress run --browser chrome --headless"
   },
   "dependencies": {
@@ -53,6 +53,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.4.0",
+    "start-server-and-test": "^2.1.2",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.44.0",
     "vite": "^7.1.7",
