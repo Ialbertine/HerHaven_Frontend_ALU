@@ -7,32 +7,35 @@ import { useTextSize } from "@/hooks/useTextSize";
 interface DropdownItem {
   href: string;
   label: string;
+  testId?: string;
 }
 
 interface NavLink {
   href: string;
   label: string;
+  testId: string;
   isActive?: boolean;
   hasDropdown?: boolean;
   dropdownItems?: DropdownItem[];
 }
 
 const navLinks: NavLink[] = [
-  { href: "/", label: "nav.home" },
-  { href: "/aboutus", label: "nav.about" },
+  { href: "/", label: "nav.home", testId: "nav-link-home" },
+  { href: "/aboutus", label: "nav.about", testId: "nav-link-about" },
   {
     href: "/services",
     label: "nav.services",
+    testId: "nav-link-services",
     hasDropdown: true,
     dropdownItems: [
-      { href: "/services", label: "nav.allServices" },
-      { href: "/therapy", label: "nav.therapyServices" },
-      { href: "/assessments", label: "nav.selfAssessment" },
-      { href: "/havenchatbot", label: "nav.havenchatbot" },
+      { href: "/services", label: "nav.allServices", testId: "nav-dropdown-all-services" },
+      { href: "/therapy", label: "nav.therapyServices", testId: "nav-dropdown-therapy-services" },
+      { href: "/assessments", label: "nav.selfAssessment", testId: "nav-dropdown-self-assessment" },
+      { href: "/havenchatbot", label: "nav.havenchatbot", testId: "nav-dropdown-havenchatbot" },
     ],
   },
-  { href: "/resources", label: "nav.resources" },
-  { href: "/contact", label: "nav.contact" },
+  { href: "/resources", label: "nav.resources", testId: "nav-link-resources" },
+  { href: "/contact", label: "nav.contact", testId: "nav-link-contact" },
 ];
 
 export const Logo: React.FC = () => (
@@ -199,6 +202,7 @@ const SignUpButton: React.FC<{ fullWidth?: boolean }> = ({
   return (
     <Link to="/signup">
       <button
+        data-cy="nav-signup-button"
         className={`bg-[#7b1fa2] hover:bg-[#9c27b0] text-white 
           px-4 py-2 sm:px-4 sm:py-2 md:px-4 md:py-2 
           text-sm sm:text-base md:text-base
@@ -236,6 +240,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({ items, isOpen, onClose }) =
           <Link
             key={item.href}
             to={item.href}
+            data-cy={item.testId}
             className="block px-4 py-3 hover:bg-purple-50 transition-colors"
             onClick={onClose}
           >
@@ -269,6 +274,7 @@ const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
         <li>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
+            data-cy={link.testId}
             className={`${baseClasses} ${activeClasses} transition-colors w-full text-left flex items-center justify-between`}
           >
             {t(link.label)}
@@ -300,6 +306,7 @@ const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
       <li className="relative">
         <button
           onClick={() => setDropdownOpen(!dropdownOpen)}
+          data-cy={link.testId}
           className={`${baseClasses} ${activeClasses} transition-colors flex items-center gap-1 cursor-pointer`}
           aria-expanded={dropdownOpen}
           aria-haspopup="true"
@@ -323,6 +330,7 @@ const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
     <li>
       <Link
         to={link.href}
+        data-cy={link.testId}
         className={`${baseClasses} ${activeClasses} transition-colors`}
         aria-current={isActive ? "page" : undefined}
       >

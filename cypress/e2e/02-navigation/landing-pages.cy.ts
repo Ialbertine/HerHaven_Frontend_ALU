@@ -12,8 +12,8 @@ describe('Landing Pages', () => {
     });
 
     it('should have navigation menu', () => {
-      // Check for common navigation items
-      cy.contains('Home').should('be.visible');
+      // Check for common navigation items via data attributes to avoid localization issues
+      cy.get('[data-cy="nav-link-home"]').should('be.visible');
     });
 
     it('should have footer', () => {
@@ -33,7 +33,7 @@ describe('Landing Pages', () => {
     });
 
     it('should have navigation back to home', () => {
-      cy.contains('Home').click();
+      cy.get('[data-cy="nav-link-home"]').click();
       cy.url().should('eq', Cypress.config().baseUrl + '/');
     });
   });
@@ -49,7 +49,8 @@ describe('Landing Pages', () => {
 
     it('should be accessible from navigation', () => {
       cy.visit('/');
-      cy.contains('Services').click();
+      cy.get('[data-cy="nav-link-services"]').click();
+      cy.get('[data-cy="nav-dropdown-all-services"]').should('be.visible').click();
       cy.url().should('include', '/services');
     });
   });
@@ -64,7 +65,7 @@ describe('Landing Pages', () => {
       cy.visit('/', { timeout: 60000 });
       // Wait for page to be fully loaded
       cy.get('body').should('be.visible');
-      cy.contains('Resources').should('be.visible').click();
+      cy.get('[data-cy="nav-link-resources"]').should('be.visible').click();
       cy.url().should('include', '/resources', { timeout: 15000 });
     });
   });

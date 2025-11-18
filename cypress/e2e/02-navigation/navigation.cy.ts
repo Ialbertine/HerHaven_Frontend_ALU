@@ -11,37 +11,38 @@ describe('Navigation', () => {
     });
 
     it('should have navigation links', () => {
-      cy.contains('Home').should('be.visible');
-      cy.contains('About').should('be.visible');
-      cy.contains('Services').should('be.visible');
-      cy.contains('Resources').should('be.visible');
-      cy.contains('Contact').should('be.visible');
+      cy.get('[data-cy="nav-link-home"]').should('be.visible');
+      cy.get('[data-cy="nav-link-about"]').should('be.visible');
+      cy.get('[data-cy="nav-link-services"]').should('be.visible');
+      cy.get('[data-cy="nav-link-resources"]').should('be.visible');
+      cy.get('[data-cy="nav-link-contact"]').should('be.visible');
     });
 
     it('should navigate to different pages', () => {
       // Navigate to About
-      cy.contains('About').click();
+      cy.get('[data-cy="nav-link-about"]').click();
       cy.url().should('include', '/aboutus');
 
       // Navigate back to Home
-      cy.contains('Home').click();
+      cy.get('[data-cy="nav-link-home"]').click();
       cy.url().should('eq', Cypress.config().baseUrl + '/');
 
       // Navigate to Services
-      cy.contains('Services').click();
+      cy.get('[data-cy="nav-link-services"]').click();
+      cy.get('[data-cy="nav-dropdown-all-services"]').should('be.visible').click();
       cy.url().should('include', '/services');
 
       // Navigate to Resources
-      cy.contains('Resources').click();
+      cy.get('[data-cy="nav-link-resources"]').click();
       cy.url().should('include', '/resources');
 
       // Navigate to Contact
-      cy.contains('Contact').click();
+      cy.get('[data-cy="nav-link-contact"]').click();
       cy.url().should('include', '/contact');
     });
 
     it('should have authentication buttons when not logged in', () => {
-      cy.contains('Sign Up').should('be.visible');
+      cy.get('[data-cy="nav-signup-button"]').should('be.visible');
     });
 
     it('should navigate to login page', () => {
@@ -51,7 +52,7 @@ describe('Navigation', () => {
     });
 
     it('should navigate to signup page', () => {
-      cy.contains('Sign Up').click();
+      cy.get('[data-cy="nav-signup-button"]').click();
       cy.url().should('include', '/signup');
     });
   });
