@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CYPRESS_DOWNLOAD_MIRROR: https://cdn.cypress.io/npm
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,13 +21,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
-        run: |
-          echo "CYPRESS_INSTALL_BINARY=0" >> $GITHUB_ENV
-          npm ci
+        env:
+          CYPRESS_INSTALL_BINARY: "0"
+        run: npm ci
 
       - name: Run linter
         run: npm run lint
@@ -39,7 +39,7 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           start: npm run preview
-          wait-on: 'http://localhost:4173'
+          wait-on: "http://localhost:4173"
           wait-on-timeout: 120
           browser: chrome
           config: baseUrl=http://localhost:4173
@@ -56,18 +56,14 @@ jobs:
           if-no-files-found: ignore
 
       - name: Deploy to Netlify
-        uses: netlify/actions/cli@master
-        with:
-          args: deploy --prod --dir=dist
+        run: npx --yes netlify-cli deploy --prod --dir=dist --site "$NETLIFY_SITE_ID"
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PROJECT_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         if: github.ref == 'refs/heads/main'
 
       - name: Deploy Preview to Netlify
-        uses: netlify/actions/cli@master
-        with:
-          args: deploy --dir=dist
+        run: npx --yes netlify-cli deploy --dir=dist --site "$NETLIFY_SITE_ID"
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PROJECT_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
