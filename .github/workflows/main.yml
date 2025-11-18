@@ -24,12 +24,34 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        env:
+         # Disable Cypress binary installation
+          CYPRESS_INSTALL_BINARY: "0"
 
       - name: Run linter
         run: npm run lint
 
       - name: Build project
         run: npm run build
+
+      - name: Run Cypress Tests
+        uses: cypress-io/github-action@v6
+        with:
+          start: npm run preview
+          wait-on: 'http://localhost:4173'
+          wait-on-timeout: 120
+          browser: chrome
+          config: baseUrl=http://localhost:4173
+        env:
+          CYPRESS_baseUrl: http://localhost:4173
+
+      - name: Upload Cypress Screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+          if-no-files-found: ignore
 
       - name: Deploy to Netlify
         uses: netlify/actions/cli@master

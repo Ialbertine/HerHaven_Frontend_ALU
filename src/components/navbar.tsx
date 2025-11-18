@@ -7,32 +7,35 @@ import { useTextSize } from "@/hooks/useTextSize";
 interface DropdownItem {
   href: string;
   label: string;
+  testId?: string;
 }
 
 interface NavLink {
   href: string;
   label: string;
+  testId: string;
   isActive?: boolean;
   hasDropdown?: boolean;
   dropdownItems?: DropdownItem[];
 }
 
 const navLinks: NavLink[] = [
-  { href: "/", label: "nav.home" },
-  { href: "/aboutus", label: "nav.about" },
+  { href: "/", label: "nav.home", testId: "nav-link-home" },
+  { href: "/aboutus", label: "nav.about", testId: "nav-link-about" },
   {
     href: "/services",
     label: "nav.services",
+    testId: "nav-link-services",
     hasDropdown: true,
     dropdownItems: [
-      { href: "/services", label: "nav.allServices" },
-      { href: "/therapy", label: "nav.therapyServices" },
-      { href: "/assessments", label: "nav.selfAssessment" },
-      { href: "/havenchatbot", label: "nav.havenchatbot" },
+      { href: "/services", label: "nav.allServices", testId: "nav-dropdown-all-services" },
+      { href: "/therapy", label: "nav.therapyServices", testId: "nav-dropdown-therapy-services" },
+      { href: "/assessments", label: "nav.selfAssessment", testId: "nav-dropdown-self-assessment" },
+      { href: "/havenchatbot", label: "nav.havenchatbot", testId: "nav-dropdown-havenchatbot" },
     ],
   },
-  { href: "/resources", label: "nav.resources" },
-  { href: "/contact", label: "nav.contact" },
+  { href: "/resources", label: "nav.resources", testId: "nav-link-resources" },
+  { href: "/contact", label: "nav.contact", testId: "nav-link-contact" },
 ];
 
 export const Logo: React.FC = () => (
@@ -199,6 +202,7 @@ const SignUpButton: React.FC<{ fullWidth?: boolean }> = ({
   return (
     <Link to="/signup">
       <button
+        data-cy="nav-signup-button"
         className={`bg-[#7b1fa2] hover:bg-[#9c27b0] text-white 
           px-4 py-2 sm:px-4 sm:py-2 md:px-4 md:py-2 
           text-sm sm:text-base md:text-base
@@ -214,23 +218,37 @@ const SignUpButton: React.FC<{ fullWidth?: boolean }> = ({
 
 interface DropdownMenuProps {
   items: DropdownItem[];
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-const DropdownMenu: React.FC<DropdownMenuProps> = ({ items }) => {
+const DropdownMenu: React.FC<DropdownMenuProps> = ({ items, isOpen, onClose }) => {
   const { t } = useTranslation("landing");
 
+  if (!isOpen) return null;
+
   return (
-    <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-      {items.map((item) => (
-        <Link
-          key={item.href}
-          to={item.href}
-          className="block px-4 py-3 hover:bg-purple-50 transition-colors"
-        >
-          <div className="font-medium text-black">{t(item.label)}</div>
-        </Link>
-      ))}
-    </div>
+    <>
+      {/* Invisible overlay to close dropdown when clicking outside */}
+      <div
+        className="fixed inset-0 z-40"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+        {items.map((item) => (
+          <Link
+            key={item.href}
+            to={item.href}
+            data-cy={item.testId}
+            className="block px-4 py-3 hover:bg-purple-50 transition-colors"
+            onClick={onClose}
+          >
+            <div className="font-medium text-black">{t(item.label)}</div>
+          </Link>
+        ))}
+      </div>
+    </>
   );
 };
 
@@ -240,7 +258,7 @@ interface NavItemProps {
 }
 
 const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
-  const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const { t } = useTranslation("landing");
   const location = useLocation();
   const isActive = isNavItemActive(link, location.pathname);
@@ -255,22 +273,24 @@ const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
       return (
         <li>
           <button
-            onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            data-cy={link.testId}
             className={`${baseClasses} ${activeClasses} transition-colors w-full text-left flex items-center justify-between`}
           >
             {t(link.label)}
             <ChevronDown
-              className={`w-4 h-4 transition-transform ${mobileDropdownOpen ? "rotate-180" : ""
+              className={`w-4 h-4 transition-transform ${dropdownOpen ? "rotate-180" : ""
                 }`}
             />
           </button>
-          {mobileDropdownOpen && (
+          {dropdownOpen && (
             <div className="pl-4 mt-2 space-y-2">
               {link.dropdownItems.map((item) => (
                 <Link
                   key={item.href}
                   to={item.href}
                   className="block py-2 text-gray-700 hover:text-[#9c27b0] transition-colors"
+                  onClick={() => setDropdownOpen(false)}
                 >
                   <div className="font-medium">{t(item.label)}</div>
                 </Link>
@@ -281,17 +301,27 @@ const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
       );
     }
 
+    // Desktop dropdown
     return (
-      <li className="relative group">
-        <a
-          href={link.href}
-          className={`${baseClasses} ${activeClasses} transition-colors flex items-center gap-1`}
+      <li className="relative">
+        <button
+          onClick={() => setDropdownOpen(!dropdownOpen)}
+          data-cy={link.testId}
+          className={`${baseClasses} ${activeClasses} transition-colors flex items-center gap-1 cursor-pointer`}
+          aria-expanded={dropdownOpen}
+          aria-haspopup="true"
           aria-current={isActive ? "page" : undefined}
         >
           {t(link.label)}
-          <ChevronDown className="w-4 h-4" />
-        </a>
-        <DropdownMenu items={link.dropdownItems} />
+          <ChevronDown
+            className={`w-4 h-4 transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
+          />
+        </button>
+        <DropdownMenu
+          items={link.dropdownItems}
+          isOpen={dropdownOpen}
+          onClose={() => setDropdownOpen(false)}
+        />
       </li>
     );
   }
@@ -300,6 +330,7 @@ const NavItem: React.FC<NavItemProps> = ({ link, isMobile = false }) => {
     <li>
       <Link
         to={link.href}
+        data-cy={link.testId}
         className={`${baseClasses} ${activeClasses} transition-colors`}
         aria-current={isActive ? "page" : undefined}
       >

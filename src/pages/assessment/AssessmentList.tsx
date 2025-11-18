@@ -89,7 +89,7 @@ export const AssessmentList: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-lavender-50 pt-12 px-6">
+    <div className="min-h-screen bg-lavender-50 pt-12 px-0 md:px-6">
       {/* Hero Section */}
       <div className="text-center max-w-4xl mx-auto py-10 px-6">
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full font-semibold text-sm mb-6">
@@ -116,12 +116,11 @@ export const AssessmentList: React.FC = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto"> 
 
         {/* Information Section */}
         {showInfo && (
           <div className="px-6 py-16 space-y-12 animate-fade-in">
-            {/* What is Self-Assessment */}
             <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
@@ -368,7 +367,7 @@ export const AssessmentList: React.FC = () => {
                 <p className="text-sm text-gray-700 leading-relaxed">
                   These self-assessment tools are designed for screening purposes only and are not meant to diagnose any mental health condition.
                   Results should not replace professional medical advice, diagnosis, or treatment. If you're experiencing a mental health emergency,
-                  please call <strong>116 117 119 (Suicide & Crisis Lifeline)</strong> or visit your nearest emergency room.
+                  please call <strong>116, 9059 (National Suicide & Crisis Lifeline)</strong> or visit your nearest emergency room.
                   Always consult with a qualified healthcare provider for proper diagnosis and treatment.
                 </p>
               </div>

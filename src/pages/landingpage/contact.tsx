@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { Mail, Phone, MapPin, Send, User, CheckCircle } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Mail, Phone, MapPin, Send, User, CheckCircle, WifiOff } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { createContactMessage } from "@/apis/contact";
+import { queueContactMessage, processContactQueue } from "@/utils/offlineContactQueue";
 import toast from "react-hot-toast";
 
 const Contact: React.FC = () => {
@@ -15,6 +16,44 @@ const Contact: React.FC = () => {
   });
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+
+  // Monitor online/offline status
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOffline(false);
+      toast.success("You're back online!");
+
+      // Process any queued messages
+      processContactQueue()
+        .then(() => {
+          console.log("Queued contact messages processed");
+        })
+        .catch((err) => {
+          console.error("Error processing contact queue:", err);
+        });
+    };
+
+    const handleOffline = () => {
+      setIsOffline(true);
+      toast.error("You're offline. Messages will be queued and sent when you reconnect.");
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    // Process queue on component mount if online
+    if (navigator.onLine) {
+      processContactQueue().catch((err) =>
+        console.error("Error processing contact queue on mount:", err)
+      );
+    }
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -32,6 +71,39 @@ const Contact: React.FC = () => {
     setIsSubmitting(true);
 
     try {
+      // Check if offline
+      if (!navigator.onLine) {
+        queueContactMessage({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phoneNumber: formData.phoneNumber,
+          message: formData.message,
+        });
+
+        setSubmitted(true);
+        toast(
+          "You're offline. Your message has been queued and will be sent automatically when you reconnect.",
+          { duration: 5000 }
+        );
+
+        // Reset form after 3 seconds
+        setTimeout(() => {
+          setSubmitted(false);
+          setFormData({
+            firstName: "",
+            lastName: "",
+            email: "",
+            phoneNumber: "",
+            message: "",
+          });
+        }, 3000);
+
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Online send normally
       const response = await createContactMessage({
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -44,7 +116,7 @@ const Contact: React.FC = () => {
         setSubmitted(true);
         toast.success(
           response.message ||
-            "Your message has been received. Our team will reach out soon."
+          "Your message has been received. Our team will reach out soon."
         );
 
         // Reset form after 3 seconds
@@ -61,7 +133,7 @@ const Contact: React.FC = () => {
       } else {
         toast.error(
           response.message ||
-            "Failed to submit contact message. Please try again."
+          "Failed to submit contact message. Please try again."
         );
       }
     } catch {
@@ -263,6 +335,16 @@ const Contact: React.FC = () => {
                     />
                   </div>
 
+                  {/* Offline Indicator */}
+                  {isOffline && (
+                    <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                      <WifiOff className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                      <p className="text-sm text-amber-800">
+                        You're currently offline. Your message will be queued and sent automatically when you reconnect.
+                      </p>
+                    </div>
+                  )}
+
                   <div>
                     <button
                       type="submit"
@@ -271,7 +353,7 @@ const Contact: React.FC = () => {
                       className="w-full py-4 bg-gradient-to-r from-[#9c27b0] to-[#7b2cbf] text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <span>
-                        {isSubmitting ? "Sending..." : t("contact.form.send")}
+                        {isSubmitting ? "Sending..." : isOffline ? "Queue Message" : t("contact.form.send")}
                       </span>
                       {!isSubmitting && (
                         <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 import apiClient from "./axiosConfig";
+import publicApiClient from "./publicApiClient";
 
 // ==================== TYPE DEFINITIONS ====================
 
@@ -166,7 +167,7 @@ export const getPublicTemplates = async (params?: {
     const queryParams = new URLSearchParams();
     if (params?.category) queryParams.append("category", params.category);
 
-    const response = await apiClient.get<ApiResponse<{ templates: AssessmentTemplate[]; count: number }>>(
+    const response = await publicApiClient.get<ApiResponse<{ templates: AssessmentTemplate[]; count: number }>>(
       `/api/assessments/public/templates${queryParams.toString() ? "?" + queryParams.toString() : ""}`
     );
     return response.data;
@@ -184,7 +185,7 @@ export const getPublicTemplateToBegin = async (
   templateId: string
 ): Promise<ApiResponse<{ template: AssessmentTemplate }>> => {
   try {
-    const response = await apiClient.get<ApiResponse<{ template: AssessmentTemplate }>>(
+    const response = await publicApiClient.get<ApiResponse<{ template: AssessmentTemplate }>>(
       `/api/assessments/public/templates/${templateId}/begin`
     );
     return response.data;
@@ -220,7 +221,7 @@ export const submitPublicAssessment = async (data: {
   };
 }>> => {
   try {
-    const response = await apiClient.post<ApiResponse<{
+    const response = await publicApiClient.post<ApiResponse<{
       assessment: {
         id: string;
         sessionId?: string;

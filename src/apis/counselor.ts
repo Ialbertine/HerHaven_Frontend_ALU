@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 import apiClient from "./axiosConfig";
+import publicApiClient from "./publicApiClient";
 
 // Type Definitions
 export interface AvailabilitySlot {
@@ -212,7 +213,7 @@ export const getAllCounselors = async (filters?: {
     if (filters?.isAvailable !== undefined)
       params.append("isAvailable", String(filters.isAvailable));
 
-    const response = await apiClient.get<
+    const response = await publicApiClient.get<
       ApiResponse<{ counselors: Counselor[]; count: number }>
     >(`/api/counselor/allcounselors?${params.toString()}`);
     return response.data;
@@ -231,7 +232,7 @@ export const getCounselorById = async (
   counselorId: string
 ): Promise<ApiResponse<{ counselor: Counselor }>> => {
   try {
-    const response = await apiClient.get<ApiResponse<{ counselor: Counselor }>>(
+    const response = await publicApiClient.get<ApiResponse<{ counselor: Counselor }>>(
       `/api/counselor/${counselorId}`
     );
     return response.data;
@@ -251,7 +252,7 @@ export const getSpecializations = async (): Promise<
   ApiResponse<{ specializations: string[] }>
 > => {
   try {
-    const response = await apiClient.get<
+    const response = await publicApiClient.get<
       ApiResponse<{ specializations: string[] }>
     >("/api/counselor/specializations/list");
     return response.data;

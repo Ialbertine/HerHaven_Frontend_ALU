@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 import apiClient from "./axiosConfig";
+import publicApiClient from "./publicApiClient";
 
 // Type Definitions
 export interface ContactMessage {
@@ -51,7 +52,7 @@ export const createContactMessage = async (data: {
   message: string;
 }): Promise<ApiResponse<ContactMessageResponse>> => {
   try {
-    const response = await apiClient.post<ApiResponse<ContactMessageResponse>>(
+    const response = await publicApiClient.post<ApiResponse<ContactMessageResponse>>(
       "/api/contact/messages",
       data
     );

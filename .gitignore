@@ -10,8 +10,18 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-dev-dist
 *.local
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+*.env
+
+# Development distribution
+dev-dist
 
 # Editor directories and files
 .vscode/*
@@ -24,8 +34,9 @@ dev-dist
 *.sln
 *.sw?
 
-# environmental variables
-.env
-env/
-config/
-.env.local
+# Cypress
+cypress/videos
+cypress/screenshots
+cypress/downloads
+.cypress-cache
+cypress.env.local.json
