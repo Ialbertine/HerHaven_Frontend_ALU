@@ -7,7 +7,19 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "cypress run",
+    "test:open": "cypress open",
+    "test:local": "cypress open --config baseUrl=http://localhost:5173",
+    "test:local:run": "cypress run --config baseUrl=http://localhost:5173",
+    "test:production": "cypress run --config baseUrl=https://ialbertine-herhaven.netlify.app",
+    "test:chrome": "cypress run --browser chrome",
+    "test:firefox": "cypress run --browser firefox",
+    "test:edge": "cypress run --browser edge",
+    "test:headed": "cypress run --headed",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "cypress:ci": "cypress run --browser chrome --headless"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.2.8",
@@ -29,11 +41,14 @@
     "tailwindcss": "^4.1.13"
   },
   "devDependencies": {
+    "@cypress/vite-dev-server": "^7.0.1",
+    "@cypress/webpack-dev-server": "^5.1.5",
     "@eslint/js": "^9.36.0",
     "@types/node": "^24.7.0",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.3",
+    "cypress": "^15.6.0",
     "eslint": "^9.36.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",

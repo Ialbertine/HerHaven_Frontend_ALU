@@ -1,0 +1,24 @@
+{
+  "validUser": {
+    "username": "testuser",
+    "email": "test@example.com",
+    "password": "Test123456"
+  },
+  "validAdmin": {
+    "email": "admin@herhaven.com",
+    "password": "Admin123456"
+  },
+  "validCounselor": {
+    "email": "counselor@herhaven.com",
+    "password": "Counselor123"
+  },
+  "invalidUser": {
+    "email": "invalid@example.com",
+    "password": "wrongpassword"
+  },
+  "incompleteUser": {
+    "email": "",
+    "password": ""
+  }
+}
+
