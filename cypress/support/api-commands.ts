@@ -1,31 +1,32 @@
 /// <reference types="cypress" />
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
       /**
        * Make an authenticated API request to production backend
        * @example cy.apiRequest('GET', '/api/users')
        */
-      apiRequest(method: string, endpoint: string, body?: any): Chainable<any>
+      apiRequest<T = unknown>(method: string, endpoint: string, body?: unknown): Chainable<Response<T>>
       
       /**
        * Login via API and store token
        * @example cy.apiLogin('email@example.com', 'password')
        */
-      apiLogin(email: string, password: string): Chainable<any>
+      apiLogin(email: string, password: string): Chainable<Response<{ token?: string; user?: { role?: string } }>>
       
       /**
        * Check API health
        * @example cy.checkApiHealth()
        */
-      checkApiHealth(): Chainable<any>
+      checkApiHealth(): Chainable<Response<{ error?: string }>>
     }
   }
 }
 
 // Make authenticated API request
-Cypress.Commands.add('apiRequest', (method: string, endpoint: string, body?: any) => {
+Cypress.Commands.add('apiRequest', (method: string, endpoint: string, body?: unknown) => {
   const apiUrl = Cypress.env('apiUrl');
   const token = localStorage.getItem('token');
   
@@ -82,7 +83,7 @@ Cypress.Commands.add('checkApiHealth', () => {
       status: 0,
       statusText: 'Network Error',
       body: { error: 'API is not accessible' },
-    } as Cypress.Response<any>);
+    } as Cypress.Response<{ error: string }>);
   });
 });
 

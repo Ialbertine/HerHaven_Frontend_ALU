@@ -21,7 +21,7 @@ import './api-commands'
 // require('./commands')
 
 // Prevent Cypress from failing on uncaught exceptions
-Cypress.on('uncaught:exception', (err, runnable) => {
+Cypress.on('uncaught:exception', (err) => {
   console.log('Uncaught exception:', err.message);
   return false;
 });
