@@ -29,6 +29,21 @@ interface SOSQueueItem {
   retryCount: number;
 }
 
+// Contact Queue Item Interface
+interface ContactQueueItem {
+  id: string;
+  data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber?: string;
+    message: string;
+  };
+  status: "pending" | "syncing" | "synced" | "failed";
+  timestamp: number;
+  retryCount: number;
+}
+
 // Service Worker event type extensions
 interface SyncEvent extends Event {
   tag: string;
@@ -98,6 +113,9 @@ self.addEventListener("sync", (event) => {
   const syncEvent = event as SyncEvent;
   if (syncEvent.tag === "sos-sync") {
     syncEvent.waitUntil(syncSOSAlerts());
+  }
+  if (syncEvent.tag === "contact-sync") {
+    syncEvent.waitUntil(syncContactMessages());
   }
 });
 
@@ -290,5 +308,119 @@ async function queueSOSForSync(sosData?: SOSQueueItem): Promise<void> {
     }
   } catch (error) {
     console.error("Error queueing SOS:", error);
+  }
+}
+
+// Sync contact messages when online
+async function syncContactMessages(): Promise<void> {
+  try {
+    const contactQueue = await getContactQueue();
+
+    for (const message of contactQueue) {
+      if (message.status === "pending") {
+        try {
+          // Attempt to send contact message
+          const response = await fetch(
+            "https://ialbertine-herhaven-backend.onrender.com/api/contact/messages",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(message.data),
+            }
+          );
+
+          if (response.ok) {
+            // Mark as synced
+            await markContactAsSynced(message.id);
+
+            // Show notification
+            await self.registration.showNotification("Message Sent", {
+              body: "Your contact message has been delivered successfully.",
+              icon: "/icons/icon-192x192.png",
+              badge: "/icons/icon-96x96.png",
+              tag: "contact-success",
+            });
+          } else {
+            // Increment retry count
+            await incrementContactRetry(message.id);
+          }
+        } catch (error) {
+          console.error("Error syncing contact message:", error);
+          await incrementContactRetry(message.id);
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Error in syncContactMessages:", error);
+  }
+}
+
+// Get contact queue from storage
+async function getContactQueue(): Promise<ContactQueueItem[]> {
+  try {
+    const cache = await caches.open("contact-queue");
+    const response = await cache.match("/contact-queue-data");
+
+    if (response) {
+      return await response.json();
+    }
+
+    return [];
+  } catch (error) {
+    console.error("Error getting contact queue:", error);
+    return [];
+  }
+}
+
+// Mark contact message as synced
+async function markContactAsSynced(id: string) {
+  try {
+    const queue = await getContactQueue();
+    const updatedQueue = queue.map((item) =>
+      item.id === id ? { ...item, status: "synced" as const } : item
+    );
+    await saveContactQueue(updatedQueue);
+  } catch (error) {
+    console.error("Error marking contact as synced:", error);
+  }
+}
+
+// Increment contact message retry count
+async function incrementContactRetry(id: string) {
+  try {
+    const queue = await getContactQueue();
+    const updatedQueue = queue.map((item) => {
+      if (item.id === id) {
+        const retryCount = (item.retryCount || 0) + 1;
+        const status: ContactQueueItem["status"] =
+          retryCount >= 3 ? "failed" : "pending";
+        return {
+          ...item,
+          retryCount,
+          status,
+        };
+      }
+      return item;
+    });
+    await saveContactQueue(updatedQueue);
+  } catch (error) {
+    console.error("Error incrementing contact retry:", error);
+  }
+}
+
+// Save contact queue to storage
+async function saveContactQueue(queue: ContactQueueItem[]): Promise<void> {
+  try {
+    const cache = await caches.open("contact-queue");
+    await cache.put(
+      "/contact-queue-data",
+      new Response(JSON.stringify(queue), {
+        headers: { "Content-Type": "application/json" },
+      })
+    );
+  } catch (error) {
+    console.error("Error saving contact queue:", error);
   }
 }

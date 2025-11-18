@@ -72,9 +72,20 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,svg,jpg,jpeg,webp,woff,woff2}"],
+        globPatterns: ["**/*.{js,css,html,ico,svg,jpg,jpeg,webp,woff,woff2,json}"],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10 MB
         runtimeCaching: [
+          {
+            urlPattern: /^\/locales\/.*\.json$/,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "translations-cache",
+              expiration: {
+                maxEntries: 30,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+              },
+            },
+          },
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: "CacheFirst",
