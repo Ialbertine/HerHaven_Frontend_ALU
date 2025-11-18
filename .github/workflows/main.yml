@@ -11,6 +11,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      CYPRESS_DOWNLOAD_MIRROR: https://cdn.cypress.io/npm
     
     steps:
       - name: Checkout code
@@ -32,7 +34,9 @@ jobs:
         id: cypress-cache
         uses: actions/cache@v4
         with:
-          path: ~/.cache/Cypress
+          path: |
+            ~/.cache/Cypress
+            ~/AppData/Local/Cypress/Cache
           key: ${{ runner.os }}-cypress-15.6.0
 
       - name: Install Cypress binary (with retries)
@@ -49,6 +53,7 @@ jobs:
           done
           echo "Cypress install failed after multiple attempts."
           exit 1
+        shell: bash
 
       - name: Run linter
         run: npm run lint
