@@ -9,7 +9,25 @@ import {
 import { ExpirationPlugin } from "workbox-expiration";
 import { CacheableResponsePlugin } from "workbox-cacheable-response";
 
-declare const self: ServiceWorkerGlobalScope;
+type PrecacheManifestEntry =
+  | {
+      url: string;
+      revision?: string;
+    }
+  | string;
+
+interface SyncManager {
+  register(tag: string): Promise<void>;
+}
+
+interface ServiceWorkerRegistrationWithSync extends ServiceWorkerRegistration {
+  sync?: SyncManager;
+}
+
+declare const self: ServiceWorkerGlobalScope & {
+  __WB_MANIFEST: PrecacheManifestEntry[];
+  registration: ServiceWorkerRegistrationWithSync;
+};
 
 interface SOSQueueItem {
   id: string;
@@ -51,7 +69,7 @@ interface SyncEvent extends Event {
 }
 
 // Precache all assets from the build
-precacheAndRoute((self as any).__WB_MANIFEST);
+precacheAndRoute(self.__WB_MANIFEST);
 
 // Clean up old caches
 cleanupOutdatedCaches();
@@ -301,8 +319,9 @@ async function queueSOSForSync(sosData?: SOSQueueItem): Promise<void> {
     await saveSOSQueue(queue);
 
     // Register sync
-    if ("sync" in self.registration) {
-      await (self.registration as any).sync.register("sos-sync");
+    const syncManager = self.registration.sync;
+    if (syncManager) {
+      await syncManager.register("sos-sync");
     }
   } catch (error) {
     console.error("Error queueing SOS:", error);
