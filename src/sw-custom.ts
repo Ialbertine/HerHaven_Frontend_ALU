@@ -51,13 +51,12 @@ interface SyncEvent extends Event {
 }
 
 // Precache all assets from the build
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 precacheAndRoute((self as any).__WB_MANIFEST);
 
 // Clean up old caches
 cleanupOutdatedCaches();
 
-// API caching with NetworkFirst strategy (with timeout for offline support)
+// API caching with NetworkFirst strategy
 registerRoute(
   ({ url }) =>
     url.origin === "https://ialbertine-herhaven-backend.onrender.com",
@@ -303,7 +302,6 @@ async function queueSOSForSync(sosData?: SOSQueueItem): Promise<void> {
 
     // Register sync
     if ("sync" in self.registration) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (self.registration as any).sync.register("sos-sync");
     }
   } catch (error) {
