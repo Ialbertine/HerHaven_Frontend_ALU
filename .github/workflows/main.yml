@@ -26,7 +26,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          echo "CYPRESS_INSTALL_BINARY=https://cdn.cypress.io/desktop/15.6.0/linux-x64/cypress.zip" >> $GITHUB_ENV
+          echo "CYPRESS_INSTALL_BINARY=0" >> $GITHUB_ENV
           npm ci
 
       - name: Run linter
