@@ -26,34 +26,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        env:
-         # Disable Cypress binary installation
-          CYPRESS_INSTALL_BINARY: "0"
-
-      - name: Cache Cypress binary
-        id: cypress-cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/Cypress
-            ~/AppData/Local/Cypress/Cache
-          key: ${{ runner.os }}-cypress-15.6.0
-
-      - name: Install Cypress binary (with retries)
-        if: steps.cypress-cache.outputs.cache-hit != 'true'
-        run: |
-          set -e
-          echo "Installing Cypress binary..."
-          for attempt in 1 2 3; do
-            if npx cypress install; then
-              exit 0
-            fi
-            echo "Cypress install failed (attempt $attempt). Retrying in $((attempt * 10))s..."
-            sleep $((attempt * 10))
-          done
-          echo "Cypress install failed after multiple attempts."
-          exit 1
-        shell: bash
 
       - name: Run linter
         run: npm run lint

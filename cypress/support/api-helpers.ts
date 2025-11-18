@@ -5,27 +5,43 @@
  * @returns Promise that resolves to true if API is available, false otherwise
  */
 export function checkApiAvailability(): Cypress.Chainable<boolean> {
-  const apiUrl = Cypress.env('apiUrl');
-  
+  const apiUrl = Cypress.env("apiUrl");
+
   if (!apiUrl) {
-    cy.log('API URL not configured, skipping API tests');
+    cy.log("API URL not configured, skipping API tests");
     return cy.wrap(false);
   }
 
-  return cy.request({
-    method: 'GET',
-    url: `${apiUrl}/api/health`,
-    failOnStatusCode: false,
-    timeout: 10000,
-  }).then((response) => {
-    // If we get any response, the API is reachable
-    const isAvailable = response.status !== undefined && response.status !== 0 && response.status < 600;
-    
-    if (isAvailable) {
-      cy.log(`API is available (Status: ${response.status})`);
-      return cy.wrap(true);
-    }
-    return cy.wrap(true);
+  return cy.then(() => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+    return fetch(`${apiUrl}/api/health`, {
+      method: "GET",
+      signal: controller.signal,
+    })
+      .then((response) => {
+        clearTimeout(timeoutId);
+        const isAvailable =
+          response.status !== undefined &&
+          response.status !== 0 &&
+          response.status < 600;
+
+        if (isAvailable) {
+          cy.log(`API is available (Status: ${response.status})`);
+          return true;
+        }
+
+        cy.log(
+          `API health check responded with status ${response.status}, marking as unavailable`
+        );
+        return false;
+      })
+      .catch((error) => {
+        clearTimeout(timeoutId);
+        cy.log(`API health check failed: ${error.message}`);
+        return false;
+      });
   });
 }
 
