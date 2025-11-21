@@ -33,6 +33,9 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Run Cypress tests
+        run: npx start-server-and-test "npm run preview -- --host 127.0.0.1 --port 4173" http://127.0.0.1:4173 "npm run cypress:run -- --config baseUrl=http://127.0.0.1:4173"
+
       - name: Deploy to Netlify
         run: npx --yes netlify-cli deploy --prod --dir=dist --site "$NETLIFY_SITE_ID"
         env:
