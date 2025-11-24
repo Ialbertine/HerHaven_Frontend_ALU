@@ -65,10 +65,15 @@ const Login: React.FC = () => {
         const response = await login(formData.email, formData.password);
 
         if (response.success) {
-          // Get user role from response data
-          const userRole = response.data?.user?.role || "user";
-          // Store user role in localStorage for ProtectedRoute
+          const userData = response.data?.user;
+          const userRole = (userData?.role || "user").toLowerCase();
+
           localStorage.setItem("userRole", userRole);
+          localStorage.setItem("accessType", "authenticated");
+          localStorage.removeItem("guestSessionId");
+          if (userData) {
+            localStorage.setItem("user", JSON.stringify(userData));
+          }
 
           setMessage({
             type: "success",
@@ -139,11 +144,10 @@ const Login: React.FC = () => {
               {/* Inline success / error message (replaces toasts) */}
               {message && (
                 <div
-                  className={`p-3 rounded-md text-sm font-medium ${
-                    message.type === "success"
+                  className={`p-3 rounded-md text-sm font-medium ${message.type === "success"
                       ? "bg-green-50 text-green-800"
                       : "bg-red-50 text-red-800"
-                  }`}
+                    }`}
                 >
                   {message.text}
                 </div>
@@ -167,9 +171,8 @@ const Login: React.FC = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className={`w-full pl-12 pr-4 py-3 rounded-full border ${
-                      errors.email ? "border-red-500" : "border-gray-300"
-                    } focus:outline-none focus:ring-2 focus:ring-[#9c27b0] focus:border-transparent transition-all`}
+                    className={`w-full pl-12 pr-4 py-3 rounded-full border ${errors.email ? "border-red-500" : "border-gray-300"
+                      } focus:outline-none focus:ring-2 focus:ring-[#9c27b0] focus:border-transparent transition-all`}
                     placeholder="Email"
                   />
                 </div>
@@ -198,9 +201,8 @@ const Login: React.FC = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className={`w-full pl-12 pr-12 py-3 rounded-full border ${
-                      errors.password ? "border-red-500" : "border-gray-300"
-                    } focus:outline-none focus:ring-2 focus:ring-[#9c27b0] focus:border-transparent transition-all`}
+                    className={`w-full pl-12 pr-12 py-3 rounded-full border ${errors.password ? "border-red-500" : "border-gray-300"
+                      } focus:outline-none focus:ring-2 focus:ring-[#9c27b0] focus:border-transparent transition-all`}
                     placeholder="Password"
                   />
                   <button

@@ -11,6 +11,8 @@ import {
   Users,
   User,
   Heart,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import {
   getAllCounselors,
@@ -66,6 +68,8 @@ const CounselorAvatar = ({
   );
 };
 
+const ITEMS_PER_PAGE = 6;
+
 const Therapits = () => {
   const { showAlert } = useModal();
   const [counselors, setCounselors] = useState<Counselor[]>([]);
@@ -94,6 +98,7 @@ const Therapits = () => {
   const [bookingLoading, setBookingLoading] = useState(false);
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [userName, setUserName] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     loadData();
@@ -258,6 +263,16 @@ const Therapits = () => {
     return matchesSearch && matchesSpec && matchesAvailable;
   });
 
+  const totalPages = Math.max(1, Math.ceil(filteredCounselors.length / ITEMS_PER_PAGE));
+  const paginatedCounselors = filteredCounselors.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  useEffect(() => {
+    setCurrentPage((prev) => Math.min(prev, totalPages));
+  }, [totalPages]);
+
   const getTodayDate = () => {
     const today = new Date();
     return today.toISOString().split("T")[0];
@@ -266,507 +281,574 @@ const Therapits = () => {
   return (
     <DashboardLayout userType="user" userName={userName}>
       {loading ? (
-        <div className="flex items-center justify-center h-screen">
+        <div className="flex items-center justify-center py-24 min-h-screen">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
         </div>
       ) : (
-        <>
-          <div className="space-y-6 min-h-screen">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800">
-                Find Your Counselor
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Browse verified counselors and book a session
+        <div className="space-y-6 min-h-screen">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">
+              Find Your Counselor
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Browse verified counselors and book a session
+            </p>
+          </div>
+
+          {/* Filters */}
+          <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search by name or specialization..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+            </div>
+
+            <div className="flex flex-wrap gap-4">
+              <select
+                value={selectedSpec}
+                onChange={(e) => {
+                  setSelectedSpec(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                <option value="all">All Specializations</option>
+                {specializations.map((spec) => (
+                  <option key={spec} value={spec}>
+                    {spec}
+                  </option>
+                ))}
+              </select>
+
+              <label className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+                <input
+                  type="checkbox"
+                  checked={showAvailable}
+                  onChange={(e) => {
+                    setShowAvailable(e.target.checked);
+                    setCurrentPage(1);
+                  }}
+                  className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
+                />
+                <span className="text-sm font-medium text-gray-700">
+                  Available Now
+                </span>
+              </label>
+            </div>
+          </div>
+
+          {/* Counselors Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {paginatedCounselors.map((counselor) => (
+              <div
+                key={counselor._id}
+                className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-all flex flex-col h-full"
+              >
+                {/* Profile Image - Centered */}
+                <div className="flex justify-center mb-4">
+                  <CounselorAvatar counselor={counselor} sizeClass="w-20 h-20" textClass="text-2xl" />
+                </div>
+
+                {/* Name - Centered */}
+                <div className="flex flex-col items-center mb-3">
+                  <h3 className="font-semibold text-gray-800 text-center mb-1">
+                    {counselor.firstName} {counselor.lastName}
+                  </h3>
+                  {counselor.isAvailable && (
+                    <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                      Available
+                    </span>
+                  )}
+                </div>
+
+                {/* Details */}
+                <div className="space-y-3 mb-4">
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Award className="w-4 h-4 text-purple-600" />
+                    <span>{counselor.specialization}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Calendar className="w-4 h-4 text-purple-600" />
+                    <span>{counselor.experience} years experience</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <MapPin className="w-4 h-4 text-purple-600" />
+                    <span>{counselor.totalSessions} sessions completed</span>
+                  </div>
+                </div>
+
+                {/* Bio */}
+                <p className="text-sm text-gray-600 mb-4 line-clamp-3 flex-grow">
+                  {counselor.bio}
+                </p>
+
+                {/* Button */}
+                <button
+                  onClick={() => openBookingModal(counselor)}
+                  className="w-full bg-gradient-to-r from-[#9027b0] to-[#9c27b0] text-white py-2 rounded-lg hover:from-[#7b1fa2] hover:to-[#8e24aa] transition-all font-medium mt-auto"
+                >
+                  Book Appointment
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {filteredCounselors.length > ITEMS_PER_PAGE && (
+            <div className="flex items-center justify-center gap-2 pt-4">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="flex items-center gap-1 px-4 py-2 rounded-lg border-2 border-gray-200 text-gray-700 font-medium hover:bg-purple-50 hover:border-purple-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-200 transition-all"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Previous
+              </button>
+
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
+                  const showPage =
+                    pageNum === 1 ||
+                    pageNum === totalPages ||
+                    (pageNum >= currentPage - 1 && pageNum <= currentPage + 1);
+
+                  const showEllipsis =
+                    (pageNum === 2 && currentPage > 3) ||
+                    (pageNum === totalPages - 1 && currentPage < totalPages - 2);
+
+                  if (!showPage && !showEllipsis) return null;
+
+                  if (showEllipsis) {
+                    return (
+                      <span key={pageNum} className="px-3 py-2 text-gray-500">
+                        ...
+                      </span>
+                    );
+                  }
+
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`min-w-[40px] h-10 rounded-lg font-medium transition-all ${currentPage === pageNum
+                        ? "bg-purple-600 text-white shadow-md"
+                        : "text-gray-700 hover:bg-gray-100"
+                        }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                }
+                disabled={currentPage === totalPages}
+                className="flex items-center gap-1 px-4 py-2 rounded-lg border-2 border-gray-200 text-gray-700 font-medium hover:bg-purple-50 hover:border-purple-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-200 transition-all"
+              >
+                Next
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
+          {filteredCounselors.length === 0 && (
+            <div className="text-center py-12 bg-white rounded-xl">
+              <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-600 mb-2">
+                No counselors found
+              </h3>
+              <p className="text-gray-500">
+                Try adjusting your search or filters
               </p>
             </div>
+          )}
 
-            {/* Filters */}
-            <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search by name or specialization..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-              </div>
-
-              <div className="flex flex-wrap gap-4">
-                <select
-                  value={selectedSpec}
-                  onChange={(e) => setSelectedSpec(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                >
-                  <option value="all">All Specializations</option>
-                  {specializations.map((spec) => (
-                    <option key={spec} value={spec}>
-                      {spec}
-                    </option>
-                  ))}
-                </select>
-
-                <label className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
-                  <input
-                    type="checkbox"
-                    checked={showAvailable}
-                    onChange={(e) => setShowAvailable(e.target.checked)}
-                    className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
-                  />
-                  <span className="text-sm font-medium text-gray-700">
-                    Available Now
-                  </span>
-                </label>
-              </div>
-            </div>
-
-            {/* Counselors Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredCounselors.map((counselor) => (
-                <div
-                  key={counselor._id}
-                  className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-all flex flex-col h-full"
-                >
-                  {/* Profile Image - Centered */}
-                  <div className="flex justify-center mb-4">
-                    <CounselorAvatar counselor={counselor} sizeClass="w-20 h-20" textClass="text-2xl" />
-                  </div>
-
-                  {/* Name - Centered */}
-                  <div className="flex flex-col items-center mb-3">
-                    <h3 className="font-semibold text-gray-800 text-center mb-1">
-                      {counselor.firstName} {counselor.lastName}
-                    </h3>
-                    {counselor.isAvailable && (
-                      <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                        Available
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Details */}
-                  <div className="space-y-3 mb-4">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Award className="w-4 h-4 text-purple-600" />
-                      <span>{counselor.specialization}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Calendar className="w-4 h-4 text-purple-600" />
-                      <span>{counselor.experience} years experience</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <MapPin className="w-4 h-4 text-purple-600" />
-                      <span>{counselor.totalSessions} sessions completed</span>
-                    </div>
-                  </div>
-
-                  {/* Bio */}
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-3 flex-grow">
-                    {counselor.bio}
-                  </p>
-
-                  {/* Button */}
-                  <button
-                    onClick={() => openBookingModal(counselor)}
-                    className="w-full bg-gradient-to-r from-[#9027b0] to-[#9c27b0] text-white py-2 rounded-lg hover:from-[#7b1fa2] hover:to-[#8e24aa] transition-all font-medium mt-auto"
-                  >
+          {/* Booking Modal */}
+          {showBookingModal && selectedCounselor && (
+            <div
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+              onClick={() => setShowBookingModal(false)}
+            >
+              <div
+                className="bg-white rounded-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-gray-800">
                     Book Appointment
+                  </h2>
+                  <button
+                    onClick={() => setShowBookingModal(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="w-6 h-6" />
                   </button>
                 </div>
-              ))}
-            </div>
 
-            {filteredCounselors.length === 0 && (
-              <div className="text-center py-12 bg-white rounded-xl">
-                <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-600 mb-2">
-                  No counselors found
-                </h3>
-                <p className="text-gray-500">
-                  Try adjusting your search or filters
-                </p>
-              </div>
-            )}
-
-            {/* Booking Modal */}
-            {showBookingModal && selectedCounselor && (
-              <div
-                className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-                onClick={() => setShowBookingModal(false)}
-              >
-                <div
-                  className="bg-white rounded-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800">
-                      Book Appointment
-                    </h2>
-                    <button
-                      onClick={() => setShowBookingModal(false)}
-                      className="text-gray-400 hover:text-gray-600"
-                    >
-                      <X className="w-6 h-6" />
-                    </button>
-                  </div>
-
-                  <div className="mb-6">
-                    <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg">
-                      <CounselorAvatar
-                        counselor={selectedCounselor}
-                        sizeClass="w-12 h-12"
-                        textClass="text-lg"
-                      />
-                      <div className="flex-1">
-                        <p className="font-semibold text-gray-800">
-                          {selectedCounselor.firstName}{" "}
-                          {selectedCounselor.lastName}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {selectedCounselor.specialization}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs text-gray-500">Booking with</p>
-                        <p className="text-sm font-medium text-purple-600">
-                          {selectedCounselor.experience} years exp
-                        </p>
-                      </div>
+                <div className="mb-6">
+                  <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg">
+                    <CounselorAvatar
+                      counselor={selectedCounselor}
+                      sizeClass="w-12 h-12"
+                      textClass="text-lg"
+                    />
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-800">
+                        {selectedCounselor.firstName}{" "}
+                        {selectedCounselor.lastName}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {selectedCounselor.specialization}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-gray-500">Booking with</p>
+                      <p className="text-sm font-medium text-purple-600">
+                        {selectedCounselor.experience} years exp
+                      </p>
                     </div>
                   </div>
+                </div>
 
-                  <div className="space-y-4">
-                    {/* Personal Information */}
-                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                      <h3 className="text-sm font-semibold text-purple-900 mb-3">
-                        Your Information
-                      </h3>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            First Name *
-                          </label>
-                          <input
-                            type="text"
-                            value={bookingData.firstName}
-                            onChange={(e) =>
-                              setBookingData({
-                                ...bookingData,
-                                firstName: e.target.value,
-                              })
-                            }
-                            placeholder="Enter first name"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Last Name *
-                          </label>
-                          <input
-                            type="text"
-                            value={bookingData.lastName}
-                            onChange={(e) =>
-                              setBookingData({
-                                ...bookingData,
-                                lastName: e.target.value,
-                              })
-                            }
-                            placeholder="Enter last name"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                          />
-                        </div>
-                      </div>
-                      <div className="mt-3">
+                <div className="space-y-4">
+                  {/* Personal Information */}
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                    <h3 className="text-sm font-semibold text-purple-900 mb-3">
+                      Your Information
+                    </h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Phone Number *
+                          First Name *
                         </label>
                         <input
-                          type="tel"
-                          value={bookingData.phoneNumber}
+                          type="text"
+                          value={bookingData.firstName}
                           onChange={(e) =>
                             setBookingData({
                               ...bookingData,
-                              phoneNumber: e.target.value,
+                              firstName: e.target.value,
                             })
                           }
-                          placeholder="Enter phone number"
+                          placeholder="Enter first name"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Last Name *
+                        </label>
+                        <input
+                          type="text"
+                          value={bookingData.lastName}
+                          onChange={(e) =>
+                            setBookingData({
+                              ...bookingData,
+                              lastName: e.target.value,
+                            })
+                          }
+                          placeholder="Enter last name"
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         />
                       </div>
                     </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Select Date *{" "}
-                        <span className="text-gray-500 font-normal text-xs">
-                          (Check {selectedCounselor.firstName}'s availability)
-                        </span>
+                    <div className="mt-3">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Phone Number *
                       </label>
                       <input
-                        type="date"
-                        min={getTodayDate()}
-                        value={bookingData.date}
-                        onChange={(e) => handleDateChange(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        type="tel"
+                        value={bookingData.phoneNumber}
+                        onChange={(e) =>
+                          setBookingData({
+                            ...bookingData,
+                            phoneNumber: e.target.value,
+                          })
+                        }
+                        placeholder="Enter phone number"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       />
                     </div>
+                  </div>
 
-                    {bookingData.date && slotsLoading && (
-                      <div className="flex items-center justify-center py-8">
-                        <div className="text-center">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-2"></div>
-                          <p className="text-sm text-gray-500">
-                            Loading available time slots...
-                          </p>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Select Date *{" "}
+                      <span className="text-gray-500 font-normal text-xs">
+                        (Check {selectedCounselor.firstName}'s availability)
+                      </span>
+                    </label>
+                    <input
+                      type="date"
+                      min={getTodayDate()}
+                      value={bookingData.date}
+                      onChange={(e) => handleDateChange(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  {bookingData.date && slotsLoading && (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="text-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-2"></div>
+                        <p className="text-sm text-gray-500">
+                          Loading available time slots...
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {bookingData.date &&
+                    !slotsLoading &&
+                    availableSlots.length > 0 && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Available Time Slots for{" "}
+                          {selectedCounselor.firstName} *
+                        </label>
+                        <div className="grid grid-cols-3 gap-2">
+                          {availableSlots.map((slot, index) => (
+                            <button
+                              key={`${slot.time}-${index}`}
+                              onClick={() =>
+                                setBookingData({
+                                  ...bookingData,
+                                  time: slot.time,
+                                })
+                              }
+                              className={`px-4 py-2 rounded-lg border-2 transition-all ${bookingData.time === slot.time
+                                ? "border-purple-600 bg-purple-50 text-purple-700 font-semibold"
+                                : "border-gray-200 hover:border-purple-300"
+                                }`}
+                            >
+                              {slot.time}
+                            </button>
+                          ))}
                         </div>
+                        <p className="text-xs text-gray-500 mt-2">
+                          {availableSlots.length} slot
+                          {availableSlots.length !== 1 ? "s" : ""} available
+                          for selected date
+                        </p>
                       </div>
                     )}
 
-                    {bookingData.date &&
-                      !slotsLoading &&
-                      availableSlots.length > 0 && (
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Available Time Slots for{" "}
-                            {selectedCounselor.firstName} *
-                          </label>
-                          <div className="grid grid-cols-3 gap-2">
-                            {availableSlots.map((slot, index) => (
-                              <button
-                                key={`${slot.time}-${index}`}
-                                onClick={() =>
-                                  setBookingData({
-                                    ...bookingData,
-                                    time: slot.time,
-                                  })
-                                }
-                                className={`px-4 py-2 rounded-lg border-2 transition-all ${bookingData.time === slot.time
-                                  ? "border-purple-600 bg-purple-50 text-purple-700 font-semibold"
-                                  : "border-gray-200 hover:border-purple-300"
-                                  }`}
-                              >
-                                {slot.time}
-                              </button>
-                            ))}
-                          </div>
-                          <p className="text-xs text-gray-500 mt-2">
-                            {availableSlots.length} slot
-                            {availableSlots.length !== 1 ? "s" : ""} available
-                            for selected date
-                          </p>
-                        </div>
-                      )}
-
-                    {bookingData.date &&
-                      !slotsLoading &&
-                      availableSlots.length === 0 && (
-                        <div className="text-center py-6 bg-gray-50 rounded-lg border border-gray-200">
-                          <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                          <p className="text-sm font-medium text-gray-600">
-                            No available slots for this date
-                          </p>
-                          <p className="text-xs text-gray-500 mt-1">
-                            {selectedCounselor.firstName} doesn't have
-                            availability on this date. Please try another date.
-                          </p>
-                        </div>
-                      )}
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Session Mode *
-                      </label>
-                      <div className="grid grid-cols-2 gap-4">
-                        <button
-                          onClick={() =>
-                            setBookingData({
-                              ...bookingData,
-                              sessionMode: "video",
-                            })
-                          }
-                          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${bookingData.sessionMode === "video"
-                            ? "border-purple-600 bg-purple-50 text-purple-700"
-                            : "border-gray-200 hover:border-purple-300"
-                            }`}
-                        >
-                          <Video className="w-5 h-5" />
-                          Video Call
-                        </button>
-                        <button
-                          onClick={() =>
-                            setBookingData({
-                              ...bookingData,
-                              sessionMode: "phone",
-                            })
-                          }
-                          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${bookingData.sessionMode === "phone"
-                            ? "border-purple-600 bg-purple-50 text-purple-700"
-                            : "border-gray-200 hover:border-purple-300"
-                            }`}
-                        >
-                          <Phone className="w-5 h-5" />
-                          Phone Call
-                        </button>
+                  {bookingData.date &&
+                    !slotsLoading &&
+                    availableSlots.length === 0 && (
+                      <div className="text-center py-6 bg-gray-50 rounded-lg border border-gray-200">
+                        <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                        <p className="text-sm font-medium text-gray-600">
+                          No available slots for this date
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {selectedCounselor.firstName} doesn't have
+                          availability on this date. Please try another date.
+                        </p>
                       </div>
-                    </div>
+                    )}
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Appointment Type *
-                      </label>
-                      <div className="grid grid-cols-3 gap-3">
-                        <button
-                          onClick={() =>
-                            setBookingData({
-                              ...bookingData,
-                              appointmentType: "individual",
-                            })
-                          }
-                          className={`flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${bookingData.appointmentType === "individual"
-                            ? "border-purple-600 bg-purple-50 text-purple-700"
-                            : "border-gray-200 hover:border-purple-300"
-                            }`}
-                        >
-                          <User className="w-5 h-5" />
-                          <span className="text-sm font-medium">
-                            Individual
-                          </span>
-                        </button>
-                        <button
-                          onClick={() =>
-                            setBookingData({
-                              ...bookingData,
-                              appointmentType: "couple",
-                            })
-                          }
-                          className={`flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${bookingData.appointmentType === "couple"
-                            ? "border-purple-600 bg-purple-50 text-purple-700"
-                            : "border-gray-200 hover:border-purple-300"
-                            }`}
-                        >
-                          <Heart className="w-5 h-5" />
-                          <span className="text-sm font-medium">Couple</span>
-                        </button>
-                        <button
-                          onClick={() =>
-                            setBookingData({
-                              ...bookingData,
-                              appointmentType: "group",
-                            })
-                          }
-                          className={`flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${bookingData.appointmentType === "group"
-                            ? "border-purple-600 bg-purple-50 text-purple-700"
-                            : "border-gray-200 hover:border-purple-300"
-                            }`}
-                        >
-                          <Users className="w-5 h-5" />
-                          <span className="text-sm font-medium">Group</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Session Duration *{" "}
-                        <span className="text-gray-500 font-normal text-xs">
-                          (Max 3 hours)
-                        </span>
-                      </label>
-                      <div className="relative">
-                        <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                        <select
-                          value={bookingData.duration}
-                          onChange={(e) =>
-                            setBookingData({
-                              ...bookingData,
-                              duration: parseInt(e.target.value),
-                            })
-                          }
-                          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none bg-white"
-                        >
-                          <option value={30}>30 minutes</option>
-                          <option value={60}>1 hour (60 minutes)</option>
-                          <option value={90}>1.5 hours (90 minutes)</option>
-                          <option value={120}>2 hours (120 minutes)</option>
-                          <option value={150}>2.5 hours (150 minutes)</option>
-                          <option value={180}>3 hours (180 minutes)</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Reason for Session (Optional)
-                      </label>
-                      <textarea
-                        value={bookingData.reason}
-                        onChange={(e) =>
-                          setBookingData({
-                            ...bookingData,
-                            reason: e.target.value,
-                          })
-                        }
-                        placeholder="Share what you'd like to discuss..."
-                        rows={4}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Urgency Level
-                      </label>
-                      <select
-                        value={bookingData.urgencyLevel}
-                        onChange={(e) =>
-                          setBookingData({
-                            ...bookingData,
-                            urgencyLevel: e.target.value,
-                          })
-                        }
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      >
-                        <option value="low">Low - General Support</option>
-                        <option value="medium">
-                          Medium - Need Support Soon
-                        </option>
-                        <option value="high">
-                          High - Urgent Support Needed
-                        </option>
-                      </select>
-                    </div>
-
-                    <div className="flex gap-3 pt-4 border-t border-gray-200">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Session Mode *
+                    </label>
+                    <div className="grid grid-cols-2 gap-4">
                       <button
-                        onClick={() => setShowBookingModal(false)}
-                        className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                        onClick={() =>
+                          setBookingData({
+                            ...bookingData,
+                            sessionMode: "video",
+                          })
+                        }
+                        className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${bookingData.sessionMode === "video"
+                          ? "border-purple-600 bg-purple-50 text-purple-700"
+                          : "border-gray-200 hover:border-purple-300"
+                          }`}
                       >
-                        Cancel
+                        <Video className="w-5 h-5" />
+                        Video Call
                       </button>
                       <button
-                        onClick={handleBookAppointment}
-                        disabled={
-                          !bookingData.firstName ||
-                          !bookingData.lastName ||
-                          !bookingData.phoneNumber ||
-                          !bookingData.date ||
-                          !bookingData.time ||
-                          bookingLoading
+                        onClick={() =>
+                          setBookingData({
+                            ...bookingData,
+                            sessionMode: "phone",
+                          })
                         }
-                        className="flex-1 px-4 py-2 bg-gradient-to-r from-[#9027b0] to-[#9c27b0] text-white rounded-lg hover:from-[#7b1fa2] hover:to-[#8e24aa] transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                        className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${bookingData.sessionMode === "phone"
+                          ? "border-purple-600 bg-purple-50 text-purple-700"
+                          : "border-gray-200 hover:border-purple-300"
+                          }`}
                       >
-                        {bookingLoading ? "Booking..." : "Book Appointment"}
+                        <Phone className="w-5 h-5" />
+                        Phone Call
                       </button>
                     </div>
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Appointment Type *
+                    </label>
+                    <div className="grid grid-cols-3 gap-3">
+                      <button
+                        onClick={() =>
+                          setBookingData({
+                            ...bookingData,
+                            appointmentType: "individual",
+                          })
+                        }
+                        className={`flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${bookingData.appointmentType === "individual"
+                          ? "border-purple-600 bg-purple-50 text-purple-700"
+                          : "border-gray-200 hover:border-purple-300"
+                          }`}
+                      >
+                        <User className="w-5 h-5" />
+                        <span className="text-sm font-medium">
+                          Individual
+                        </span>
+                      </button>
+                      <button
+                        onClick={() =>
+                          setBookingData({
+                            ...bookingData,
+                            appointmentType: "couple",
+                          })
+                        }
+                        className={`flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${bookingData.appointmentType === "couple"
+                          ? "border-purple-600 bg-purple-50 text-purple-700"
+                          : "border-gray-200 hover:border-purple-300"
+                          }`}
+                      >
+                        <Heart className="w-5 h-5" />
+                        <span className="text-sm font-medium">Couple</span>
+                      </button>
+                      <button
+                        onClick={() =>
+                          setBookingData({
+                            ...bookingData,
+                            appointmentType: "group",
+                          })
+                        }
+                        className={`flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${bookingData.appointmentType === "group"
+                          ? "border-purple-600 bg-purple-50 text-purple-700"
+                          : "border-gray-200 hover:border-purple-300"
+                          }`}
+                      >
+                        <Users className="w-5 h-5" />
+                        <span className="text-sm font-medium">Group</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Session Duration *{" "}
+                      <span className="text-gray-500 font-normal text-xs">
+                        (Max 3 hours)
+                      </span>
+                    </label>
+                    <div className="relative">
+                      <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <select
+                        value={bookingData.duration}
+                        onChange={(e) =>
+                          setBookingData({
+                            ...bookingData,
+                            duration: parseInt(e.target.value),
+                          })
+                        }
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none bg-white"
+                      >
+                        <option value={30}>30 minutes</option>
+                        <option value={60}>1 hour (60 minutes)</option>
+                        <option value={90}>1.5 hours (90 minutes)</option>
+                        <option value={120}>2 hours (120 minutes)</option>
+                        <option value={150}>2.5 hours (150 minutes)</option>
+                        <option value={180}>3 hours (180 minutes)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Reason for Session (Optional)
+                    </label>
+                    <textarea
+                      value={bookingData.reason}
+                      onChange={(e) =>
+                        setBookingData({
+                          ...bookingData,
+                          reason: e.target.value,
+                        })
+                      }
+                      placeholder="Share what you'd like to discuss..."
+                      rows={4}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Urgency Level
+                    </label>
+                    <select
+                      value={bookingData.urgencyLevel}
+                      onChange={(e) =>
+                        setBookingData({
+                          ...bookingData,
+                          urgencyLevel: e.target.value,
+                        })
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    >
+                      <option value="low">Low - General Support</option>
+                      <option value="medium">
+                        Medium - Need Support Soon
+                      </option>
+                      <option value="high">
+                        High - Urgent Support Needed
+                      </option>
+                    </select>
+                  </div>
+
+                  <div className="flex gap-3 pt-4 border-t border-gray-200">
+                    <button
+                      onClick={() => setShowBookingModal(false)}
+                      className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleBookAppointment}
+                      disabled={
+                        !bookingData.firstName ||
+                        !bookingData.lastName ||
+                        !bookingData.phoneNumber ||
+                        !bookingData.date ||
+                        !bookingData.time ||
+                        bookingLoading
+                      }
+                      className="flex-1 px-4 py-2 bg-gradient-to-r from-[#9027b0] to-[#9c27b0] text-white rounded-lg hover:from-[#7b1fa2] hover:to-[#8e24aa] transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {bookingLoading ? "Booking..." : "Book Appointment"}
+                    </button>
+                  </div>
                 </div>
               </div>
-            )}
-          </div>
-        </>
+            </div>
+          )}
+        </div>
       )}
     </DashboardLayout>
   );

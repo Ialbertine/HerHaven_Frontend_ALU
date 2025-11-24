@@ -81,10 +81,10 @@ const Community: React.FC = () => {
   };
 
   // Filter posts based on search term
+  const normalizedSearch = searchTerm.toLowerCase();
   const filteredPosts: Post[] = posts.filter((post: Post) =>
-    post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+    post.content.toLowerCase().includes(normalizedSearch) ||
+    post.tags.some(tag => tag.toLowerCase().includes(normalizedSearch))
   );
 
   return (
@@ -238,11 +238,10 @@ const Community: React.FC = () => {
                         <button
                           key={pageNum}
                           onClick={() => setPage(pageNum)}
-                          className={`min-w-[40px] h-10 rounded-lg font-medium transition-all ${
-                            page === pageNum
-                              ? 'bg-purple-600 text-white shadow-md'
-                              : 'text-gray-700 hover:bg-gray-100'
-                          }`}
+                          className={`min-w-[40px] h-10 rounded-lg font-medium transition-all ${page === pageNum
+                            ? 'bg-purple-600 text-white shadow-md'
+                            : 'text-gray-700 hover:bg-gray-100'
+                            }`}
                         >
                           {pageNum}
                         </button>

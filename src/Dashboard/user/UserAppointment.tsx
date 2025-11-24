@@ -17,6 +17,7 @@ import {
   getMeetingDetails,
   deleteAppointment,
 } from "@/apis/appointment";
+import { getCurrentUser } from "@/apis/auth";
 import DashboardLayout from "@/components/DashboardLayout";
 import EmbeddedMeeting from "@/components/EmbeddedMeeting";
 import { useModal } from "@/contexts/useModal";
@@ -57,10 +58,29 @@ const UserAppointments = () => {
   const [showEmbeddedMeeting, setShowEmbeddedMeeting] = useState<boolean>(false);
   const [currentMeeting, setCurrentMeeting] = useState<{ url: string, id: string } | null>(null);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [userName, setUserName] = useState("");
+
+  // Determine guest state using both role and presence of auth token
+  const userRole = localStorage.getItem("userRole");
+  const accessType = localStorage.getItem("accessType");
+  const authToken = localStorage.getItem("token");
+  const guestSessionId = localStorage.getItem("guestSessionId");
+  const isGuest =
+    !authToken &&
+    (userRole === "guest" || accessType === "guest" || !!guestSessionId);
 
   useEffect(() => {
-    loadAppointments();
-  }, []);
+    if (isGuest) {
+      setUserName("Guest");
+      setLoading(false);
+    } else {
+      const user = getCurrentUser();
+      if (user) {
+        setUserName(user.username || "User");
+      }
+      loadAppointments();
+    }
+  }, [isGuest]);
 
   const loadAppointments = async () => {
     try {
@@ -176,18 +196,16 @@ const UserAppointments = () => {
     }
     const isPast = appointmentDateTime < new Date();
 
-    // Can delete if:
-    // 1. Appointment is in the past (cancelled, ended, completed, or confirmed that passed)
-    // 2. Cannot delete upcoming pending or confirmed appointments
+    // can delete if appointment is cancelled, ended, or completed
     if (['cancelled', 'ended', 'completed'].includes(appointment.status)) {
-      return true; // Can always delete these statuses
+      return true;
     }
 
     if (appointment.status === 'confirmed' && isPast) {
-      return true; // Can delete confirmed appointments that have passed
+      return true;
     }
 
-    return false; // Cannot delete upcoming or in-progress appointments
+    return false;
   };
 
   const filteredAppointments = appointments.filter((apt) => {
@@ -258,32 +276,48 @@ const UserAppointments = () => {
     );
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-      </div>
-    );
-  }
-
   return (
-    <DashboardLayout userType="user" userName="-">
-      {loading ? (
-        <div className="flex items-center justify-center h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+    <DashboardLayout userType={isGuest ? "guest" : "user"} userName={userName}>
+      <div className="space-y-6 min-h-screen">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">
+            My Appointments
+          </h1>
+          <p className="text-gray-600 mt-1">
+            View and manage your therapy sessions
+          </p>
         </div>
-      ) : (
-        <>
-          <div className="space-y-6 min-h-screen">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800">
-                My Appointments
-              </h1>
-              <p className="text-gray-600 mt-1">
-                View and manage your therapy sessions
-              </p>
-            </div>
 
+        {isGuest ? (
+          <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+            <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-600 mb-2">
+              Sign in to view your appointments
+            </h3>
+            <p className="text-gray-500 mb-6">
+              Create an account or sign in to access and manage your therapy sessions.
+            </p>
+            <div className="flex flex-wrap gap-4 justify-center">
+              <button
+                onClick={() => window.location.href = '/signup'}
+                className="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+              >
+                Create Account
+              </button>
+              <button
+                onClick={() => window.location.href = '/login'}
+                className="px-6 py-3 bg-white text-purple-600 border-2 border-purple-600 rounded-lg font-semibold hover:bg-purple-50 transition-colors"
+              >
+                Sign In
+              </button>
+            </div>
+          </div>
+        ) : loading ? (
+          <div className="flex items-center justify-center py-24">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+          </div>
+        ) : (
+          <>
             {/* Filters */}
             <div className="flex gap-2 flex-wrap">
               <button
@@ -565,9 +599,9 @@ const UserAppointments = () => {
                 </div>
               </div>
             )}
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </div>
       {/* Embedded Meeting Component */}
       {showEmbeddedMeeting && currentMeeting && (
         <div className={`fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 ${isFullscreen ? 'p-0' : ''}`}>

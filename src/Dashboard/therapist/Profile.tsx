@@ -164,35 +164,31 @@ const Profile: React.FC = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-      </div>
-    );
-  }
-
-  if (!profile) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-red-600">Failed to load profile</div>
-      </div>
-    );
-  }
+  const layoutUserName = profile?.username || 'Counselor';
 
   return (
-    <DashboardLayout userType="counselor" userName={profile.username || 'Counselor'}>
+    <DashboardLayout userType="counselor" userName={layoutUserName}>
       <div className="space-y-6 min-h-screen">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-800">Profile Overview</h1>
-          <button
-            onClick={() => setIsEditing(!isEditing)}
-            className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            {isEditing ? <X className="w-4 h-4" /> : <Edit2 className="w-4 h-4" />}
-            {isEditing ? 'Cancel' : 'Edit Profile'}
-          </button>
-        </div>
+        {loading ? (
+          <div className="flex items-center justify-center py-24">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+          </div>
+        ) : !profile ? (
+          <div className="flex items-center justify-center py-24">
+            <div className="text-red-600 font-semibold">Failed to load profile</div>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center justify-between">
+              <h1 className="text-2xl font-bold text-gray-800">Profile Overview</h1>
+              <button
+                onClick={() => setIsEditing(!isEditing)}
+                className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                {isEditing ? <X className="w-4 h-4" /> : <Edit2 className="w-4 h-4" />}
+                {isEditing ? 'Cancel' : 'Edit Profile'}
+              </button>
+            </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1">
@@ -361,8 +357,10 @@ const Profile: React.FC = () => {
           </div>
         </div>
 
-        {/* Feedback Form */}
-        <FeedbackForm />
+            {/* Feedback Form */}
+            <FeedbackForm />
+          </>
+        )}
       </div>
     </DashboardLayout>
   );
