@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Heart, MessageSquare, MoreVertical, Trash2, Clock, Tag as TagIcon, CheckCircle } from 'lucide-react';
-import { type Post, likePost, deletePost } from '@/apis/community';
+import { Heart, MessageSquare, MoreVertical, Trash2, Edit2, Clock, Tag as TagIcon, CheckCircle, X } from 'lucide-react';
+import { type Post, likePost, deletePost, updatePost } from '@/apis/community';
 import { getCurrentUser } from '@/apis/auth';
 import { useModal } from '@/contexts/useModal';
 
@@ -23,6 +23,9 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, onClick, onUpdate }) 
   const [showMenu, setShowMenu] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likeCount);
   const [isLiking, setIsLiking] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedContent, setEditedContent] = useState(post.content);
+  const [editedTags, setEditedTags] = useState<string[]>(post.tags || []);
 
   const isOwner = currentUser && post.author && post.author._id === currentUser.id;
   const isAdmin = currentUser && ['admin', 'super_admin'].includes(currentUser.role || '');
@@ -93,6 +96,39 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, onClick, onUpdate }) 
     );
   };
 
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsEditing(true);
+    setEditedContent(post.content);
+    setEditedTags(post.tags || []);
+    setShowMenu(false);
+  };
+
+  const handleCancelEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsEditing(false);
+    setEditedContent(post.content);
+    setEditedTags(post.tags || []);
+  };
+
+  const handleSaveEdit = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!editedContent.trim()) return;
+
+    try {
+      const response = await updatePost(post._id, {
+        content: editedContent.trim(),
+        tags: editedTags.length > 0 ? editedTags : undefined,
+      });
+      if (response.success) {
+        setIsEditing(false);
+        onUpdate();
+      }
+    } catch (error) {
+      console.error('Error updating post:', error);
+    }
+  };
+
   const truncateContent = (content: string, maxLength: number = 120) => {
     if (content.length <= maxLength) return content;
     return content.slice(0, maxLength) + '...';
@@ -140,6 +176,13 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, onClick, onUpdate }) 
                 {showMenu && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10">
                     <button
+                      onClick={handleEdit}
+                      className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                      Edit
+                    </button>
+                    <button
                       onClick={handleDelete}
                       className="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 flex items-center gap-2"
                     >
@@ -171,31 +214,79 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, onClick, onUpdate }) 
             )}
           </div>
 
-          {/* Content preview */}
-          <p className="text-gray-600 mb-3 line-clamp-2">
-            {truncateContent(post.content)}
-          </p>
-
-          {/* Tags */}
-          {post.tags && post.tags.length > 0 && (
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-sm font-semibold text-gray-700">Topics:</span>
+          {/* Content preview or edit */}
+          {isEditing ? (
+            <div className="space-y-3 mb-3">
+              <textarea
+                value={editedContent}
+                onChange={(e) => setEditedContent(e.target.value)}
+                onClick={(e) => e.stopPropagation()}
+                rows={4}
+                maxLength={5000}
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all resize-none"
+              />
               <div className="flex flex-wrap gap-2">
-                {post.tags.slice(0, 3).map((tag, index) => (
+                {editedTags.map((tag, index) => (
                   <span
                     key={index}
-                    className="px-2.5 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-medium"
+                    className="px-2.5 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-medium flex items-center gap-1"
                   >
                     {tag}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditedTags(prev => prev.filter(t => t !== tag));
+                      }}
+                      className="hover:text-purple-900"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
                   </span>
                 ))}
-                {post.tags.length > 3 && (
-                  <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
-                    +{post.tags.length - 3} more
-                  </span>
-                )}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleSaveEdit}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all text-sm"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={handleCancelEdit}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all text-sm"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
+          ) : (
+            <>
+              <p className="text-gray-600 mb-3 line-clamp-2">
+                {truncateContent(post.content)}
+              </p>
+
+              {/* Tags */}
+              {post.tags && post.tags.length > 0 && (
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-sm font-semibold text-gray-700">Topics:</span>
+                  <div className="flex flex-wrap gap-2">
+                    {post.tags.slice(0, 3).map((tag, index) => (
+                      <span
+                        key={index}
+                        className="px-2.5 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-medium"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                    {post.tags.length > 3 && (
+                      <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
+                        +{post.tags.length - 3} more
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           {/* Actions */}

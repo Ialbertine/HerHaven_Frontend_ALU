@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { X, Heart, MessageSquare, Send, MoreVertical, Trash2, Eye, EyeOff } from 'lucide-react';
+import { X, Heart, MessageSquare, Send, MoreVertical, Trash2, Edit2, Eye, EyeOff } from 'lucide-react';
 import {
   type Post,
   type Comment,
@@ -7,7 +7,10 @@ import {
   getPostComments,
   createComment,
   likeComment,
-  deleteComment
+  deleteComment,
+  updatePost,
+  updateComment,
+  deletePost
 } from '@/apis/community';
 import { getCurrentUser } from '@/apis/auth';
 import { useModal } from '@/contexts/useModal';
@@ -18,7 +21,7 @@ interface PostDetailModalProps {
   onUpdate: () => void;
 }
 
-const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
+const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose, onUpdate }) => {
   const { showDeleteConfirm } = useModal();
   const currentUser = getCurrentUser();
   
@@ -35,6 +38,21 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
   const [likeCount, setLikeCount] = useState(post.likeCount);
   const [commentCount, setCommentCount] = useState(post.commentCount);
   const [showCommentMenu, setShowCommentMenu] = useState<string | null>(null);
+  
+  // Post editing state
+  const [isEditingPost, setIsEditingPost] = useState(false);
+  const [editedPostContent, setEditedPostContent] = useState(post.content);
+  const [editedPostTags, setEditedPostTags] = useState<string[]>(post.tags || []);
+  const [showPostMenu, setShowPostMenu] = useState(false);
+  
+  // Comment editing state
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editedCommentContent, setEditedCommentContent] = useState('');
+  
+  // Ownership checks
+  const isPostOwner = currentUser && post.author && post.author._id === currentUser.id;
+  const isPostAdmin = currentUser && ['admin', 'super_admin'].includes(currentUser.role || '');
+  const canModifyPost = isPostOwner || isPostAdmin;
 
   const fetchComments = useCallback(async () => {
     try {
@@ -50,6 +68,31 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
   useEffect(() => {
     fetchComments();
   }, [fetchComments]);
+
+  // Update local state when post prop changes
+  useEffect(() => {
+    if (!isEditingPost) {
+      setEditedPostContent(post.content);
+      setEditedPostTags(post.tags || []);
+    }
+    setLikeCount(post.likeCount);
+    setCommentCount(post.commentCount);
+  }, [post, isEditingPost]);
+
+  // Close menus when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (showPostMenu || showCommentMenu) {
+        setShowPostMenu(false);
+        setShowCommentMenu(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showPostMenu, showCommentMenu]);
 
   const formatTimeAgo = (dateString: string): string => {
     const date = new Date(dateString);
@@ -136,18 +179,124 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
     );
   };
 
+  const handleEditPost = () => {
+    setIsEditingPost(true);
+    setEditedPostContent(post.content);
+    setEditedPostTags(post.tags || []);
+    setShowPostMenu(false);
+  };
+
+  const handleCancelEditPost = () => {
+    setIsEditingPost(false);
+    setEditedPostContent(post.content);
+    setEditedPostTags(post.tags || []);
+  };
+
+  const handleSavePost = async () => {
+    if (!editedPostContent.trim()) return;
+
+    try {
+      const response = await updatePost(post._id, {
+        content: editedPostContent.trim(),
+        tags: editedPostTags.length > 0 ? editedPostTags : undefined,
+      });
+      if (response.success) {
+        setIsEditingPost(false);
+        onUpdate();
+      }
+    } catch (error) {
+      console.error('Error updating post:', error);
+    }
+  };
+
+  const handleDeletePost = async () => {
+    showDeleteConfirm(
+      'Are you sure you want to delete this post?',
+      async () => {
+        try {
+          const response = await deletePost(post._id);
+          if (response.success) {
+            onUpdate();
+            onClose();
+          }
+        } catch (error) {
+          console.error('Error deleting post:', error);
+        }
+        setShowPostMenu(false);
+      }
+    );
+  };
+
+  const handleEditComment = (comment: Comment) => {
+    setEditingCommentId(comment._id);
+    setEditedCommentContent(comment.content);
+    setShowCommentMenu(null);
+  };
+
+  const handleCancelEditComment = () => {
+    setEditingCommentId(null);
+    setEditedCommentContent('');
+  };
+
+  const handleSaveComment = async (commentId: string) => {
+    if (!editedCommentContent.trim()) return;
+
+    try {
+      const response = await updateComment(commentId, {
+        content: editedCommentContent.trim(),
+      });
+      if (response.success) {
+        setEditingCommentId(null);
+        setEditedCommentContent('');
+        fetchComments();
+      }
+    } catch (error) {
+      console.error('Error updating comment:', error);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="p-6 border-b border-gray-200 flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-800">Post Details</h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-all"
-          >
-            <X className="w-6 h-6 text-gray-600" />
-          </button>
+          <div className="flex items-center gap-2">
+            {canModifyPost && !isEditingPost && (
+              <div className="relative">
+                <button
+                  onClick={() => setShowPostMenu(!showPostMenu)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-all"
+                >
+                  <MoreVertical className="w-5 h-5 text-gray-600" />
+                </button>
+                {showPostMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10">
+                    <button
+                      onClick={handleEditPost}
+                      className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={handleDeletePost}
+                      className="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 flex items-center gap-2"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Delete
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-all"
+            >
+              <X className="w-6 h-6 text-gray-600" />
+            </button>
+          </div>
         </div>
 
         {/* Content */}
@@ -164,20 +313,64 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
               </div>
             </div>
 
-            <p className="text-gray-600 mb-4 whitespace-pre-wrap">{post.content}</p>
-
-            {/* Tags */}
-            {post.tags && post.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-4">
-                {post.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 bg-purple-50 text-purple-600 rounded-full text-sm font-medium"
+            {isEditingPost ? (
+              <div className="space-y-4 mb-4">
+                <textarea
+                  value={editedPostContent}
+                  onChange={(e) => setEditedPostContent(e.target.value)}
+                  rows={6}
+                  maxLength={5000}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all resize-none"
+                />
+                <div className="flex flex-wrap gap-2">
+                  {editedPostTags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-purple-50 text-purple-600 rounded-full text-sm font-medium flex items-center gap-2"
+                    >
+                      {tag}
+                      <button
+                        onClick={() => setEditedPostTags(prev => prev.filter(t => t !== tag))}
+                        className="hover:text-purple-800"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleSavePost}
+                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all"
                   >
-                    {tag}
-                  </span>
-                ))}
+                    Save
+                  </button>
+                  <button
+                    onClick={handleCancelEditPost}
+                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
+            ) : (
+              <>
+                <p className="text-gray-600 mb-4 whitespace-pre-wrap">{post.content}</p>
+
+                {/* Tags */}
+                {post.tags && post.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {post.tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1 bg-purple-50 text-purple-600 rounded-full text-sm font-medium"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
 
             {/* Post Actions */}
@@ -247,10 +440,11 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
               {comments.map((comment) => {
                 const isCommentOwner = currentUser && comment.author && comment.author._id === currentUser.id;
                 const isCommentAdmin = currentUser && ['admin', 'super_admin'].includes(currentUser.role || '');
-                const canDeleteComment = isCommentOwner || isCommentAdmin;
+                const canModifyComment = isCommentOwner || isCommentAdmin;
                 
                 // Check if current user has liked this comment
                 const hasLikedComment = currentUser?.id ? comment.likes.includes(currentUser.id) : false;
+                const isEditing = editingCommentId === comment._id;
 
                 return (
                   <div key={comment._id} className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
@@ -263,7 +457,7 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
                           <p className="font-semibold text-gray-800">{comment.authorName}</p>
                           <p className="text-sm text-gray-500">{formatTimeAgo(comment.createdAt)}</p>
                         </div>
-                        {canDeleteComment && (
+                        {canModifyComment && !isEditing && (
                           <div className="relative">
                             <button
                               onClick={() => setShowCommentMenu(showCommentMenu === comment._id ? null : comment._id)}
@@ -273,6 +467,13 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
                             </button>
                             {showCommentMenu === comment._id && (
                               <div className="absolute right-0 mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+                                <button
+                                  onClick={() => handleEditComment(comment)}
+                                  className="w-full px-3 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 text-sm"
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                  Edit
+                                </button>
                                 <button
                                   onClick={() => handleDeleteComment(comment._id)}
                                   className="w-full px-3 py-2 text-left text-red-600 hover:bg-red-50 flex items-center gap-2 text-sm"
@@ -285,16 +486,44 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
                           </div>
                         )}
                       </div>
-                      <p className="text-gray-700 mb-2">{comment.content}</p>
-                      <button
-                        onClick={() => handleLikeComment(comment._id)}
-                        className={`flex items-center gap-1 text-sm transition-all ${
-                          hasLikedComment ? 'text-pink-600' : 'text-gray-600 hover:text-pink-600'
-                        }`}
-                      >
-                        <Heart className={`w-4 h-4 ${hasLikedComment ? 'fill-current' : ''}`} />
-                        <span>{comment.likeCount}</span>
-                      </button>
+                      {isEditing ? (
+                        <div className="space-y-2 mb-2">
+                          <textarea
+                            value={editedCommentContent}
+                            onChange={(e) => setEditedCommentContent(e.target.value)}
+                            rows={3}
+                            maxLength={1000}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all resize-none"
+                          />
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleSaveComment(comment._id)}
+                              className="px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all text-sm"
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={handleCancelEditComment}
+                              className="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all text-sm"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-gray-700 mb-2">{comment.content}</p>
+                      )}
+                      {!isEditing && (
+                        <button
+                          onClick={() => handleLikeComment(comment._id)}
+                          className={`flex items-center gap-1 text-sm transition-all ${
+                            hasLikedComment ? 'text-pink-600' : 'text-gray-600 hover:text-pink-600'
+                          }`}
+                        >
+                          <Heart className={`w-4 h-4 ${hasLikedComment ? 'fill-current' : ''}`} />
+                          <span>{comment.likeCount}</span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 );
