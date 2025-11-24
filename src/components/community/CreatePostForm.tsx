@@ -11,7 +11,6 @@ const CreatePostForm: React.FC<CreatePostFormProps> = ({ onSuccess }) => {
   const isGuest = userRole === 'guest';
 
   const [formData, setFormData] = useState<CreatePostData>({
-    title: '',
     content: '',
     tags: [],
     isAnonymous: isGuest,
@@ -50,7 +49,6 @@ const CreatePostForm: React.FC<CreatePostFormProps> = ({ onSuccess }) => {
 
   const resetForm = () => {
     setFormData({
-      title: '',
       content: '',
       tags: [],
       isAnonymous: isGuest,
@@ -67,9 +65,15 @@ const CreatePostForm: React.FC<CreatePostFormProps> = ({ onSuccess }) => {
       return;
     }
 
+    const payload: CreatePostData = {
+      content: formData.content.trim(),
+      isAnonymous: formData.isAnonymous,
+      tags: formData.tags && formData.tags.length > 0 ? formData.tags : undefined,
+    };
+
     setIsSubmitting(true);
     try {
-      const response = await createPost(formData);
+      const response = await createPost(payload);
       if (response.success) {
         resetForm();
         onSuccess();
@@ -150,24 +154,6 @@ const CreatePostForm: React.FC<CreatePostFormProps> = ({ onSuccess }) => {
               </button>
             </div>
           )}
-
-          {/* Title */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Title
-            </label>
-            <input
-              type="text"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              placeholder="Give your post a title (optional)..."
-              maxLength={200}
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all"
-            />
-            <p className="text-sm text-gray-500 mt-1">
-              {formData.title.length}/200 characters
-            </p>
-          </div>
 
           {/* Content */}
           <div>

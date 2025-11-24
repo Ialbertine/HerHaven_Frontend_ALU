@@ -35,6 +35,8 @@ export const register = async (
 
     if (response.data.success && response.data.data?.token) {
       localStorage.setItem("token", response.data.data.token);
+      localStorage.setItem("accessType", "authenticated");
+      localStorage.removeItem("guestSessionId");
       if (response.data.data.user) {
         localStorage.setItem("user", JSON.stringify(response.data.data.user));
       }
@@ -63,6 +65,8 @@ export const login = async (
 
     if (response.data.success && response.data.data?.token) {
       localStorage.setItem("token", response.data.data.token);
+      localStorage.setItem("accessType", "authenticated");
+      localStorage.removeItem("guestSessionId");
       if (response.data.data.user) {
         localStorage.setItem("user", JSON.stringify(response.data.data.user));
       }

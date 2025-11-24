@@ -181,14 +181,6 @@ const Schedule: React.FC = () => {
     setIsEditing(false);
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-      </div>
-    );
-  }
-
   const currentAvailability: Availability = isEditing
     ? editedAvailability
     : availability;
@@ -199,140 +191,148 @@ const Schedule: React.FC = () => {
       userName={userName}
     >
       <div className="space-y-6 min-h-screen">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">My Schedule</h1>
-            <p className="text-gray-600 mt-1">Manage your availability</p>
+        {loading ? (
+          <div className="flex items-center justify-center py-24">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
           </div>
-          <div className="flex gap-2">
-            {isEditing ? (
-              <>
-                <button
-                  onClick={handleCancelEdit}
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSaveAvailability}
-                  disabled={saving}
-                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Save className="w-4 h-4" />
-                  {saving ? "Saving..." : "Save Changes"}
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                <Edit2 className="w-4 h-4" />
-                Edit Schedule
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <div className="space-y-6">
-            {daysOfWeek.map((day) => (
-              <div
-                key={day}
-                className="border-b border-gray-100 pb-6 last:border-b-0"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <Calendar className="w-5 h-5 text-purple-600" />
-                    <h3 className="font-semibold text-gray-800">{day}</h3>
-                  </div>
-                  {isEditing && (
+        ) : (
+          <>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-800">My Schedule</h1>
+                <p className="text-gray-600 mt-1">Manage your availability</p>
+              </div>
+              <div className="flex gap-2">
+                {isEditing ? (
+                  <>
                     <button
-                      onClick={() => addTimeSlot(day)}
-                      className="flex items-center gap-1 text-purple-600 hover:text-purple-700 text-sm font-medium"
+                      onClick={handleCancelEdit}
+                      className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
                     >
-                      <Plus className="w-4 h-4" />
-                      Add Slot
+                      Cancel
                     </button>
-                  )}
-                </div>
-
-                {currentAvailability[day]?.length > 0 ? (
-                  <div className="space-y-3">
-                    {currentAvailability[day].map((slot, index) => (
-                      <div key={index} className="flex items-center gap-3">
-                        <Clock className="w-4 h-4 text-gray-400" />
-                        {isEditing ? (
-                          <>
-                            <input
-                              type="time"
-                              value={slot.start}
-                              onChange={(e) =>
-                                updateTimeSlot(
-                                  day,
-                                  index,
-                                  "start",
-                                  e.target.value
-                                )
-                              }
-                              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                            />
-                            <span className="text-gray-500">to</span>
-                            <input
-                              type="time"
-                              value={slot.end}
-                              onChange={(e) =>
-                                updateTimeSlot(
-                                  day,
-                                  index,
-                                  "end",
-                                  e.target.value
-                                )
-                              }
-                              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                            />
-                            <button
-                              onClick={() => removeTimeSlot(day, index)}
-                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </>
-                        ) : (
-                          <div className="flex items-center gap-2">
-                            <span className="px-3 py-2 bg-purple-50 text-purple-700 rounded-lg font-medium">
-                              {slot.start}
-                            </span>
-                            <span className="text-gray-500">to</span>
-                            <span className="px-3 py-2 bg-purple-50 text-purple-700 rounded-lg font-medium">
-                              {slot.end}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                    <button
+                      onClick={handleSaveAvailability}
+                      disabled={saving}
+                      className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Save className="w-4 h-4" />
+                      {saving ? "Saving..." : "Save Changes"}
+                    </button>
+                  </>
                 ) : (
-                  <div className="text-center py-4">
-                    <p className="text-gray-400 text-sm">
-                      No availability set for this day
-                    </p>
-                  </div>
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                    Edit Schedule
+                  </button>
                 )}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
 
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-100">
-          <h3 className="font-semibold text-gray-800 mb-2">Schedule Tips</h3>
-          <ul className="space-y-2 text-sm text-gray-600">
-            <li>• Set consistent hours to help clients plan appointments</li>
-            <li>• Include buffer time between sessions for notes and breaks</li>
-            <li>• Update your availability regularly to avoid conflicts</li>
-            <li>• Consider time zones if offering remote sessions</li>
-          </ul>
-        </div>
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="space-y-6">
+                {daysOfWeek.map((day) => (
+                  <div
+                    key={day}
+                    className="border-b border-gray-100 pb-6 last:border-b-0"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <Calendar className="w-5 h-5 text-purple-600" />
+                        <h3 className="font-semibold text-gray-800">{day}</h3>
+                      </div>
+                      {isEditing && (
+                        <button
+                          onClick={() => addTimeSlot(day)}
+                          className="flex items-center gap-1 text-purple-600 hover:text-purple-700 text-sm font-medium"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add Slot
+                        </button>
+                      )}
+                    </div>
+
+                    {currentAvailability[day]?.length > 0 ? (
+                      <div className="space-y-3">
+                        {currentAvailability[day].map((slot, index) => (
+                          <div key={index} className="flex items-center gap-3">
+                            <Clock className="w-4 h-4 text-gray-400" />
+                            {isEditing ? (
+                              <>
+                                <input
+                                  type="time"
+                                  value={slot.start}
+                                  onChange={(e) =>
+                                    updateTimeSlot(
+                                      day,
+                                      index,
+                                      "start",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                />
+                                <span className="text-gray-500">to</span>
+                                <input
+                                  type="time"
+                                  value={slot.end}
+                                  onChange={(e) =>
+                                    updateTimeSlot(
+                                      day,
+                                      index,
+                                      "end",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                />
+                                <button
+                                  onClick={() => removeTimeSlot(day, index)}
+                                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </>
+                            ) : (
+                              <div className="flex items-center gap-2">
+                                <span className="px-3 py-2 bg-purple-50 text-purple-700 rounded-lg font-medium">
+                                  {slot.start}
+                                </span>
+                                <span className="text-gray-500">to</span>
+                                <span className="px-3 py-2 bg-purple-50 text-purple-700 rounded-lg font-medium">
+                                  {slot.end}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-4">
+                        <p className="text-gray-400 text-sm">
+                          No availability set for this day
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-100">
+              <h3 className="font-semibold text-gray-800 mb-2">Schedule Tips</h3>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>• Set consistent hours to help clients plan appointments</li>
+                <li>• Include buffer time between sessions for notes and breaks</li>
+                <li>• Update your availability regularly to avoid conflicts</li>
+                <li>• Consider time zones if offering remote sessions</li>
+              </ul>
+            </div>
+          </>
+        )}
       </div>
     </DashboardLayout>
   );

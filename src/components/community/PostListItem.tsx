@@ -152,11 +152,6 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, onClick, onUpdate }) 
             )}
           </div>
 
-          {/* Post Title */}
-          <h4 className="text-xl font-semibold text-gray-800 mb-2">
-            {post.title}
-          </h4>
-
           {/* Post metadata */}
           <div className="flex items-center gap-4 text-sm text-gray-600 mb-3 flex-wrap">
             <div className="flex items-center gap-1.5">

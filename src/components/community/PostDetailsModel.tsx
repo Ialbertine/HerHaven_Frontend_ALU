@@ -164,7 +164,6 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
               </div>
             </div>
 
-            <h3 className="text-2xl font-bold text-gray-800 mb-3">{post.title}</h3>
             <p className="text-gray-600 mb-4 whitespace-pre-wrap">{post.content}</p>
 
             {/* Tags */}

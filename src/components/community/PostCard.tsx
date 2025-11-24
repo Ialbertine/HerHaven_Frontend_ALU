@@ -135,11 +135,6 @@ const PostCard: React.FC<PostCardProps> = ({ post, onClick, onUpdate }) => {
         )}
       </div>
 
-      {/* Title */}
-      <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-purple-600 transition-colors">
-        {post.title}
-      </h3>
-
       {/* Content */}
       <p className="text-gray-600 mb-4 line-clamp-3">
         {truncateContent(post.content)}

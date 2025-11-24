@@ -4,7 +4,6 @@ import apiClient from "./axiosConfig";
 // Type Definitions
 export interface Post {
   _id: string;
-  title: string;
   content: string;
   author: {
     _id: string;
@@ -85,14 +84,12 @@ export interface LikeResponse {
 }
 
 export interface CreatePostData {
-  title: string;
   content: string;
   tags?: string[];
   isAnonymous?: boolean;
 }
 
 export interface UpdatePostData {
-  title?: string;
   content?: string;
   tags?: string[];
   isAnonymous?: boolean;
