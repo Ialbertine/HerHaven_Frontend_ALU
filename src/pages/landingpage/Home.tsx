@@ -134,7 +134,7 @@ export const Home: React.FC = () => {
                 </div>
               </div>
 
-              <Link to="/about">
+              <Link to="/aboutus">
                 <button className="inline-flex items-center gap-1 px-4 py-3 rounded-full border border-transparent bg-gradient-to-r from-[#9c27b0] to-[#7b2cbf] text-white font-bold group hover:from-[#7b2cbf] hover:to-[#6a1b9a] hover:shadow-lg transform hover:scale-105 transition-all duration-300 ease-in-out">
                   <span>{t("homeabout.learnMore")}</span>
                   <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
