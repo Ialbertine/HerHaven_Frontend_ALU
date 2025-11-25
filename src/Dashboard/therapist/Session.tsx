@@ -100,28 +100,44 @@ const Sessions: React.FC = () => {
     try {
       setStartingSession(appointmentId);
       const response = await startSession(appointmentId);
-      if (response.success && response.data?.meetingDetails) {
-        const meetingDetails = {
-          meetingId: response.data.meetingDetails.meetingId,
-          meetingUrl: response.data.meetingDetails.meetingUrl,
-          roomName: '',
-          startTime: response.data.meetingDetails.startTime || new Date().toISOString(),
-          duration: 60
-        };
-        const updated = appointments.map(apt =>
-          apt._id === appointmentId
-            ? { ...apt, status: 'in-progress', meetingDetails }
-            : apt
-        );
+      if (response.success && response.data) {
+        const sessionData = response.data;
+        const updated = appointments.map(apt => {
+          if (apt._id !== appointmentId) return apt;
+          const meetingDetails = sessionData.meetingDetails
+            ? {
+              ...apt.meetingDetails,
+              ...sessionData.meetingDetails,
+              roomName: apt.meetingDetails?.roomName || '',
+              duration: apt.meetingDetails?.duration || apt.duration || 60,
+            }
+            : apt.meetingDetails;
+
+          return {
+            ...apt,
+            status: sessionData.status || apt.status,
+            startedAt: sessionData.startedAt ?? apt.startedAt,
+            meetingDetails
+          };
+        });
         setAppointments(updated);
 
-        // Instead of opening in new tab, show embedded meeting
-        setCurrentMeeting({
-          url: response.data.meetingDetails.meetingUrl,
-          id: response.data.meetingDetails.meetingId
-        });
-        setShowEmbeddedMeeting(true);
-        showAlert('Session started! Meeting is now available in the platform. User has been notified.', 'Success', 'success');
+        const targetAppointment = updated.find(apt => apt._id === appointmentId);
+        const linkReady = sessionData.meetingDetails?.isLinkReady;
+        const wentInProgress = sessionData.status?.toLowerCase() === 'in-progress';
+
+        if (wentInProgress && targetAppointment?.meetingDetails?.meetingUrl) {
+          setCurrentMeeting({
+            url: targetAppointment.meetingDetails.meetingUrl,
+            id: targetAppointment.meetingDetails.meetingId
+          });
+          setShowEmbeddedMeeting(true);
+          showAlert('Session started! Meeting is now available in the platform. User has been notified.', 'Success', 'success');
+        } else if (linkReady) {
+          showAlert(response.message || 'Session link is ready. You and the client can join when you are ready.', 'Success', 'success');
+        } else {
+          showAlert(response.message || 'Session link request received. Please try again shortly.', 'Info', 'info');
+        }
       } else {
         showAlert(response.message || 'Failed to start session', 'Error', 'danger');
       }
@@ -134,19 +150,28 @@ const Sessions: React.FC = () => {
   };
 
   const handleJoinMeeting = (appointment: Appointment): void => {
-    if (appointment.meetingDetails?.meetingUrl) {
-      // Show embedded meeting instead of modal
+    if (canJoinMeeting(appointment) && appointment.meetingDetails?.meetingUrl) {
       setCurrentMeeting({
         url: appointment.meetingDetails.meetingUrl,
         id: appointment.meetingDetails.meetingId
       });
       setShowEmbeddedMeeting(true);
-    } else {
-      // Fallback to modal if no meeting details
-      setSelectedMeeting(appointment);
-      setShowMeetingModal(true);
-      setCopied(false);
+      return;
     }
+
+    if (appointment.meetingDetails?.meetingUrl) {
+      const availableTime = formatLinkAvailability(appointment.meetingDetails.linkAvailableAt);
+      showAlert(
+        `Session link is prepared but not yet available${availableTime ? ` (opens ${availableTime})` : ''}. Please try again closer to the start time.`,
+        'Info',
+        'info'
+      );
+      return;
+    }
+
+    setSelectedMeeting(appointment);
+    setShowMeetingModal(true);
+    setCopied(false);
   };
 
   const handleEndSession = async (): Promise<void> => {
@@ -323,6 +348,38 @@ const Sessions: React.FC = () => {
     }
   };
 
+  const isLinkWindowOpen = (linkAvailableAt?: string): boolean => {
+    if (!linkAvailableAt) return true;
+    return new Date(linkAvailableAt) <= new Date();
+  };
+
+  const isLinkReadyForDisplay = (appointment: Appointment): boolean => {
+    return Boolean(
+      appointment.meetingDetails?.isLinkReady &&
+      isLinkWindowOpen(appointment.meetingDetails?.linkAvailableAt)
+    );
+  };
+
+  const formatLinkAvailability = (linkAvailableAt?: string): string | null => {
+    if (!linkAvailableAt) return null;
+    try {
+      return new Date(linkAvailableAt).toLocaleString([], {
+        dateStyle: 'medium',
+        timeStyle: 'short'
+      });
+    } catch {
+      return linkAvailableAt;
+    }
+  };
+
+  const canJoinMeeting = (appointment: Appointment): boolean => {
+    const meetingUrl = appointment.meetingDetails?.meetingUrl;
+    if (!meetingUrl) return false;
+    const status = appointment.status.toLowerCase();
+    if (status === 'in-progress') return true;
+    return isLinkReadyForDisplay(appointment);
+  };
+
   const filteredAppointments = appointments.filter(apt => {
     const fullName = `${apt.firstName || ''} ${apt.lastName || ''}`.toLowerCase();
     const phoneNumber = apt.phoneNumber || '';
@@ -396,105 +453,116 @@ const Sessions: React.FC = () => {
             <div className="bg-white rounded-xl shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Client</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Contact</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date & Time</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Mode</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Reason</th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {filteredAppointments.map((appointment) => (
-                  <tr key={appointment._id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                          {appointment.firstName && appointment.lastName
-                            ? getInitials(appointment.firstName, appointment.lastName)
-                            : appointment.user?.username?.charAt(0).toUpperCase() || 'U'}
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-800">
-                            {appointment.firstName && appointment.lastName
-                              ? `${appointment.firstName} ${appointment.lastName}`
-                              : appointment.user?.username || 'Unknown User'}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm">
-                        <p className="text-gray-700">{appointment.user?.email || 'No email'}</p>
-                        {appointment.phoneNumber && (
-                          <p className="text-gray-500">{appointment.phoneNumber}</p>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm">
-                        <div className="flex items-center gap-1 text-gray-700">
-                          <Calendar className="w-4 h-4 text-purple-600" />
-                          <span>{new Date(appointment.appointmentDate).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric'
-                          })}</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-gray-600 mt-1">
-                          <Clock className="w-4 h-4 text-purple-600" />
-                          <span>{appointment.appointmentTime}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {appointment.sessionMode && (
-                        <div className="flex items-center gap-2">
-                          {appointment.sessionMode === 'video' ? (
-                            <Video className="w-4 h-4 text-purple-600" />
-                          ) : (
-                            <Phone className="w-4 h-4 text-purple-600" />
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Client</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Contact</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date & Time</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Mode</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Reason</th>
+                      <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {filteredAppointments.map((appointment) => (
+                      <tr key={appointment._id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                              {appointment.firstName && appointment.lastName
+                                ? getInitials(appointment.firstName, appointment.lastName)
+                                : appointment.user?.username?.charAt(0).toUpperCase() || 'U'}
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-800">
+                                {appointment.firstName && appointment.lastName
+                                  ? `${appointment.firstName} ${appointment.lastName}`
+                                  : appointment.user?.username || 'Unknown User'}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm">
+                            <p className="text-gray-700">{appointment.user?.email || 'No email'}</p>
+                            {appointment.phoneNumber && (
+                              <p className="text-gray-500">{appointment.phoneNumber}</p>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm">
+                            <div className="flex items-center gap-1 text-gray-700">
+                              <Calendar className="w-4 h-4 text-purple-600" />
+                              <span>{new Date(appointment.appointmentDate).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric'
+                              })}</span>
+                            </div>
+                            <div className="flex items-center gap-1 text-gray-600 mt-1">
+                              <Clock className="w-4 h-4 text-purple-600" />
+                              <span>{appointment.appointmentTime}</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {appointment.sessionMode && (
+                            <div className="flex items-center gap-2">
+                              {appointment.sessionMode === 'video' ? (
+                                <Video className="w-4 h-4 text-purple-600" />
+                              ) : (
+                                <Phone className="w-4 h-4 text-purple-600" />
+                              )}
+                              <span className="text-sm text-gray-700 capitalize">{appointment.sessionMode}</span>
+                            </div>
                           )}
-                          <span className="text-sm text-gray-700 capitalize">{appointment.sessionMode}</span>
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(appointment.status)}`}>
-                        {appointment.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="text-sm text-gray-700 max-w-xs truncate" title={appointment.reason || 'N/A'}>
-                        {appointment.reason || 'N/A'}
-                      </p>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <div className="flex gap-2 justify-end">
-                        {appointment.status.toLowerCase() === 'pending' && (
-                          <>
-                            <button
-                              onClick={() => handleApprove(appointment._id)}
-                              className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                              title="Approve"
-                            >
-                              <Check className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleReject(appointment._id)}
-                              className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                              title="Reject"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </>
-                        )}
-                        {appointment.status.toLowerCase() === 'confirmed' && (
-                          <>
-                            {isAppointmentInPast(appointment.appointmentDate, appointment.appointmentTime) ? (
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(appointment.status)}`}>
+                            {appointment.status}
+                          </span>
+                          {isLinkReadyForDisplay(appointment) && (
+                            <span className="block text-xs text-purple-600 mt-1">Session link ready</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="text-sm text-gray-700 max-w-xs truncate" title={appointment.reason || 'N/A'}>
+                            {appointment.reason || 'N/A'}
+                          </p>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right">
+                          <div className="flex gap-2 justify-end">
+                            {appointment.status.toLowerCase() === 'pending' && (
+                              <>
+                                <button
+                                  onClick={() => handleApprove(appointment._id)}
+                                  className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                                  title="Approve"
+                                >
+                                  <Check className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleReject(appointment._id)}
+                                  className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                                  title="Reject"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </>
+                            )}
+                            {appointment.status.toLowerCase() === 'confirmed' && !isLinkReadyForDisplay(appointment) && !isAppointmentInPast(appointment.appointmentDate, appointment.appointmentTime) && (
+                              <button
+                                onClick={() => handleStartSession(appointment._id)}
+                                disabled={startingSession === appointment._id}
+                                className="p-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                title="Generate Session Link"
+                              >
+                                <Play className="w-4 h-4" />
+                              </button>
+                            )}
+                            {appointment.status.toLowerCase() === 'confirmed' && isAppointmentInPast(appointment.appointmentDate, appointment.appointmentTime) && (
                               <button
                                 onClick={() => handleMarkAsEnded(appointment._id)}
                                 disabled={markingAsEnded === appointment._id}
@@ -503,196 +571,201 @@ const Sessions: React.FC = () => {
                               >
                                 <AlertCircle className="w-4 h-4" />
                               </button>
-                            ) : (
+                            )}
+                            {canJoinMeeting(appointment) && (
                               <button
-                                onClick={() => handleStartSession(appointment._id)}
-                                disabled={startingSession === appointment._id}
-                                className="p-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                title="Start Session"
+                                onClick={() => handleJoinMeeting(appointment)}
+                                className="p-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-colors"
+                                title="Join Meeting"
                               >
-                                <Play className="w-4 h-4" />
+                                <ExternalLink className="w-4 h-4" />
                               </button>
                             )}
-                          </>
-                        )}
-                        {appointment.status.toLowerCase() === 'in-progress' && (
-                          <button
-                            onClick={() => handleJoinMeeting(appointment)}
-                            className="p-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-colors"
-                            title="Join Meeting"
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                          </button>
-                        )}
-                        {canDelete(appointment) && (
-                          <button
-                            onClick={() => handleDeleteAppointment(appointment._id)}
-                            disabled={deletingAppointment === appointment._id}
-                            className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                            {canDelete(appointment) && (
+                              <button
+                                onClick={() => handleDeleteAppointment(appointment._id)}
+                                disabled={deletingAppointment === appointment._id}
+                                className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                title="Delete"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
 
-        {filteredAppointments.length === 0 && (
-          <div className="text-center py-12 bg-white rounded-xl">
-            <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-600 mb-2">No appointments found</h3>
-            <p className="text-gray-500">Try adjusting your search or filters</p>
-          </div>
-        )}
+            {filteredAppointments.length === 0 && (
+              <div className="text-center py-12 bg-white rounded-xl">
+                <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-600 mb-2">No appointments found</h3>
+                <p className="text-gray-500">Try adjusting your search or filters</p>
+              </div>
+            )}
 
-        {/* Meeting Details Modal */}
-        {showMeetingModal && selectedMeeting && (
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-            onClick={() => setShowMeetingModal(false)}
-          >
-            <div
-              className="bg-white rounded-xl max-w-2xl w-full p-6"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">Meeting Details</h2>
-                <button
-                  onClick={() => setShowMeetingModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
+            {/* Meeting Details Modal */}
+            {showMeetingModal && selectedMeeting && (
+              <div
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+                onClick={() => setShowMeetingModal(false)}
+              >
+                <div
+                  className="bg-white rounded-xl max-w-2xl w-full p-6"
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-4 mb-6">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold">
-                    {selectedMeeting.firstName && selectedMeeting.lastName
-                      ? getInitials(selectedMeeting.firstName, selectedMeeting.lastName)
-                      : selectedMeeting.user?.username?.charAt(0).toUpperCase() || 'U'}
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-800">
-                      {selectedMeeting.firstName && selectedMeeting.lastName
-                        ? `${selectedMeeting.firstName} ${selectedMeeting.lastName}`
-                        : selectedMeeting.user?.username || 'Unknown User'}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {selectedMeeting.user?.email || 'No email'}
-                      {selectedMeeting.phoneNumber && ` • ${selectedMeeting.phoneNumber}`}
-                    </p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-purple-600" />
-                    <span>{new Date(selectedMeeting.appointmentDate).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric'
-                    })}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-purple-600" />
-                    <span>{selectedMeeting.appointmentTime}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Meeting Link
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={selectedMeeting.meetingDetails?.meetingUrl || ''}
-                      readOnly
-                      className="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 text-sm"
-                    />
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-bold text-gray-800">Meeting Details</h2>
                     <button
-                      onClick={() => copyToClipboard(selectedMeeting.meetingDetails?.meetingUrl || '')}
-                      className="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                      onClick={() => setShowMeetingModal(false)}
+                      className="text-gray-400 hover:text-gray-600"
                     >
-                      {copied ? (
-                        <CheckCircle className="w-5 h-5 text-green-600" />
-                      ) : (
-                        <Copy className="w-5 h-5 text-gray-600" />
-                      )}
+                      <X className="w-6 h-6" />
                     </button>
                   </div>
-                  {copied && (
-                    <p className="text-xs text-green-600 mt-1">Link copied to clipboard!</p>
-                  )}
-                </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Meeting ID
-                  </label>
-                  <input
-                    type="text"
-                    value={selectedMeeting.meetingDetails?.meetingId || ''}
-                    readOnly
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 text-sm"
-                  />
-                </div>
-
-                {selectedMeeting.reason && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Session Reason
-                    </label>
-                    <p className="px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 text-sm">
-                      {selectedMeeting.reason}
-                    </p>
+                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-4 mb-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold">
+                        {selectedMeeting.firstName && selectedMeeting.lastName
+                          ? getInitials(selectedMeeting.firstName, selectedMeeting.lastName)
+                          : selectedMeeting.user?.username?.charAt(0).toUpperCase() || 'U'}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-800">
+                          {selectedMeeting.firstName && selectedMeeting.lastName
+                            ? `${selectedMeeting.firstName} ${selectedMeeting.lastName}`
+                            : selectedMeeting.user?.username || 'Unknown User'}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {selectedMeeting.user?.email || 'No email'}
+                          {selectedMeeting.phoneNumber && ` • ${selectedMeeting.phoneNumber}`}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-purple-600" />
+                        <span>{new Date(selectedMeeting.appointmentDate).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        })}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-purple-600" />
+                        <span>{selectedMeeting.appointmentTime}</span>
+                      </div>
+                    </div>
                   </div>
-                )}
 
-                <div className="flex gap-3 pt-4">
-                  <button
-                    onClick={() => window.open(selectedMeeting.meetingDetails?.meetingUrl, '_blank')}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-colors font-medium"
-                  >
-                    <ExternalLink className="w-5 h-5" />
-                    Open Meeting
-                  </button>
-                  <button
-                    onClick={handleEndSession}
-                    disabled={endingSession}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <CheckCircle className="w-5 h-5" />
-                    {endingSession ? 'Ending...' : 'End Session'}
-                  </button>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Meeting Link
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={selectedMeeting.meetingDetails?.meetingUrl || ''}
+                          readOnly
+                          className="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 text-sm"
+                        />
+                        <button
+                          onClick={() => copyToClipboard(selectedMeeting.meetingDetails?.meetingUrl || '')}
+                          className="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                        >
+                          {copied ? (
+                            <CheckCircle className="w-5 h-5 text-green-600" />
+                          ) : (
+                            <Copy className="w-5 h-5 text-gray-600" />
+                          )}
+                        </button>
+                      </div>
+                      {copied && (
+                        <p className="text-xs text-green-600 mt-1">Link copied to clipboard!</p>
+                      )}
+                      {selectedMeeting.meetingDetails ? (
+                        isLinkReadyForDisplay(selectedMeeting) ? (
+                          <p className="text-xs text-green-600 mt-1">
+                            Session link ready{selectedMeeting.meetingDetails.linkAvailableAt ? ` since ${formatLinkAvailability(selectedMeeting.meetingDetails.linkAvailableAt)}` : ''}. Share it when you are ready to begin.
+                          </p>
+                        ) : (
+                          <p className="text-xs text-amber-600 mt-1">
+                            Session link will unlock closer to start time
+                            {selectedMeeting.meetingDetails.linkAvailableAt ? ` (ready around ${formatLinkAvailability(selectedMeeting.meetingDetails.linkAvailableAt)})` : ''}.
+                          </p>
+                        )
+                      ) : (
+                        <p className="text-xs text-amber-600 mt-1">
+                          No meeting link yet. Use the “Generate Session Link” button to prepare one.
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Meeting ID
+                      </label>
+                      <input
+                        type="text"
+                        value={selectedMeeting.meetingDetails?.meetingId || ''}
+                        readOnly
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 text-sm"
+                      />
+                    </div>
+
+                    {selectedMeeting.reason && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Session Reason
+                        </label>
+                        <p className="px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 text-sm">
+                          {selectedMeeting.reason}
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="flex gap-3 pt-4">
+                      <button
+                        onClick={() => window.open(selectedMeeting.meetingDetails?.meetingUrl, '_blank')}
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-colors font-medium"
+                      >
+                        <ExternalLink className="w-5 h-5" />
+                        Open Meeting
+                      </button>
+                      <button
+                        onClick={handleEndSession}
+                        disabled={endingSession}
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <CheckCircle className="w-5 h-5" />
+                        {endingSession ? 'Ending...' : 'End Session'}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        )}
+            )}
 
-        {/* Embedded Meeting Component */}
-        {showEmbeddedMeeting && currentMeeting && (
-          <div className={`fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 ${isFullscreen ? 'p-0' : ''}`}>
-            <div className={`${isFullscreen ? 'w-full h-full' : 'w-full max-w-4xl h-[80vh]'}`}>
-              <EmbeddedMeeting
-                meetingUrl={currentMeeting.url}
-                meetingId={currentMeeting.id}
-                onMeetingEnd={handleEndEmbeddedMeeting}
-                isFullscreen={isFullscreen}
-                onToggleFullscreen={handleToggleFullscreen}
-              />
-            </div>
-          </div>
-        )}
+            {/* Embedded Meeting Component */}
+            {showEmbeddedMeeting && currentMeeting && (
+              <div className={`fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 ${isFullscreen ? 'p-0' : ''}`}>
+                <div className={`${isFullscreen ? 'w-full h-full' : 'w-full max-w-4xl h-[80vh]'}`}>
+                  <EmbeddedMeeting
+                    meetingUrl={currentMeeting.url}
+                    meetingId={currentMeeting.id}
+                    onMeetingEnd={handleEndEmbeddedMeeting}
+                    isFullscreen={isFullscreen}
+                    onToggleFullscreen={handleToggleFullscreen}
+                  />
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import {
+  ArrowLeft,
   Loader2,
   X,
   Search,
@@ -354,6 +355,20 @@ export const AssessmentResults: React.FC = () => {
       `}</style>
       <div className="min-h-screen bg-lavender-50 py-20 px-6 print-content flex items-center justify-center">
         <div className="w-full max-w-4xl mx-auto">
+          {isAuthenticated && (
+            <div className="mb-6">
+              <Link
+                to="/user/dashboard"
+                className="inline-flex items-center gap-2 text-purple-700 hover:text-purple-900 font-medium transition-colors"
+                aria-label="Back to your dashboard"
+              >
+                <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-md">
+                  <ArrowLeft className="w-5 h-5" />
+                </span>
+                Back to dashboard
+              </Link>
+            </div>
+          )}
           {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full font-semibold text-sm mb-4">

@@ -43,10 +43,13 @@ export interface Appointment {
   meetingDetails?: {
     meetingId: string;
     meetingUrl: string;
-    roomName: string;
-    startTime: string;
-    duration: number;
+    roomName?: string;
+    startTime?: string;
+    duration?: number;
+    isLinkReady?: boolean;
+    linkAvailableAt?: string;
   };
+  startedAt?: string;
   createdAt: string;
 }
 
@@ -236,10 +239,13 @@ export const startSession = async (
   ApiResponse<{
     appointmentId: string;
     status: string;
+    startedAt?: string;
     meetingDetails?: { 
       meetingId: string; 
       meetingUrl: string;
-      startTime: string;
+      startTime?: string;
+      isLinkReady?: boolean;
+      linkAvailableAt?: string;
     };
   }>
 > => {
@@ -251,7 +257,9 @@ export const startSession = async (
         meetingDetails?: { 
           meetingId: string; 
           meetingUrl: string;
-          startTime: string;
+          startTime?: string;
+          isLinkReady?: boolean;
+          linkAvailableAt?: string;
         };
       }>
     >(`/api/appointments/${appointmentId}/start`);
@@ -322,6 +330,8 @@ export const getMeetingDetails = async (
       meetingUrl: string;
       password?: string;
       startTime: string;
+      isLinkReady?: boolean;
+      linkAvailableAt?: string;
     };
   }>
 > => {
