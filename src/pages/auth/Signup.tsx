@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, User, Mail, Lock, Check, X, Loader2 } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, User, Mail, Lock, Check, X, Loader2 } from "lucide-react";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import { register, continueAsGuest } from "@/apis/auth";
 
@@ -180,6 +180,15 @@ const Signup: React.FC = () => {
     <section className="relative min-h-screen flex items-center overflow-hidden pb-2">
       {/* Animated Background */}
       <AnimatedBackground variant="default" />
+
+      <Link
+        to="/"
+        className="absolute top-4 left-4 sm:left-6 inline-flex items-center gap-2 text-[#9c27b0] font-semibold bg-white/90 backdrop-blur px-3 py-2 rounded-full shadow-md hover:text-purple-900 transition-colors"
+        aria-label="Back to HerHaven home"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        <span className="hidden sm:inline">Back home</span>
+      </Link>
 
       {/* Content */}
       <div className="mx-auto px-6 relative z-10 w-full">

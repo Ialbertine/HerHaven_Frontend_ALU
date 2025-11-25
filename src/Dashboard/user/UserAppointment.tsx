@@ -41,7 +41,10 @@ interface Appointment {
   meetingDetails?: {
     meetingUrl: string;
     meetingId: string;
+    isLinkReady?: boolean;
+    linkAvailableAt?: string;
   };
+  startedAt?: string;
 }
 
 const UserAppointments = () => {
@@ -135,6 +138,11 @@ const UserAppointments = () => {
   };
 
   const handleJoinMeeting = async (appointmentId: string) => {
+    const appointment = appointments.find((apt) => apt._id === appointmentId);
+    if (appointment && !canJoin(appointment)) {
+      showAlert("Your session link isn’t ready just yet. Please try again closer to the start time.", "Info", "info");
+      return;
+    }
     try {
       const response = await getMeetingDetails(appointmentId);
       if (response.success && response.data?.meeting?.meetingUrl) {
@@ -267,13 +275,22 @@ const UserAppointments = () => {
     return ["pending", "confirmed"].includes(appointment.status);
   };
 
-  const canJoin = (appointment: Appointment) => {
-    return (
-      appointment.status === "in-progress" ||
-      (appointment.status === "confirmed" &&
-        new Date(appointment.appointmentDate).toDateString() ===
-        new Date().toDateString())
+  const isLinkWindowOpen = (linkAvailableAt?: string) => {
+    if (!linkAvailableAt) return true;
+    return new Date(linkAvailableAt) <= new Date();
+  };
+
+  const isLinkReady = (appointment: Appointment) => {
+    return Boolean(
+      appointment.meetingDetails?.isLinkReady &&
+      isLinkWindowOpen(appointment.meetingDetails?.linkAvailableAt)
     );
+  };
+
+  const canJoin = (appointment: Appointment) => {
+    if (!appointment.meetingDetails?.meetingUrl) return false;
+    if (appointment.status === "in-progress") return true;
+    return appointment.status === "confirmed" && isLinkReady(appointment);
   };
 
   return (
@@ -402,6 +419,11 @@ const UserAppointments = () => {
                             {getStatusIcon(appointment.status)}
                             {appointment.status}
                           </span>
+                          {isLinkReady(appointment) && (
+                            <span className="px-2 py-1 rounded-full text-xs font-medium text-purple-700 bg-purple-100">
+                              Session link ready
+                            </span>
+                          )}
                         </div>
                         <p className="text-sm text-gray-600 mb-2">
                           {appointment.counselor.specialization}
@@ -453,11 +475,12 @@ const UserAppointments = () => {
                         )}
 
                         {appointment.status === "confirmed" && (
-                          <div className="mt-3 flex items-start gap-2 p-3 bg-green-50 rounded-lg">
-                            <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                            <p className="text-sm text-green-700">
-                              Your appointment is confirmed! You can join 10
-                              minutes before the scheduled time.
+                          <div className={`mt-3 flex items-start gap-2 p-3 rounded-lg ${isLinkReady(appointment) ? "bg-purple-50" : "bg-green-50"}`}>
+                            <CheckCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${isLinkReady(appointment) ? "text-purple-600" : "text-green-600"}`} />
+                            <p className={`text-sm ${isLinkReady(appointment) ? "text-purple-700" : "text-green-700"}`}>
+                              {isLinkReady(appointment)
+                                ? "Your counselor prepared the session link. You can join whenever you’re ready."
+                                : "Your appointment is confirmed! The session link will be available once your counselor prepares it."}
                             </p>
                           </div>
                         )}

@@ -65,10 +65,13 @@ export interface Appointment {
   meetingDetails?: {
     meetingId: string;
     meetingUrl: string;
-    roomName: string;
-    startTime: string;
-    duration: number;
+    roomName?: string;
+    startTime?: string;
+    duration?: number;
+    isLinkReady?: boolean;
+    linkAvailableAt?: string;
   };
+  startedAt?: string;
   createdAt: string;
 }
 
