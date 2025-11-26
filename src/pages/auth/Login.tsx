@@ -116,7 +116,7 @@ const Login: React.FC = () => {
 
       <Link
         to="/"
-        className="absolute top-4 left-4 sm:left-6 inline-flex items-center gap-2 text-[#9c27b0] font-semibold bg-white/90 backdrop-blur px-3 py-2 rounded-full shadow-md hover:text-purple-900 transition-colors"
+        className="absolute top-4 left-4 sm:left-6 inline-flex items-center gap-2 text-[#9c27b0] font-semibold bg-white/90 backdrop-blur px-3 py-2 rounded-full shadow-md hover:text-purple-900 transition-colors cursor-pointer z-50"
         aria-label="Back to HerHaven home"
       >
         <ArrowLeft className="w-4 h-4" />
@@ -275,7 +275,7 @@ const Login: React.FC = () => {
               Don't have an account?{" "}
               <Link
                 to="/signup"
-                className="text-[#9c27b0] hover:underline font-semibold"
+                className="text-[#9c27b0] hover:underline font-semibold cursor-pointer"
               >
                 Sign Up
               </Link>

@@ -195,7 +195,7 @@ export const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     ));
 
   return (
-    <div className="absolute inset-0 z-0">
+    <div className="absolute inset-0 z-0 pointer-events-none">
       {/* Gradient Background */}
       {showGradient && (
         <div
