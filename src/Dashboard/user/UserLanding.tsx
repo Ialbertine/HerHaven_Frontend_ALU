@@ -126,7 +126,7 @@ const UserLanding = () => {
       ) : (
         <div className="space-y-6 min-h-screen">
           {/* Welcome Section */}
-          <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8 text-white">
+          <div className="bg-purple-600 rounded-2xl p-8 text-white">
             <h1 className="text-3xl font-bold mb-2">
               {isGuest ? `Welcome, ${userName}!` : `Welcome Back, ${userName}!`}
             </h1>
