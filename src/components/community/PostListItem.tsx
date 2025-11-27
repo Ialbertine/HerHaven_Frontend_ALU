@@ -3,6 +3,7 @@ import { Heart, MessageSquare, MoreVertical, Trash2, Edit2, Clock, Tag as TagIco
 import { type Post, likePost, deletePost, updatePost } from '@/apis/community';
 import { getCurrentUser } from '@/apis/auth';
 import { useModal } from '@/contexts/useModal';
+import { getAuthorDisplayName, getAuthorInitial } from '@/utils/communityUtils';
 
 interface PostListItemProps {
   post: Post;
@@ -13,13 +14,13 @@ interface PostListItemProps {
 const PostListItem: React.FC<PostListItemProps> = ({ post, onClick, onUpdate }) => {
   const { showDeleteConfirm } = useModal();
   const currentUser = getCurrentUser();
-  
+
   // Check if current user has already liked this post
   const [liked, setLiked] = useState(() => {
     if (!currentUser?.id) return false;
     return post.likes.includes(currentUser.id);
   });
-  
+
   const [showMenu, setShowMenu] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likeCount);
   const [isLiking, setIsLiking] = useState(false);
@@ -53,10 +54,10 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, onClick, onUpdate }) 
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'long', 
-      day: 'numeric', 
-      year: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
     });
   };
 
@@ -143,7 +144,7 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, onClick, onUpdate }) 
         {/* Avatar */}
         <div className="flex-shrink-0">
           <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center text-white font-semibold text-base shadow-md">
-            {post.authorName.charAt(0).toUpperCase()}
+            {getAuthorInitial(post)}
           </div>
         </div>
 
@@ -152,7 +153,7 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, onClick, onUpdate }) 
           {/* Header with author and menu */}
           <div className="flex items-start justify-between mb-2">
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-lg font-bold text-gray-900">{post.authorName}</h3>
+              <h3 className="text-lg font-bold text-gray-900">{getAuthorDisplayName(post)}</h3>
               {post.isAnonymous && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
                   <CheckCircle className="w-3 h-3" />
@@ -160,7 +161,7 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, onClick, onUpdate }) 
                 </span>
               )}
             </div>
-            
+
             {canModify && (
               <div className="relative">
                 <button
@@ -294,11 +295,10 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, onClick, onUpdate }) 
             <button
               onClick={handleLike}
               disabled={isLiking}
-              className={`flex items-center gap-2 transition-all ${
-                liked
+              className={`flex items-center gap-2 transition-all ${liked
                   ? 'text-pink-600'
                   : 'text-gray-600 hover:text-pink-600'
-              }`}
+                }`}
             >
               <Heart className={`w-5 h-5 ${liked ? 'fill-current' : ''}`} />
               <span className="font-medium text-sm">{likeCount} likes</span>

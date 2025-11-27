@@ -14,6 +14,7 @@ import {
 } from '@/apis/community';
 import { getCurrentUser } from '@/apis/auth';
 import { useModal } from '@/contexts/useModal';
+import { getAuthorDisplayName, getAuthorInitial } from '@/utils/communityUtils';
 
 interface PostDetailModalProps {
   post: Post;
@@ -305,10 +306,10 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose, onUpda
           <div>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center text-white font-semibold text-base shadow-md">
-                {post.authorName.charAt(0).toUpperCase()}
+                {getAuthorInitial(post)}
               </div>
               <div>
-                <h4 className="font-semibold text-gray-800">{post.authorName}</h4>
+                <h4 className="font-semibold text-gray-800">{getAuthorDisplayName(post)}</h4>
                 <p className="text-sm text-gray-500">{formatTimeAgo(post.createdAt)}</p>
               </div>
             </div>
@@ -449,12 +450,12 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose, onUpda
                 return (
                   <div key={comment._id} className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
                     <div className="w-9 h-9 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center text-white font-semibold text-sm shadow-md flex-shrink-0">
-                      {comment.authorName.charAt(0).toUpperCase()}
+                      {getAuthorInitial(comment)}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-start justify-between mb-2">
                         <div>
-                          <p className="font-semibold text-gray-800">{comment.authorName}</p>
+                          <p className="font-semibold text-gray-800">{getAuthorDisplayName(comment)}</p>
                           <p className="text-sm text-gray-500">{formatTimeAgo(comment.createdAt)}</p>
                         </div>
                         {canModifyComment && !isEditing && (

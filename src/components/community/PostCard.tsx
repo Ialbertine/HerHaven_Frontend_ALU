@@ -3,6 +3,7 @@ import { Heart, MessageSquare, MoreVertical, Trash2 } from 'lucide-react';
 import { type Post, likePost, deletePost } from '@/apis/community';
 import { getCurrentUser } from '@/apis/auth';
 import { useModal } from '@/contexts/useModal';
+import { getAuthorDisplayName, getAuthorInitial } from '@/utils/communityUtils';
 
 interface PostCardProps {
   post: Post;
@@ -98,10 +99,10 @@ const PostCard: React.FC<PostCardProps> = ({ post, onClick, onUpdate }) => {
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center text-white font-semibold text-sm shadow-md">
-            {post.authorName.charAt(0).toUpperCase()}
+            {getAuthorInitial(post)}
           </div>
           <div>
-            <h4 className="font-semibold text-gray-800">{post.authorName}</h4>
+            <h4 className="font-semibold text-gray-800">{getAuthorDisplayName(post)}</h4>
             <p className="text-sm text-gray-500">
               {formatTimeAgo(post.createdAt)}
             </p>
